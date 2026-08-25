@@ -968,12 +968,11 @@ riskAssets.forEach((item) => {
                   </strong>
 
                   <small>
-  Score{" "}
-  {assetDetail?.blast_radius?.blast_radius_score ??
-    assetDetail?.blast_radius?.score ??
-    assetDetail?.blast_radius_score ??
-    "—"}
-</small>
+                    Score{" "}
+                    {assetDetail?.current_risk?.score ??
+                      assetDetail?.risk_assessment?.final_score ??
+                      "—"}
+                  </small>
                 </div>
 
 
@@ -1018,7 +1017,10 @@ riskAssets.forEach((item) => {
 
                   <small>
                     Score{" "}
-                    {assetDetail?.blast_radius?.score ?? "—"}
+                    {assetDetail?.blast_radius?.blast_radius_score ??
+                      assetDetail?.blast_radius?.score ??
+                      assetDetail?.blast_radius_score ??
+                      "—"}
                   </small>
                 </div>
 
