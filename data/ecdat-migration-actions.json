@@ -1,0 +1,4024 @@
+{
+  "metadata": {
+    "project": "ECDAT",
+    "stage": "9.4",
+    "component": "migration-action-generation",
+    "source_asset_count": 59,
+    "migration_record_count": 59
+  },
+  "summary": {
+    "total_assets": 59,
+    "total_migration_actions": 575,
+    "assets_with_pqc_candidates": 14,
+    "migration_type_distribution": {
+      "pqc-candidate": 13,
+      "no-direct-pqc-replacement": 16,
+      "architectural-migration": 30
+    }
+  },
+  "assets": [
+    {
+      "asset": "ECDH",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify the current key-establishment protocol and handshake flow."
+        },
+        {
+          "step": 2,
+          "action": "Identify all inputs and outputs of the existing key-agreement operation."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
+        },
+        {
+          "step": 5,
+          "action": "Update protocol negotiation and key-establishment handling where required."
+        },
+        {
+          "step": 6,
+          "action": "Validate key encapsulation and decapsulation integration."
+        },
+        {
+          "step": 7,
+          "action": "Validate interoperability with all communicating endpoints."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for ECDH.",
+        "reasons": [
+          "The asset performs key agreement and can be evaluated against a PQC KEM."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+        "server-spi-private/src/main/java/org/keycloak/protocol/saml/util/ArtifactBindingUtils.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "ArtifactBindingUtils",
+        "SignatureUtil"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for SHA1.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "key@7ec82636-0987-4d06-a8fa-c58fd7d99b00",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for key@7ec82636-0987-4d06-a8fa-c58fd7d99b00.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@bedd9443-4b38-46c4-9376-56470f4f1d61",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEddsaKeyProviderFactory"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@bedd9443-4b38-46c4-9376-56470f4f1d61.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256withRSAandMGF1",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA256withRSAandMGF1.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "RAW",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HmacOTP"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for RAW.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "EdDSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "GeneratedEddsaKeyProvider",
+        "GeneratedEddsaKeyProviderFactory"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for EdDSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA256",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "HMACProvider",
+        "KeycloakModelUtils"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for HMAC-SHA256.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@2ee4ba9f-8158-4c38-9b8c-514d4f1d1267",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AbstractGeneratedEcKeyProviderFactory"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@2ee4ba9f-8158-4c38-9b8c-514d4f1d1267.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@b7a91807-d26b-4c20-9ee0-a3ff2610e59c",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for private-key@b7a91807-d26b-4c20-9ee0-a3ff2610e59c.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "RSA-2048",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java",
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
+      ],
+      "affected_file_count": 3,
+      "affected_classes": [
+        "JWKParser",
+        "KeyUtils",
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 3,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for RSA-2048.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@e336b953-bacc-4b33-a373-a5b54ae5c3f6",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSECDSACryptoProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@e336b953-bacc-4b33-a373-a5b54ae5c3f6.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@fd8f5bc5-0bf8-44e6-aa1b-d2253312995d",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@fd8f5bc5-0bf8-44e6-aa1b-d2253312995d.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384withRSAandMGF1",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA384withRSAandMGF1.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "DSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for DSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "EC",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java",
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+        "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java"
+      ],
+      "affected_file_count": 10,
+      "affected_classes": [
+        "AbstractGeneratedEcKeyProviderFactory",
+        "BCECDSACryptoProvider",
+        "BCEcdhEsAlgorithmProvider",
+        "BCFIPSECDSACryptoProvider",
+        "BCFIPSEcdhEsAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider",
+        "GeneratedEcdhKeyProvider",
+        "GeneratedEcdsaKeyProvider",
+        "KeyUtils",
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 10,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Use ML-KEM-768 only as a migration direction after confirming the actual cryptographic purpose."
+        },
+        {
+          "step": 6,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 7,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 8,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 9,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 10,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 11,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 11,
+      "explanation": {
+        "summary": "ECDAT generated 11 migration action(s) for EC.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@6a9e9ef8-9d6d-403a-90db-346ccecfa603",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "JWKParser"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@6a9e9ef8-9d6d-403a-90db-346ccecfa603.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@7b0e2681-aece-44cb-b65d-682e31b3949c",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEcdsaKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for private-key@7b0e2681-aece-44cb-b65d-682e31b3949c.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@ce4a129b-e78a-4eae-94ec-926cdb246ce6",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HmacOTP"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@ce4a129b-e78a-4eae-94ec-926cdb246ce6.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "AES",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/AesKeyWrapAlgorithmProvider.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "AesKeyWrapAlgorithmProvider",
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for AES.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@9ddf49c3-b522-4be7-9ae6-4a4240e4a22b",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEcdhKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for private-key@9ddf49c3-b522-4be7-9ae6-4a4240e4a22b.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@64e30937-2fd7-4d97-a0cb-c36223c5b125",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@64e30937-2fd7-4d97-a0cb-c36223c5b125.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256withRSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA256withRSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@7860b937-ece5-41e2-a560-a52543af28de",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCECDSACryptoProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@7860b937-ece5-41e2-a560-a52543af28de.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "HMACProvider",
+        "RSAProvider"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for SHA512.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@c8dbb1ed-ebd2-4702-8aa9-b5717b6c47f3",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "KeycloakModelUtils"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@c8dbb1ed-ebd2-4702-8aa9-b5717b6c47f3.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512withRSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA512withRSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@a51ac580-bf55-4c1e-bf18-7e0a930b2a31",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEddsaKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for private-key@a51ac580-bf55-4c1e-bf18-7e0a930b2a31.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "key@f921da60-964d-4de4-bc18-1ee9126a1875",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for key@f921da60-964d-4de4-bc18-1ee9126a1875.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "key@73ead9c3-f48c-4f34-a1c7-ad41fe269de0",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "KeyUtils"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for key@73ead9c3-f48c-4f34-a1c7-ad41fe269de0.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384withRSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA384withRSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1withDSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "SignatureUtil"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA1withDSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@6b1c3523-ad59-41c8-a388-7a352c875532",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@6b1c3523-ad59-41c8-a388-7a352c875532.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@46f8bdaf-6cf1-4676-be3d-924c7aa9f369",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@46f8bdaf-6cf1-4676-be3d-924c7aa9f369.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 3,
+      "affected_classes": [
+        "HMACProvider",
+        "HashUtils",
+        "RSAProvider"
+      ],
+      "affected_class_count": 3,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for SHA384.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@21a4e44d-498a-4aa6-ac3a-a6badad09783",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesGcmEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@21a4e44d-498a-4aa6-ac3a-a6badad09783.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@60d9251a-4da5-40d8-9895-242c2e5bd2b5",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@60d9251a-4da5-40d8-9895-242c2e5bd2b5.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@d8b0b027-dd96-4747-ac04-9cd7e2ef14be",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@d8b0b027-dd96-4747-ac04-9cd7e2ef14be.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA512",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HMACProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for HMAC-SHA512.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1withRSA",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "SignatureUtil"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA1withRSA.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@c9da4368-6dc1-4173-a512-c84543e9fc9f",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@c9da4368-6dc1-4173-a512-c84543e9fc9f.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "TLS",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "adapters/saml/core/src/main/java/org/keycloak/adapters/cloned/HttpClientBuilder.java",
+        "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/embedded/JGroupsConfigurator.java",
+        "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/remote/DefaultCacheRemoteConfigProviderFactory.java",
+        "operator/src/main/java/org/keycloak/operator/controllers/KeycloakClientBaseController.java",
+        "services/src/main/java/org/keycloak/connections/httpclient/HttpClientBuilder.java",
+        "services/src/main/java/org/keycloak/truststore/JSSETruststoreConfigurator.java",
+        "test-framework/core/src/main/java/org/keycloak/testframework/server/DistributionKeycloakServer.java",
+        "test-framework/core/src/main/java/org/keycloak/testframework/server/ReadinessProbe.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/AbstractQuarkusDeployableContainer.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/InfinispanServerDeployableContainer.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java",
+        "testsuite/integration-arquillian/util/src/main/java/org/keycloak/testsuite/utils/tls/TLSUtils.java",
+        "testsuite/utils/src/main/java/org/keycloak/testsuite/KeycloakServer.java",
+        "util/embedded-ldap/src/main/java/org/keycloak/util/ldap/TLS13StartTlsHandler.java"
+      ],
+      "affected_file_count": 14,
+      "affected_classes": [
+        "AbstractQuarkusDeployableContainer",
+        "DefaultCacheRemoteConfigProviderFactory",
+        "DistributionKeycloakServer",
+        "HttpClientBuilder",
+        "InfinispanServerDeployableContainer",
+        "JGroupsConfigurator",
+        "JSSETruststoreConfigurator",
+        "KeycloakClientBaseController",
+        "KeycloakServer",
+        "MutualTLSUtils",
+        "ReadinessProbe",
+        "TLS13StartTlsHandler",
+        "TLSUtils"
+      ],
+      "affected_class_count": 13,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for TLS.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512withRSAandMGF1",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA512withRSAandMGF1.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "HMACSHA2",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for HMACSHA2.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "key@8908f512-bdf6-42a6-9776-62e5eafe6ecb",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for key@8908f512-bdf6-42a6-9776-62e5eafe6ecb.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@b467f5c0-5da9-4466-9aa6-4657c94c24be",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for private-key@b467f5c0-5da9-4466-9aa6-4657c94c24be.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "MGF1",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for MGF1.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-CBC-PKCS5",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for AES128-CBC-PKCS5.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "key@3f4c5573-7ce0-4f3f-a032-5bbad2758d77",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for key@3f4c5573-7ce0-4f3f-a032-5bbad2758d77.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-GCM",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for AES128-GCM.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA384",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HMACProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for HMAC-SHA384.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "ConcatenationKDF",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for ConcatenationKDF.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+        "operator/src/main/java/org/keycloak/operator/Utils.java",
+        "server-spi-private/src/main/java/org/keycloak/broker/provider/AbstractIdentityProvider.java",
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java",
+        "services/src/main/java/org/keycloak/protocol/docker/DockerKeyIdentifier.java",
+        "services/src/main/java/org/keycloak/protocol/oid4vc/issuance/signing/vcdm/Ed255192018Suite.java",
+        "services/src/main/java/org/keycloak/protocol/oidc/mappers/SHA256PairwiseSubMapper.java",
+        "services/src/main/java/org/keycloak/protocol/oidc/par/endpoints/AbstractParEndpoint.java",
+        "services/src/main/java/org/keycloak/services/clientpolicy/executor/PKCEEnforcerExecutor.java",
+        "services/src/main/java/org/keycloak/services/resources/IdentityBrokerService.java",
+        "services/src/main/java/org/keycloak/services/util/MtlsHoKTokenUtil.java",
+        "services/src/main/java/org/keycloak/utils/BrokerUtil.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java"
+      ],
+      "affected_file_count": 16,
+      "affected_classes": [
+        "AbstractIdentityProvider",
+        "AbstractParEndpoint",
+        "BrokerUtil",
+        "DockerKeyIdentifier",
+        "Ed255192018Suite",
+        "HMACProvider",
+        "HashUtils",
+        "IdentityBrokerService",
+        "KeyUtils",
+        "KeycloakModelUtils",
+        "MtlsHoKTokenUtil",
+        "MutualTLSUtils",
+        "PKCEEnforcerExecutor",
+        "RSAProvider",
+        "SHA256PairwiseSubMapper",
+        "Utils"
+      ],
+      "affected_class_count": 16,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for SHA256.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@d510a558-18c2-4b61-b548-5cce9ad1e034",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@d510a558-18c2-4b61-b548-5cce9ad1e034.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@e8327716-f2e2-4b84-9825-f77a2d849da6",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "KeyUtils"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for public-key@e8327716-f2e2-4b84-9825-f77a2d849da6.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "AES128",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/AesKeyWrapAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 4,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider",
+        "AesGcmEncryptionProvider",
+        "AesKeyWrapAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 4,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for AES128.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    },
+    {
+      "asset": "RSASSA-PSS",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for RSASSA-PSS.",
+        "reasons": [
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@f63dfb4d-24e4-4131-acec-403bc85c911b",
+      "migration_type": "architectural-migration",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Determine the exact cryptographic purpose from source usage."
+        },
+        {
+          "step": 2,
+          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+        },
+        {
+          "step": 3,
+          "action": "Review all affected interfaces and protocol dependencies."
+        },
+        {
+          "step": 4,
+          "action": "Do not perform a blind direct algorithm replacement."
+        },
+        {
+          "step": 5,
+          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
+        },
+        {
+          "step": 6,
+          "action": "Validate protocol and interoperability requirements."
+        },
+        {
+          "step": 7,
+          "action": "Create a controlled migration and rollback strategy."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for secret-key@f63dfb4d-24e4-4131-acec-403bc85c911b.",
+        "reasons": [
+          "The asset requires usage-specific or architectural migration planning."
+        ]
+      }
+    },
+    {
+      "asset": "MD5",
+      "migration_type": "no-direct-pqc-replacement",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/cache/ComputedKey.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ComputedKey"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Validate the current cryptographic purpose."
+        },
+        {
+          "step": 2,
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+        },
+        {
+          "step": 3,
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+        },
+        {
+          "step": 4,
+          "action": "Review dependent protocols and cryptographic constructions."
+        },
+        {
+          "step": 5,
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
+        },
+        {
+          "step": 6,
+          "action": "Perform security and interoperability testing."
+        },
+        {
+          "step": 7,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 8,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 9,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 9,
+      "explanation": {
+        "summary": "ECDAT generated 9 migration action(s) for MD5.",
+        "reasons": [
+          "No direct PQC replacement is currently available for the identified asset."
+        ]
+      }
+    }
+  ]
+}
