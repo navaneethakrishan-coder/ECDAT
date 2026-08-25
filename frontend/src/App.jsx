@@ -143,6 +143,13 @@ function App() {
 
   const [assetDetailLoading, setAssetDetailLoading] =
     useState(false);
+  const [riskFilter, setRiskFilter] =
+  useState("ALL");
+  const [migrationFilter, setMigrationFilter] =
+  useState("ALL");
+  const [pqcFilter, setPqcFilter] = useState("ALL");
+  const [sourceImpactFilter, setSourceImpactFilter] =
+  useState("ALL");
 
 
   // ==========================================================
@@ -376,20 +383,16 @@ const sourceImpactChartData = [
 // REAL RISK LOOKUP
 // ==========================================================
 
-const riskByAsset = {};
+const assetAnalysisByName = {};
 
 riskAssets.forEach((item) => {
-
   const name =
     item.asset ||
     item.name;
 
   if (name) {
-    riskByAsset[name] =
-      item.risk_severity ||
-      "MEDIUM";
+    assetAnalysisByName[name] = item;
   }
-
 });
 
 
@@ -397,48 +400,92 @@ riskAssets.forEach((item) => {
   // FILTER ASSETS
   // ==========================================================
 
-  const filteredAssets =
-    assets.filter((asset) => {
+const filteredAssets = assets.filter((asset) => {
+  const name = String(
+    asset.asset ||
+    asset.name ||
+    ""
+  );
 
-      const name =
-        asset.name ||
-        asset.asset ||
-        "";
+  const type = String(
+    asset.asset_type ||
+    asset.type ||
+    ""
+  );
 
-      const type =
-        asset.asset_type ||
-        asset.type ||
-        "";
+  const primitive = String(
+    asset.primitive ||
+    ""
+  );
 
-      const primitive =
-        asset.primitive ||
-        "";
+  const analysis =
+    assetAnalysisByName[name] || {};
 
-      const query =
-        search
-          .toLowerCase()
-          .trim();
+  const risk = String(
+    analysis.risk_severity ||
+    "MEDIUM"
+  )
+    .trim()
+    .toUpperCase();
 
-      if (!query) {
-        return true;
-      }
+  const migrationType = String(
+    analysis.migration_type ||
+    ""
+  )
+    .trim()
+    .toLowerCase();
 
-      return (
-        name
-          .toLowerCase()
-          .includes(query) ||
+  const sourceImpact = String(
+    analysis.source_impact ||
+    ""
+  )
+    .trim()
+    .toUpperCase();
 
-        type
-          .toLowerCase()
-          .includes(query) ||
+  const pqcApplicable =
+    Boolean(analysis.pqc_applicable);
 
-        primitive
-          .toLowerCase()
-          .includes(query)
-      );
-    });
+  const selectedRisk =
+    String(riskFilter)
+      .trim()
+      .toUpperCase();
 
+  const query =
+    search.trim().toLowerCase();
 
+  const matchesSearch =
+    !query ||
+    name.toLowerCase().includes(query) ||
+    type.toLowerCase().includes(query) ||
+    primitive.toLowerCase().includes(query);
+
+  const matchesRisk =
+    selectedRisk === "ALL" ||
+    risk === selectedRisk;
+
+  const matchesMigration =
+    migrationFilter === "ALL" ||
+    migrationType === migrationFilter;
+
+  const matchesPqc =
+    pqcFilter === "ALL" ||
+    (pqcFilter === "APPLICABLE" &&
+      pqcApplicable) ||
+    (pqcFilter === "NOT_APPLICABLE" &&
+      !pqcApplicable);
+
+  const matchesSourceImpact =
+    sourceImpactFilter === "ALL" ||
+    sourceImpact === sourceImpactFilter;
+
+  return (
+    matchesSearch &&
+    matchesRisk &&
+    matchesMigration &&
+    matchesPqc &&
+    matchesSourceImpact
+  );
+});
   // ==========================================================
   // MAIN UI
   // ==========================================================
@@ -658,14 +705,14 @@ riskAssets.forEach((item) => {
     >
       <ResponsiveContainer>
         <BarChart
-          data={riskChartData}
-          margin={{
-            top: 10,
-            right: 10,
-            left: -20,
-            bottom: 5,
-          }}
-        >
+  data={riskChartData}
+  margin={{
+    top: 10,
+    right: 10,
+    left: -20,
+    bottom: 5,
+  }}
+>
 
           <CartesianGrid
             strokeDasharray="3 3"
@@ -695,6 +742,16 @@ riskAssets.forEach((item) => {
   name="Assets"
   fill="#f87171"
   radius={[5, 5, 0, 0]}
+  cursor="pointer"
+  onClick={(data) => {
+    const risk = data?.name;
+
+    if (risk) {
+      setRiskFilter(
+        String(risk).toUpperCase()
+      );
+    }
+  }}
 />
 
         </BarChart>
@@ -765,6 +822,30 @@ riskAssets.forEach((item) => {
   name="Assets"
   fill="#8b5cf6"
   radius={[5, 5, 0, 0]}
+  cursor="pointer"
+  onClick={(data) => {
+    const migration = data?.name;
+
+    if (!migration) return;
+
+    const migrationMap = {
+      Architectural:
+        "architectural-migration",
+
+      "PQC Candidate":
+        "pqc-candidate",
+
+      "No Direct Replacement":
+        "no-direct-pqc-replacement",
+    };
+
+    const value =
+      migrationMap[migration];
+
+    if (value) {
+      setMigrationFilter(value);
+    }
+  }}
 />
 
         </BarChart>
@@ -829,11 +910,21 @@ riskAssets.forEach((item) => {
         <Tooltip />
 
         <Bar
-          dataKey="value"
-          name="Assets"
-          radius={[5, 5, 0, 0]}
-          fill="#3b82f6"
-        />
+  dataKey="value"
+  name="Assets"
+  radius={[5, 5, 0, 0]}
+  fill="#3b82f6"
+  cursor="pointer"
+  onClick={(data) => {
+    const impact = data?.name;
+
+    if (impact) {
+      setSourceImpactFilter(
+        String(impact).toUpperCase()
+      );
+    }
+  }}
+/>
 
       </BarChart>
     </ResponsiveContainer>
@@ -896,6 +987,98 @@ riskAssets.forEach((item) => {
                 }
                 placeholder="Search assets, types or primitives..."
               />
+              <select
+  value={riskFilter}
+  onChange={(event) =>
+    setRiskFilter(event.target.value)
+  }
+  className="asset-filter"
+>
+  <option value="ALL">
+    All Risk Levels
+  </option>
+
+  <option value="HIGH">
+    High Risk
+  </option>
+
+  <option value="MEDIUM">
+    Medium Risk
+  </option>
+
+  <option value="LOW">
+    Low Risk
+  </option>
+
+  <option value="CRITICAL">
+    Critical Risk
+  </option>
+</select>
+<select
+  value={migrationFilter}
+  onChange={(event) =>
+    setMigrationFilter(event.target.value)
+  }
+  className="asset-filter"
+>
+  <option value="ALL">
+    All Migration Types
+  </option>
+
+  <option value="pqc-candidate">
+    PQC Candidate
+  </option>
+
+  <option value="architectural-migration">
+    Architectural Migration
+  </option>
+
+  <option value="no-direct-pqc-replacement">
+    No Direct PQC Replacement
+  </option>
+</select>
+<select
+  value={pqcFilter}
+  onChange={(event) =>
+    setPqcFilter(event.target.value)
+  }
+  className="asset-filter"
+>
+  <option value="ALL">
+    All PQC Status
+  </option>
+
+  <option value="APPLICABLE">
+    PQC Applicable
+  </option>
+
+  <option value="NOT_APPLICABLE">
+    No Direct PQC
+  </option>
+</select>
+<select
+  value={sourceImpactFilter}
+  onChange={(event) =>
+    setSourceImpactFilter(event.target.value)
+  }
+  className="asset-filter"
+>
+  <option value="ALL">
+    All Source Impact
+  </option>
+
+  <option value="HIGH">
+    High Impact
+  </option>
+
+  <option value="MEDIUM">
+    Medium Impact
+  </option>
+
+  <option value="LOW">
+    Low Impact
+  </option>
+</select>
 
               {search && (
 
@@ -992,9 +1175,11 @@ riskAssets.forEach((item) => {
                    */
 
                   const severity =
-  riskByAsset[name] ||
-  "MEDIUM";
-
+  String(
+    assetAnalysisByName[name]
+      ?.risk_severity ||
+    "MEDIUM"
+  ).toUpperCase();
 
                   return (
 
