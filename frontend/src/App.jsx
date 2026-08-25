@@ -11,7 +11,15 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 import {
   getSummary,
   getAssets,
@@ -309,6 +317,60 @@ function App() {
 
   const migrationDistribution =
     summary?.migration_type_distribution || {};
+  const sourceImpactDistribution =
+  summary?.source_impact_distribution || {};
+  const riskChartData = [
+  {
+    name: "HIGH",
+    value: riskDistribution.HIGH || 0,
+  },
+  {
+    name: "MEDIUM",
+    value: riskDistribution.MEDIUM || 0,
+  },
+  {
+    name: "CRITICAL",
+    value: riskDistribution.CRITICAL || 0,
+  },
+];
+
+const migrationChartData = [
+  {
+    name: "Architectural",
+    value:
+      migrationDistribution[
+        "architectural-migration"
+      ] || 0,
+  },
+  {
+    name: "PQC Candidate",
+    value:
+      migrationDistribution[
+        "pqc-candidate"
+      ] || 0,
+  },
+  {
+    name: "No Direct Replacement",
+    value:
+      migrationDistribution[
+        "no-direct-pqc-replacement"
+      ] || 0,
+  },
+];
+const sourceImpactChartData = [
+  {
+    name: "HIGH",
+    value: sourceImpactDistribution.HIGH || 0,
+  },
+  {
+    name: "MEDIUM",
+    value: sourceImpactDistribution.MEDIUM || 0,
+  },
+  {
+    name: "LOW",
+    value: sourceImpactDistribution.LOW || 0,
+  },
+];
   
     // ==========================================================
 // REAL RISK LOOKUP
@@ -572,134 +634,215 @@ riskAssets.forEach((item) => {
 
         <section className="analytics-grid">
 
+  <div className="panel">
 
-          {/* RISK */}
+    <div className="panel-header">
 
-          <div className="panel">
+      <div>
+        <h2>Risk Distribution</h2>
 
-            <div className="panel-header">
+        <p>
+          Current migration risk severity
+        </p>
+      </div>
 
-              <div>
+      <ShieldAlert size={20} />
 
-                <h2>
-                  Risk Distribution
-                </h2>
+    </div>
 
-                <p>
-                  Current migration risk severity
-                </p>
+    <div
+      style={{
+        width: "100%",
+        height: 260,
+      }}
+    >
+      <ResponsiveContainer>
+        <BarChart
+          data={riskChartData}
+          margin={{
+            top: 10,
+            right: 10,
+            left: -20,
+            bottom: 5,
+          }}
+        >
 
-              </div>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#1e2b42"
+          />
 
-              <ShieldAlert size={20} />
+          <XAxis
+            dataKey="name"
+            stroke="#7185a5"
+            tick={{
+              fontSize: 11,
+            }}
+          />
 
-            </div>
+          <YAxis
+            stroke="#7185a5"
+            allowDecimals={false}
+            tick={{
+              fontSize: 11,
+            }}
+          />
 
+          <Tooltip />
 
-            <div className="distribution-list">
+          <Bar
+  dataKey="value"
+  name="Assets"
+  fill="#f87171"
+  radius={[5, 5, 0, 0]}
+/>
 
-              <DistributionBar
-                label="HIGH"
-                value={
-                  riskDistribution.HIGH || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
 
-              <DistributionBar
-                label="MEDIUM"
-                value={
-                  riskDistribution.MEDIUM || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
-
-              <DistributionBar
-                label="CRITICAL"
-                value={
-                  riskDistribution.CRITICAL || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
-
-            </div>
-
-          </div>
-
-
-          {/* MIGRATION */}
-
-          <div className="panel">
-
-            <div className="panel-header">
-
-              <div>
-
-                <h2>
-                  Migration Distribution
-                </h2>
-
-                <p>
-                  Recommended migration strategy
-                </p>
-
-              </div>
-
-              <Zap size={20} />
-
-            </div>
+  </div>
 
 
-            <div className="distribution-list">
+  <div className="panel">
 
-              <DistributionBar
-                label="Architectural"
-                value={
-                  migrationDistribution[
-                    "architectural-migration"
-                  ] || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
+    <div className="panel-header">
 
-              <DistributionBar
-                label="PQC Candidate"
-                value={
-                  migrationDistribution[
-                    "pqc-candidate"
-                  ] || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
+      <div>
+        <h2>Migration Distribution</h2>
 
-              <DistributionBar
-                label="No Direct Replacement"
-                value={
-                  migrationDistribution[
-                    "no-direct-pqc-replacement"
-                  ] || 0
-                }
-                total={
-                  summary?.total_assets || 0
-                }
-              />
+        <p>
+          Recommended migration strategy
+        </p>
+      </div>
 
-            </div>
+      <Zap size={20} />
 
-          </div>
+    </div>
 
-        </section>
+    <div
+      style={{
+        width: "100%",
+        height: 260,
+      }}
+    >
+      <ResponsiveContainer>
+        <BarChart
+          data={migrationChartData}
+          margin={{
+            top: 10,
+            right: 10,
+            left: -20,
+            bottom: 5,
+          }}
+        >
 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#1e2b42"
+          />
+
+          <XAxis
+            dataKey="name"
+            stroke="#7185a5"
+            tick={{
+              fontSize: 10,
+            }}
+          />
+
+          <YAxis
+            stroke="#7185a5"
+            allowDecimals={false}
+            tick={{
+              fontSize: 11,
+            }}
+          />
+
+          <Tooltip />
+
+          <Bar
+  dataKey="value"
+  name="Assets"
+  fill="#8b5cf6"
+  radius={[5, 5, 0, 0]}
+/>
+
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+
+  </div>
+  <div className="panel">
+
+  <div className="panel-header">
+
+    <div>
+      <h2>Source Impact</h2>
+
+      <p>
+        Estimated source-code migration impact
+      </p>
+    </div>
+
+    <FileWarning size={20} />
+
+  </div>
+
+  <div
+    style={{
+      width: "100%",
+      height: 260,
+    }}
+  >
+    <ResponsiveContainer>
+      <BarChart
+        data={sourceImpactChartData}
+        margin={{
+          top: 10,
+          right: 10,
+          left: -20,
+          bottom: 5,
+        }}
+      >
+
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="#1e2b42"
+        />
+
+        <XAxis
+          dataKey="name"
+          stroke="#7185a5"
+          tick={{
+            fontSize: 11,
+          }}
+        />
+
+        <YAxis
+          stroke="#7185a5"
+          allowDecimals={false}
+          tick={{
+            fontSize: 11,
+          }}
+        />
+
+        <Tooltip />
+
+        <Bar
+          dataKey="value"
+          name="Assets"
+          radius={[5, 5, 0, 0]}
+          fill="#3b82f6"
+        />
+
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+
+</div>
+
+
+</section>
 
         {/* ==================================================
             ASSET INVENTORY
