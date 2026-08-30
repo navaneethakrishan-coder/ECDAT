@@ -3,11 +3,6 @@ import json
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import subprocess
-import sys
-import threading
-from pathlib import Path
-from pydantic import BaseModel
 
 
 # ============================================================
@@ -26,65 +21,6 @@ app = FastAPI(
     ),
     version="1.0.0",
 )
-class AnalyzeRequest(BaseModel):
-    repository: str
-    branch: str = "main"
-
-
-analysis_state = {
-    "status": "idle",
-    "repository": None,
-    "branch": None,
-    "message": "No analysis running.",
-    "error": None
-}
-
-
-def run_repository_analysis(repository: str, branch: str):
-    global analysis_state
-
-    analysis_state.update({
-        "status": "running",
-        "repository": repository,
-        "branch": branch,
-        "message": "CBOMKit scan and ECDAT analysis are running.",
-        "error": None
-    })
-
-    try:
-        backend_dir = Path(__file__).resolve().parent
-        script = backend_dir / "analyze_repository.py"
-
-        result = subprocess.run(
-    [
-        sys.executable,
-        str(script),
-        repository,
-        branch
-    ],
-    cwd=str(backend_dir)
-)
-
-        if result.returncode != 0:
-            analysis_state.update({
-                 "status": "failed",
-        "message": "Analysis failed. Check the backend terminal for details.",
-        "error": f"analyze_repository.py exited with code {result.returncode}"
-            })
-            return
-
-        analysis_state.update({
-            "status": "completed",
-            "message": "CBOMKit scan and ECDAT analysis completed successfully.",
-            "error": None
-        })
-
-    except Exception as exc:
-        analysis_state.update({
-            "status": "failed",
-            "message": "Analysis failed unexpectedly.",
-            "error": str(exc)
-        })
 
 app.add_middleware(
     CORSMiddleware,
@@ -1483,30 +1419,3 @@ def get_asset(asset_name: str):
             else None
         ),
     }
-@app.post("/api/analyze")
-def start_analysis(request: AnalyzeRequest):
-    if analysis_state["status"] == "running":
-        raise HTTPException(
-            status_code=409,
-            detail="An analysis is already running."
-        )
-
-    thread = threading.Thread(
-        target=run_repository_analysis,
-        args=(request.repository, request.branch),
-        daemon=True
-    )
-
-    thread.start()
-
-    return {
-        "status": "started",
-        "repository": request.repository,
-        "branch": request.branch,
-        "message": "Analysis started successfully."
-    }
-
-
-@app.get("/api/analyze/status")
-def get_analysis_status():
-    return analysis_state

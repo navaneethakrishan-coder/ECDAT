@@ -176,3 +176,41 @@ export function getAssetMigrationReport(assetName) {
     `/api/migration-report/assets/${encodeURIComponent(assetName)}`
   );
 }
+// ------------------------------------------------------------
+// Automated Repository Analysis
+// ------------------------------------------------------------
+
+export async function startAnalysis(repository, branch = "main") {
+  const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      repository,
+      branch,
+    }),
+  });
+
+  if (!response.ok) {
+    let detail = `Analysis request failed: ${response.status}`;
+
+    try {
+      const error = await response.json();
+
+      if (error.detail) {
+        detail = error.detail;
+      }
+    } catch {
+      // Keep default error message.
+    }
+
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+
+export function getAnalysisStatus() {
+  return request("/api/analyze/status");
+}

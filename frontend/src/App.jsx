@@ -25,8 +25,9 @@ import {
   getAssets,
   getAsset,
   getMigrationReportAssets,
+  startAnalysis,
+  getAnalysisStatus,
 } from "./api";
-
 import "./App.css";
 
 
@@ -150,6 +151,40 @@ function App() {
   const [pqcFilter, setPqcFilter] = useState("ALL");
   const [sourceImpactFilter, setSourceImpactFilter] =
   useState("ALL");
+  const [repository, setRepository] = useState("");
+const [branch, setBranch] = useState("main");
+const [analysisStatus, setAnalysisStatus] = useState("idle");
+const [analysisMessage, setAnalysisMessage] = useState("");
+const [analysisError, setAnalysisError] = useState("");
+const [analysisRunning, setAnalysisRunning] = useState(false);
+async function handleAnalyzeRepository() {
+  if (!repository.trim()) {
+    setAnalysisError("Please enter a GitHub repository URL.");
+    return;
+  }
+
+  try {
+    setAnalysisRunning(true);
+    setAnalysisError("");
+    setAnalysisStatus("starting");
+    setAnalysisMessage("Starting CBOMKit scan...");
+
+    await startAnalysis(repository.trim(), branch.trim() || "main");
+
+    setAnalysisStatus("running");
+    setAnalysisMessage(
+      "CBOMKit is scanning the repository and ECDAT is processing the results..."
+    );
+  } catch (error) {
+    console.error("Repository analysis error:", error);
+
+    setAnalysisStatus("failed");
+    setAnalysisError(
+      error?.message || "Unable to start repository analysis."
+    );
+    setAnalysisRunning(false);
+  }
+}
 
 
   // ==========================================================
@@ -251,6 +286,62 @@ function App() {
     loadAssetDetail();
 
   }, [selectedAsset]);
+  useEffect(() => {
+  if (!analysisRunning) {
+    return;
+  }
+
+  const interval = setInterval(async () => {
+    try {
+      const status = await getAnalysisStatus();
+
+      setAnalysisStatus(status.status);
+      setAnalysisMessage(status.message || "");
+
+      if (status.status === "completed") {
+        setAnalysisRunning(false);
+
+        // Reload dashboard data
+        try {
+          const [
+            summaryData,
+            assetsData,
+            riskData,
+          ] = await Promise.all([
+            getSummary(),
+            getAssets(),
+            getMigrationReportAssets(),
+          ]);
+
+          setSummary(summaryData);
+          setAssets(assetsData.assets || []);
+          setRiskAssets(riskData.assets || []);
+        } catch (error) {
+          console.error(
+            "Failed to refresh dashboard:",
+            error
+          );
+        }
+      }
+
+      if (status.status === "failed") {
+        setAnalysisRunning(false);
+        setAnalysisError(
+          status.error ||
+            "Repository analysis failed."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Analysis status error:",
+        error
+      );
+    }
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [analysisRunning]);
+
 
 
   // ==========================================================
@@ -532,36 +623,92 @@ const filteredAssets = assets.filter((asset) => {
             Dashboard
           </div>
 
-          <div className="nav-item">
-            <Database size={18} />
-            Assets
-          </div>
+          <div
+  className="nav-item"
+  onClick={() => {
+    document
+      .querySelector(".asset-panel")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }}
+>
+  <Database size={18} />
+  Assets
+</div>
 
-          <div className="nav-item">
-            <ShieldAlert size={18} />
-            Risk Analysis
-          </div>
+          <div
+  className="nav-item"
+  onClick={() =>
+    document
+      .getElementById("risk-analysis-section")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+  }
+>
+  <ShieldAlert size={18} />
+  Risk Analysis
+</div>
 
-          <div className="nav-item">
-            <Zap size={18} />
-            PQC Migration
-          </div>
+          <div
+  className="nav-item"
+  onClick={() =>
+    document
+      .getElementById("pqc-migration-section")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+  }
+>
+  <Zap size={18} />
+  PQC Migration
+</div>
 
+          <div
+  className="nav-item"
+  onClick={() => {
+    if (selectedAsset) {
+      document
+        .getElementById("migration-actions-section")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
 
-          <div className="nav-section">
-            MIGRATION
-          </div>
+      return;
+    }
 
-          <div className="nav-item">
-            <ArrowUpRight size={18} />
-            Migration Actions
-          </div>
+    document
+      .querySelector(".stats-grid")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }}
+>
+  <ArrowUpRight size={18} />
+  Migration Actions
+</div>
+          <div
+  className="nav-item"
+  onClick={() => {
+    const target = selectedAsset
+      ? document.getElementById("asset-source-impact-section")
+      : document.getElementById("global-source-impact-section");
 
-          <div className="nav-item">
-            <FileWarning size={18} />
-            Source Impact
-          </div>
-
+    target?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }}
+>
+  <FileWarning size={18} />
+  Source Impact
+</div>
         </nav>
 
 
@@ -608,6 +755,88 @@ const filteredAssets = assets.filter((asset) => {
             <h1>
               Cryptographic Migration Dashboard
             </h1>
+            <section className="repository-analysis-panel">
+
+  <div className="repository-analysis-header">
+    <div>
+      <h2>Analyze Repository</h2>
+
+      <p>
+        Scan a GitHub repository with CBOMKit and
+        automatically run the complete ECDAT migration
+        analysis.
+      </p>
+    </div>
+  </div>
+
+  <div className="repository-analysis-form">
+
+    <div className="repository-input-group">
+      <label>GitHub Repository URL</label>
+
+      <input
+        type="text"
+        value={repository}
+        onChange={(event) =>
+          setRepository(event.target.value)
+        }
+        placeholder="https://github.com/owner/repository"
+        disabled={analysisRunning}
+      />
+    </div>
+
+    <div className="repository-input-group branch-input">
+      <label>Branch</label>
+
+      <input
+        type="text"
+        value={branch}
+        onChange={(event) =>
+          setBranch(event.target.value)
+        }
+        placeholder="main"
+        disabled={analysisRunning}
+      />
+    </div>
+
+    <button
+      type="button"
+      className="analyze-repository-button"
+      onClick={handleAnalyzeRepository}
+      disabled={analysisRunning}
+    >
+      {analysisRunning
+        ? "Analyzing..."
+        : "Analyze Repository"}
+    </button>
+
+  </div>
+
+  {analysisStatus !== "idle" && (
+    <div
+      className={`analysis-status analysis-${analysisStatus}`}
+    >
+      <span className="analysis-status-dot" />
+
+      <div>
+        <strong>
+          {analysisStatus === "completed"
+            ? "Analysis Complete"
+            : analysisStatus === "failed"
+            ? "Analysis Failed"
+            : "Analysis Running"}
+        </strong>
+
+        <p>
+          {analysisError ||
+            analysisMessage ||
+            "Processing repository..."}
+        </p>
+      </div>
+    </div>
+  )}
+
+</section>
 
             <p className="page-description">
               Post-quantum readiness and migration
@@ -681,7 +910,7 @@ const filteredAssets = assets.filter((asset) => {
 
         <section className="analytics-grid">
 
-  <div className="panel">
+  <div className="panel" id="risk-analysis-section">
 
     <div className="panel-header">
 
@@ -761,7 +990,7 @@ const filteredAssets = assets.filter((asset) => {
   </div>
 
 
-  <div className="panel">
+  <div className="panel" id="pqc-migration-section">
 
     <div className="panel-header">
 
@@ -853,7 +1082,7 @@ const filteredAssets = assets.filter((asset) => {
     </div>
 
   </div>
-  <div className="panel">
+  <div className="panel" id="global-source-impact-section">
 
   <div className="panel-header">
 
@@ -1286,7 +1515,7 @@ const filteredAssets = assets.filter((asset) => {
                   ANALYSIS SUMMARY
               ====================================================== */}
 
-              <div className="detail-summary-grid">
+              <div className="detail-summary-grid top-summary-grid">
 
                 <div className="detail-stat-card">
                   <span>Risk</span>
@@ -1441,89 +1670,6 @@ const filteredAssets = assets.filter((asset) => {
                 <>
 
 
-                  {/* ==========================================
-                      SUMMARY STATS
-                  ========================================== */}
-
-                  <div className="asset-detail-stats">
-
-
-                    <div className="detail-stat">
-
-                      <span>
-                        Risk
-                      </span>
-
-                      <strong>
-                        {
-                          assetDetail
-                            .current_risk
-                            ?.severity ||
-                          assetDetail
-                            .risk_assessment
-                            ?.severity ||
-                          "N/A"
-                        }
-                      </strong>
-
-                    </div>
-
-
-                    <div className="detail-stat">
-
-                      <span>
-                        Priority
-                      </span>
-
-                      <strong>
-                        {
-                          assetDetail
-                            .migration_impact
-                            ?.priority
-                            ?.level ||
-                          "N/A"
-                        }
-                      </strong>
-
-                    </div>
-
-
-                    <div className="detail-stat">
-
-                      <span>
-                        Migration
-                      </span>
-
-                      <strong>
-                        {
-                          assetDetail
-                            .pqc_migration
-                            ?.migration_type ||
-                          "N/A"
-                        }
-                      </strong>
-
-                    </div>
-
-
-                    <div className="detail-stat">
-
-                      <span>
-                        Candidate
-                      </span>
-
-                      <strong>
-                        {
-                          assetDetail
-                            .recommendation
-                            ?.candidate ||
-                          "None"
-                        }
-                      </strong>
-
-                    </div>
-
-                  </div>
 
 
                   {/* ==========================================
@@ -1537,7 +1683,7 @@ const filteredAssets = assets.filter((asset) => {
                     </h3>
 
 
-                    <div className="detail-grid">
+                    <div className="detail-grid classification-grid">
 
                       <div>
 
@@ -1603,91 +1749,89 @@ const filteredAssets = assets.filter((asset) => {
                       CURRENT RISK
                   ========================================== */}
 
-                  <div className="detail-card">
+                  <div className="detail-card" id="asset-risk-section">
 
-                    <h3>
-                      Current Risk
-                    </h3>
+  <h3>
+    Current Risk
+  </h3>
 
+  <div className="detail-grid current-risk-grid">
 
-                    <div className="detail-grid">
+    <div>
 
-                      <div>
+      <span>
+        Score
+      </span>
 
-                        <span>
-                          Score
-                        </span>
+      <strong>
+        {
+          assetDetail
+            .current_risk
+            ?.score ??
+          assetDetail
+            .risk_assessment
+            ?.final_score ??
+          "N/A"
+        }
+      </strong>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .current_risk
-                              ?.score ??
-                            assetDetail
-                              .risk_assessment
-                              ?.final_score ??
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Severity
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .current_risk
-                              ?.severity ||
-                            assetDetail
-                              .risk_assessment
-                              ?.severity ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
+    </div>
 
 
-                      <div>
+    <div>
 
-                        <span>
-                          Reason
-                        </span>
+      <span>
+        Severity
+      </span>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .classification
-                              ?.risk_reason ||
-                            "N/A"
-                          }
-                        </strong>
+      <strong>
+        {
+          assetDetail
+            .current_risk
+            ?.severity ||
+          assetDetail
+            .risk_assessment
+            ?.severity ||
+          "N/A"
+        }
+      </strong>
 
-                      </div>
+    </div>
 
-                    </div>
 
-                  </div>
+    <div>
 
+      <span>
+        Reason
+      </span>
+
+      <strong>
+        {
+          assetDetail
+            .classification
+            ?.risk_reason ||
+          "N/A"
+        }
+      </strong>
+
+    </div>
+
+  </div>
+
+</div>
 
                   {/* ==========================================
                       PQC MIGRATION
                   ========================================== */}
 
-                  <div className="detail-card">
+                  <div className="detail-card" id="pqc-migration-section">
 
                     <h3>
                       PQC Migration
                     </h3>
 
 
-                    <div className="detail-grid">
+                    <div className="detail-grid pqc-migration-grid">
 
                       <div>
 
@@ -1754,166 +1898,190 @@ const filteredAssets = assets.filter((asset) => {
 
                   <div className="detail-card">
 
-                    <h3>
-                      PQC Recommendation
-                    </h3>
+  <h3>
+    PQC Recommendation
+  </h3>
 
+  <div className="pqc-recommendation-card">
 
-                    <div className="recommendation-box">
+    <div className="pqc-recommendation-item">
+      <span className="pqc-recommendation-item-label">
+        Recommended Candidate
+      </span>
 
-                      <div>
+      <div className="pqc-recommendation-item-value">
+        {assetDetail.recommendation?.candidate ||
+          "No direct replacement"}
+      </div>
+    </div>
 
-                        <span>
-                          Recommended Candidate
-                        </span>
+    <div className="pqc-recommendation-item">
+      <span className="pqc-recommendation-item-label">
+        Candidate Score
+      </span>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .recommendation
-                              ?.candidate ||
-                            "No direct replacement"
-                          }
-                        </strong>
+      <div className="pqc-recommendation-item-score">
+        {assetDetail.recommendation?.candidate_score ?? "N/A"}
+      </div>
+    </div>
 
-                      </div>
+    <div className="pqc-recommendation-item">
+      <span className="pqc-recommendation-item-label">
+        Rank
+      </span>
 
+      <div className="pqc-recommendation-item-rank">
+        {assetDetail.recommendation?.candidate_rank
+          ? `#${assetDetail.recommendation.candidate_rank}`
+          : "N/A"}
+      </div>
+    </div>
 
-                      <div>
+  </div>
 
-                        <span>
-                          Candidate Score
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .recommendation
-                              ?.candidate_score ??
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Rank
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .recommendation
-                              ?.candidate_rank
-                              ? `#${assetDetail.recommendation.candidate_rank}`
-                              : "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
+</div>
 
                   {/* ==========================================
                       SOURCE IMPACT
                   ========================================== */}
 
-                  <div className="detail-card">
+                  <div
+  className="detail-card source-impact-card"
+  id="asset-source-impact-section"
+>
 
-                    <h3>
-                      Source Impact
-                    </h3>
+  <div className="detail-card-heading">
+    <div>
+      <h3>Source Impact</h3>
+      <p>
+        Estimated source-code changes required for migration
+      </p>
+    </div>
 
+    <span
+      className={`impact-badge impact-${
+        String(
+          assetDetail?.source_impact?.impact_level || "unknown"
+        ).toLowerCase()
+      }`}
+    >
+      {assetDetail?.source_impact?.impact_level || "N/A"}
+    </span>
+  </div>
 
-                    <div className="detail-grid">
+  <div className="source-impact-stats">
 
-                      <div>
+    <div className="impact-stat">
+      <span>Files</span>
+      <strong>
+        {assetDetail?.source_impact?.affected_file_count ?? 0}
+      </strong>
+    </div>
 
-                        <span>
-                          Files
-                        </span>
+    <div className="impact-stat">
+      <span>Classes</span>
+      <strong>
+        {assetDetail?.source_impact?.affected_class_count ?? 0}
+      </strong>
+    </div>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .source_impact
-                              ?.affected_file_count ??
-                            0
-                          }
-                        </strong>
+    <div className="impact-stat">
+      <span>Functions</span>
+      <strong>
+        {assetDetail?.source_impact?.affected_function_count ?? 0}
+      </strong>
+    </div>
 
-                      </div>
+  </div>
 
+  <div className="source-impact-lists">
 
-                      <div>
+    <div className="impact-list">
+      <div className="impact-list-title">
+        Affected Files
+      </div>
 
-                        <span>
-                          Classes
-                        </span>
+      {(
+        assetDetail?.source_impact?.affected_files || []
+      ).length > 0 ? (
+        assetDetail.source_impact.affected_files.map(
+          (file, index) => (
+            <div
+              className="impact-list-item"
+              key={`${file}-${index}`}
+            >
+              <FileWarning size={14} />
+              <span>{file}</span>
+            </div>
+          )
+        )
+      ) : (
+        <div className="impact-empty">
+          No affected files
+        </div>
+      )}
+    </div>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .source_impact
-                              ?.affected_class_count ??
-                            0
-                          }
-                        </strong>
+    <div className="impact-list">
+      <div className="impact-list-title">
+        Affected Classes
+      </div>
 
-                      </div>
+      {(
+        assetDetail?.source_impact?.affected_classes || []
+      ).length > 0 ? (
+        assetDetail.source_impact.affected_classes.map(
+          (item, index) => (
+            <div
+              className="impact-list-item"
+              key={`${item}-${index}`}
+            >
+              <Database size={14} />
+              <span>{item}</span>
+            </div>
+          )
+        )
+      ) : (
+        <div className="impact-empty">
+          No affected classes
+        </div>
+      )}
+    </div>
 
+    <div className="impact-list">
+      <div className="impact-list-title">
+        Affected Functions
+      </div>
 
-                      <div>
+      {(
+        assetDetail?.source_impact?.affected_functions || []
+      ).length > 0 ? (
+        assetDetail.source_impact.affected_functions.map(
+          (item, index) => (
+            <div
+              className="impact-list-item"
+              key={`${item}-${index}`}
+            >
+              <Activity size={14} />
+              <span>{item}</span>
+            </div>
+          )
+        )
+      ) : (
+        <div className="impact-empty">
+          No affected functions
+        </div>
+      )}
+    </div>
 
-                        <span>
-                          Functions
-                        </span>
+  </div>
 
-                        <strong>
-                          {
-                            assetDetail
-                              .source_impact
-                              ?.affected_function_count ??
-                            0
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Impact
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .source_impact
-                              ?.impact_level ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
+</div>
                   {/* ==========================================
                       MIGRATION ACTIONS
                   ========================================== */}
 
-                  <div className="detail-card">
+                  <div className="detail-card" id="migration-actions-section">
 
                     <h3>
                       Migration Actions

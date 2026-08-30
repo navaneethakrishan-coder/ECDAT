@@ -1,0 +1,77 @@
+{
+  "total_assets": 59,
+  "severity_distribution": {
+    "CRITICAL": 0,
+    "HIGH": 14,
+    "MEDIUM": 45,
+    "LOW": 0
+  },
+  "evidence_confidence_distribution": {
+    "HIGH": 49,
+    "MEDIUM": 10,
+    "LOW": 0
+  },
+  "average_risk_score": 47.22,
+  "top_risk_assets": [
+    {
+      "name": "ECDH",
+      "score": 65.75,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "EdDSA",
+      "score": 65.75,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "RSA-2048",
+      "score": 65.75,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "DSA",
+      "score": 65.75,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "EC",
+      "score": 65.75,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "SHA1withDSA",
+      "score": 65.0,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "SHA1withRSA",
+      "score": 65.0,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "RSASSA-PSS",
+      "score": 65.0,
+      "severity": "HIGH",
+      "evidence_confidence": "HIGH"
+    },
+    {
+      "name": "SHA256withRSAandMGF1",
+      "score": 63.75,
+      "severity": "HIGH",
+      "evidence_confidence": "MEDIUM"
+    },
+    {
+      "name": "SHA384withRSAandMGF1",
+      "score": 63.75,
+      "severity": "HIGH",
+      "evidence_confidence": "MEDIUM"
+    }
+  ]
+}

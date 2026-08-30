@@ -1,0 +1,94 @@
+{
+  "registry_version": "1.0",
+  "source": {
+    "organization": "NIST",
+    "standards": [
+      "FIPS 203",
+      "FIPS 204",
+      "FIPS 205"
+    ],
+    "last_verified": "2026-08-24"
+  },
+  "algorithms": [
+    {
+      "name": "ML-KEM-512",
+      "standard": "FIPS 203",
+      "family": "KEM",
+      "purpose": [
+        "key-establishment",
+        "key-encapsulation"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "512"
+    },
+    {
+      "name": "ML-KEM-768",
+      "standard": "FIPS 203",
+      "family": "KEM",
+      "purpose": [
+        "key-establishment",
+        "key-encapsulation"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "768"
+    },
+    {
+      "name": "ML-KEM-1024",
+      "standard": "FIPS 203",
+      "family": "KEM",
+      "purpose": [
+        "key-establishment",
+        "key-encapsulation"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "1024"
+    },
+    {
+      "name": "ML-DSA-44",
+      "standard": "FIPS 204",
+      "family": "digital-signature",
+      "purpose": [
+        "digital-signature"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "44"
+    },
+    {
+      "name": "ML-DSA-65",
+      "standard": "FIPS 204",
+      "family": "digital-signature",
+      "purpose": [
+        "digital-signature"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "65"
+    },
+    {
+      "name": "ML-DSA-87",
+      "standard": "FIPS 204",
+      "family": "digital-signature",
+      "purpose": [
+        "digital-signature"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "87"
+    },
+    {
+      "name": "SLH-DSA",
+      "standard": "FIPS 205",
+      "family": "digital-signature",
+      "purpose": [
+        "digital-signature"
+      ],
+      "quantum_status": "post-quantum",
+      "standardization_status": "final",
+      "parameter_set": "multiple"
+    }
+  ]
+}

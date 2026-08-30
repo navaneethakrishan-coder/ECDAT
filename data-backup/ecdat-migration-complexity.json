@@ -1,24 +1,64 @@
 {
   "project": "ECDAT",
   "source": "keycloak-cbom.json",
-  "asset_count": 57,
+  "asset_count": 59,
   "risk_mapping": {
-    "mapped": 57,
+    "mapped": 59,
     "missing": 0
   },
   "blast_radius_mapping": {
-    "mapped": 57,
+    "mapped": 59,
     "missing": 0
   },
   "assets": [
     {
-      "score": 68,
+      "score": 78,
+      "level": "CRITICAL",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 35,
+        "migration_time_complexity": 8,
+        "evidence_surface": 10,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "public-key-cryptography"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 12,
+        "transitive_dependents": 12,
+        "evidence_count": 12
+      },
+      "explanation": {
+        "summary": "EC has an estimated migration complexity score of 78/100 and a complexity level of CRITICAL.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: public-key-cryptography.",
+          "12 direct dependent asset(s) increase migration complexity.",
+          "12 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "12 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "EC",
+      "bom_ref": "9a803f18-8709-48d5-b128-9a2e19d74333"
+    },
+    {
+      "score": 61,
       "level": "HIGH",
       "factors": {
         "cryptographic_complexity": 20,
-        "dependency_complexity": 25,
+        "dependency_complexity": 20,
         "migration_time_complexity": 8,
-        "evidence_surface": 10,
+        "evidence_surface": 8,
         "data_lifetime_pressure": 5
       },
       "context": {
@@ -32,75 +72,74 @@
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
-        "direct_dependents": 5,
-        "transitive_dependents": 5,
-        "evidence_count": 5
+        "direct_dependents": 4,
+        "transitive_dependents": 4,
+        "evidence_count": 4
       },
       "explanation": {
-        "summary": "RSA has an estimated migration complexity score of 68/100 and a complexity level of HIGH.",
+        "summary": "RSA-2048 has an estimated migration complexity score of 61/100 and a complexity level of HIGH.",
         "reasons": [
           "Cryptographic category: asymmetric.",
           "Cryptographic purpose: encryption, digital-signature.",
-          "5 direct dependent asset(s) increase migration complexity.",
-          "5 transitive dependent asset(s) may be affected.",
+          "4 direct dependent asset(s) increase migration complexity.",
+          "4 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
-          "5 evidence occurrence(s) indicate source-level migration surface.",
+          "4 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: vulnerable."
         ]
       },
-      "asset": "RSA",
-      "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69"
+      "asset": "RSA-2048",
+      "bom_ref": "8e5d04f1-c5f4-40d9-94b1-369acbc51366"
     },
     {
-      "score": 68,
+      "score": 60,
       "level": "HIGH",
       "factors": {
-        "cryptographic_complexity": 20,
+        "cryptographic_complexity": 12,
         "dependency_complexity": 25,
         "migration_time_complexity": 8,
         "evidence_surface": 10,
         "data_lifetime_pressure": 5
       },
       "context": {
-        "category": "asymmetric",
+        "category": "symmetric",
         "purpose": [
-          "encryption",
-          "digital-signature"
+          "encryption"
         ],
-        "quantum_status": "vulnerable",
+        "quantum_status": "reduced-security-margin",
         "business_criticality": "MEDIUM",
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
         "direct_dependents": 5,
         "transitive_dependents": 5,
-        "evidence_count": 5
+        "evidence_count": 7
       },
       "explanation": {
-        "summary": "RSA has an estimated migration complexity score of 68/100 and a complexity level of HIGH.",
+        "summary": "AES128 has an estimated migration complexity score of 60/100 and a complexity level of HIGH.",
         "reasons": [
-          "Cryptographic category: asymmetric.",
-          "Cryptographic purpose: encryption, digital-signature.",
+          "Cryptographic category: symmetric.",
+          "Cryptographic purpose: encryption.",
           "5 direct dependent asset(s) increase migration complexity.",
           "5 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
-          "5 evidence occurrence(s) indicate source-level migration surface.",
+          "7 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
-          "Quantum status: vulnerable."
+          "Quantum status: reduced-security-margin."
         ]
       },
-      "asset": "RSA",
-      "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69"
+      "asset": "AES128",
+      "bom_ref": "8b06019f-eef3-4c94-86e9-9d78ee220234"
     },
     {
-      "score": 54,
-      "level": "HIGH",
+      "score": 47,
+      "level": "MEDIUM",
       "factors": {
         "cryptographic_complexity": 20,
-        "dependency_complexity": 15,
+        "dependency_complexity": 10,
         "migration_time_complexity": 8,
-        "evidence_surface": 6,
+        "evidence_surface": 4,
         "data_lifetime_pressure": 5
       },
       "context": {
@@ -113,34 +152,34 @@
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
-        "direct_dependents": 3,
-        "transitive_dependents": 3,
-        "evidence_count": 3
+        "direct_dependents": 2,
+        "transitive_dependents": 2,
+        "evidence_count": 2
       },
       "explanation": {
-        "summary": "DSA has an estimated migration complexity score of 54/100 and a complexity level of HIGH.",
+        "summary": "EdDSA has an estimated migration complexity score of 47/100 and a complexity level of MEDIUM.",
         "reasons": [
           "Cryptographic category: asymmetric.",
           "Cryptographic purpose: digital-signature.",
-          "3 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "2 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
-          "3 evidence occurrence(s) indicate source-level migration surface.",
+          "2 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: vulnerable."
         ]
       },
-      "asset": "DSA",
-      "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
+      "asset": "EdDSA",
+      "bom_ref": "df8841c5-2fec-452f-b6dc-dd860ccd2147"
     },
     {
-      "score": 54,
-      "level": "HIGH",
+      "score": 47,
+      "level": "MEDIUM",
       "factors": {
         "cryptographic_complexity": 20,
-        "dependency_complexity": 15,
+        "dependency_complexity": 10,
         "migration_time_complexity": 8,
-        "evidence_surface": 6,
+        "evidence_surface": 4,
         "data_lifetime_pressure": 5
       },
       "context": {
@@ -153,37 +192,233 @@
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
-        "direct_dependents": 3,
-        "transitive_dependents": 3,
-        "evidence_count": 3
+        "direct_dependents": 2,
+        "transitive_dependents": 2,
+        "evidence_count": 2
       },
       "explanation": {
-        "summary": "DSA has an estimated migration complexity score of 54/100 and a complexity level of HIGH.",
+        "summary": "DSA has an estimated migration complexity score of 47/100 and a complexity level of MEDIUM.",
         "reasons": [
           "Cryptographic category: asymmetric.",
           "Cryptographic purpose: digital-signature.",
-          "3 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "2 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
-          "3 evidence occurrence(s) indicate source-level migration surface.",
+          "2 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: vulnerable."
         ]
       },
       "asset": "DSA",
-      "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
+      "bom_ref": "0af8cc58-4727-4ee1-bffd-04623e66b631"
     },
     {
       "score": 43,
       "level": "MEDIUM",
       "factors": {
-        "cryptographic_complexity": 20,
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 12,
+        "migration_time_complexity": 8,
+        "evidence_surface": 10,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 2,
+        "transitive_dependents": 3,
+        "evidence_count": 16
+      },
+      "explanation": {
+        "summary": "SHA256 has an estimated migration complexity score of 43/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: hash.",
+          "Cryptographic purpose: hash.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "3 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "16 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: quantum-aware."
+        ]
+      },
+      "asset": "SHA256",
+      "bom_ref": "5071389c-f49d-4c1c-9c5e-42ddbfe15441"
+    },
+    {
+      "score": 42,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 25,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 4,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "key-agreement"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 2
+      },
+      "explanation": {
+        "summary": "ECDH has an estimated migration complexity score of 42/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: key-agreement.",
+          "Estimated migration time: 2 year(s).",
+          "2 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "ECDH",
+      "bom_ref": "3a441c6f-bb88-4bd7-b888-15f4dd4606f5"
+    },
+    {
+      "score": 38,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 15,
         "dependency_complexity": 0,
         "migration_time_complexity": 8,
         "evidence_surface": 10,
         "data_lifetime_pressure": 5
       },
       "context": {
+        "category": "protocol",
+        "purpose": [
+          "secure-communication"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 15
+      },
+      "explanation": {
+        "summary": "TLS has an estimated migration complexity score of 38/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: protocol.",
+          "Cryptographic purpose: secure-communication.",
+          "Estimated migration time: 2 year(s).",
+          "15 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "TLS",
+      "bom_ref": "170227e4-995a-44b3-9139-fa50be0559dd"
+    },
+    {
+      "score": 37,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 10,
+        "migration_time_complexity": 8,
+        "evidence_surface": 6,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "weak",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 2,
+        "transitive_dependents": 2,
+        "evidence_count": 3
+      },
+      "explanation": {
+        "summary": "SHA1 has an estimated migration complexity score of 37/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: hash.",
+          "Cryptographic purpose: hash.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "2 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "3 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: weak."
+        ]
+      },
+      "asset": "SHA1",
+      "bom_ref": "71b09c4c-b472-4177-9ac9-31e788145383"
+    },
+    {
+      "score": 37,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 10,
+        "migration_time_complexity": 8,
+        "evidence_surface": 6,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 2,
+        "transitive_dependents": 2,
+        "evidence_count": 3
+      },
+      "explanation": {
+        "summary": "SHA384 has an estimated migration complexity score of 37/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: hash.",
+          "Cryptographic purpose: hash.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "2 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "3 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: quantum-aware."
+        ]
+      },
+      "asset": "SHA384",
+      "bom_ref": "214d407f-db44-4053-9664-205d58f9dc71"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
         "category": "asymmetric",
         "purpose": [
           "digital-signature"
@@ -195,570 +430,410 @@
         "data_lifetime_years": 5,
         "direct_dependents": 0,
         "transitive_dependents": 0,
-        "evidence_count": 5
+        "evidence_count": 1
       },
       "explanation": {
-        "summary": "RSA-OAEP has an estimated migration complexity score of 43/100 and a complexity level of MEDIUM.",
+        "summary": "SHA256withRSAandMGF1 has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
         "reasons": [
           "Cryptographic category: asymmetric.",
           "Cryptographic purpose: digital-signature.",
           "Estimated migration time: 2 year(s).",
-          "5 evidence occurrence(s) indicate source-level migration surface.",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: vulnerable."
         ]
       },
-      "asset": "RSA-OAEP",
-      "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1"
+      "asset": "SHA256withRSAandMGF1",
+      "bom_ref": "e92ca930-e3cf-466f-af77-8decbc934125"
     },
     {
-      "score": 40,
+      "score": 35,
       "level": "MEDIUM",
       "factors": {
         "cryptographic_complexity": 20,
-        "dependency_complexity": 5,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 1,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "RSA-2048 has an estimated migration complexity score of 40/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: asymmetric.",
-          "Cryptographic purpose: encryption, digital-signature.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "1 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: vulnerable."
-        ]
-      },
-      "asset": "RSA-2048",
-      "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25"
-    },
-    {
-      "score": 40,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 20,
-        "dependency_complexity": 5,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 1,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "RSA-2048 has an estimated migration complexity score of 40/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: asymmetric.",
-          "Cryptographic purpose: encryption, digital-signature.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "1 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: vulnerable."
-        ]
-      },
-      "asset": "RSA-2048",
-      "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26"
-    },
-    {
-      "score": 40,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 20,
-        "dependency_complexity": 5,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 1,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "RSA-2048 has an estimated migration complexity score of 40/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: asymmetric.",
-          "Cryptographic purpose: encryption, digital-signature.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "1 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: vulnerable."
-        ]
-      },
-      "asset": "RSA-2048",
-      "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26"
-    },
-    {
-      "score": 37,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 8,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 6,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 3
-      },
-      "explanation": {
-        "summary": "SHA256 has an estimated migration complexity score of 37/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: hash.",
-          "Cryptographic purpose: hash.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "3 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: quantum-aware."
-        ]
-      },
-      "asset": "SHA256",
-      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8"
-    },
-    {
-      "score": 37,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 8,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 6,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 3
-      },
-      "explanation": {
-        "summary": "SHA256 has an estimated migration complexity score of 37/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: hash.",
-          "Cryptographic purpose: hash.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "3 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: quantum-aware."
-        ]
-      },
-      "asset": "SHA256",
-      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8"
-    },
-    {
-      "score": 34,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 8,
-        "dependency_complexity": 9,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 3,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "SHA512 has an estimated migration complexity score of 34/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: hash.",
-          "Cryptographic purpose: hash.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: quantum-aware."
-        ]
-      },
-      "asset": "SHA512",
-      "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c"
-    },
-    {
-      "score": 34,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 8,
-        "dependency_complexity": 9,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 3,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "SHA512 has an estimated migration complexity score of 34/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: hash.",
-          "Cryptographic purpose: hash.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: quantum-aware."
-        ]
-      },
-      "asset": "SHA512",
-      "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c"
-    },
-    {
-      "score": 32,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "Ed25519 has an estimated migration complexity score of 32/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "Ed25519",
-      "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e"
-    },
-    {
-      "score": 32,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "Ed448 has an estimated migration complexity score of 32/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "Ed448",
-      "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2"
-    },
-    {
-      "score": 32,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "Ed25519 has an estimated migration complexity score of 32/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "Ed25519",
-      "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e"
-    },
-    {
-      "score": 32,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 10,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 2,
-        "transitive_dependents": 2,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "Ed448 has an estimated migration complexity score of 32/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "2 direct dependent asset(s) increase migration complexity.",
-          "2 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "Ed448",
-      "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2"
-    },
-    {
-      "score": 31,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 9,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 3,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "SHAKE256 has an estimated migration complexity score of 31/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "SHAKE256",
-      "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8"
-    },
-    {
-      "score": 31,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 9,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 3,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "SHAKE256 has an estimated migration complexity score of 31/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "3 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "SHAKE256",
-      "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8"
-    },
-    {
-      "score": 25,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 5,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 1,
-        "transitive_dependents": 1,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "DH has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "1 direct dependent asset(s) increase migration complexity.",
-          "1 transitive dependent asset(s) may be affected.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "DH",
-      "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13"
-    },
-    {
-      "score": 25,
-      "level": "MEDIUM",
-      "factors": {
-        "cryptographic_complexity": 8,
         "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA384withRSAandMGF1 has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA384withRSAandMGF1",
+      "bom_ref": "1fdfa706-919f-4346-bcff-476f8bc0763f"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA256withRSA has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA256withRSA",
+      "bom_ref": "490bd9d8-17c9-410e-a82a-39c25379f7cb"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 10,
+        "migration_time_complexity": 8,
+        "evidence_surface": 4,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 2,
+        "transitive_dependents": 2,
+        "evidence_count": 2
+      },
+      "explanation": {
+        "summary": "SHA512 has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: hash.",
+          "Cryptographic purpose: hash.",
+          "2 direct dependent asset(s) increase migration complexity.",
+          "2 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "2 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: quantum-aware."
+        ]
+      },
+      "asset": "SHA512",
+      "bom_ref": "64114490-f4e0-48e3-bea5-9dd2c45017b4"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA512withRSA has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA512withRSA",
+      "bom_ref": "a99e7788-9bcc-4354-9b8c-440efc6162ed"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA384withRSA has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA384withRSA",
+      "bom_ref": "d75fafc7-806f-40b2-8c4c-c5f4a3286c69"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA1withDSA has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA1withDSA",
+      "bom_ref": "cf58cefc-07ca-463d-87d6-6104d2e41c47"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA1withRSA has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA1withRSA",
+      "bom_ref": "8bf47395-b183-45fd-9322-0ed426b6f434"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "SHA512withRSAandMGF1 has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "SHA512withRSAandMGF1",
+      "bom_ref": "acc9615b-d8c2-4f47-b361-f8f9e3d90b68"
+    },
+    {
+      "score": 35,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 20,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "RSASSA-PSS has an estimated migration complexity score of 35/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: asymmetric.",
+          "Cryptographic purpose: digital-signature.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: vulnerable."
+        ]
+      },
+      "asset": "RSASSA-PSS",
+      "bom_ref": "0dd8613e-e10e-4acd-bade-668f9d1bbfc1"
+    },
+    {
+      "score": 33,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 12,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 8,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 4
+      },
+      "explanation": {
+        "summary": "AES has an estimated migration complexity score of 33/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: symmetric.",
+          "Cryptographic purpose: encryption.",
+          "Estimated migration time: 2 year(s).",
+          "4 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: reduced-security-margin."
+        ]
+      },
+      "asset": "AES",
+      "bom_ref": "9ab7f468-ed60-4799-a2cf-714cea0dbdc7"
+    },
+    {
+      "score": 30,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 5,
         "migration_time_complexity": 8,
         "evidence_surface": 4,
         "data_lifetime_pressure": 5
@@ -773,15 +848,17 @@
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
+        "direct_dependents": 1,
+        "transitive_dependents": 1,
         "evidence_count": 2
       },
       "explanation": {
-        "summary": "HMAC-SHA256 has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
+        "summary": "HMAC-SHA256 has an estimated migration complexity score of 30/100 and a complexity level of MEDIUM.",
         "reasons": [
           "Cryptographic category: mac.",
           "Cryptographic purpose: message-authentication.",
+          "1 direct dependent asset(s) increase migration complexity.",
+          "1 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
           "2 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
@@ -789,7 +866,123 @@
         ]
       },
       "asset": "HMAC-SHA256",
-      "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f"
+      "bom_ref": "b4e8a045-9290-41c7-836c-b27688253c33"
+    },
+    {
+      "score": 28,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 8,
+        "dependency_complexity": 5,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 1,
+        "transitive_dependents": 1,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "HMACSHA2 has an estimated migration complexity score of 28/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: mac.",
+          "Cryptographic purpose: message-authentication.",
+          "1 direct dependent asset(s) increase migration complexity.",
+          "1 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: quantum-aware."
+        ]
+      },
+      "asset": "HMACSHA2",
+      "bom_ref": "ea699e84-da8b-4c98-84da-980c4c667480"
+    },
+    {
+      "score": 27,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 12,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "AES128-CBC-PKCS5 has an estimated migration complexity score of 27/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: symmetric.",
+          "Cryptographic purpose: encryption.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: reduced-security-margin."
+        ]
+      },
+      "asset": "AES128-CBC-PKCS5",
+      "bom_ref": "40a106f4-5d54-4e1e-a258-6e3b0440166b"
+    },
+    {
+      "score": 27,
+      "level": "MEDIUM",
+      "factors": {
+        "cryptographic_complexity": 12,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "AES128-GCM has an estimated migration complexity score of 27/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: symmetric.",
+          "Cryptographic purpose: encryption.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: reduced-security-margin."
+        ]
+      },
+      "asset": "AES128-GCM",
+      "bom_ref": "59c098ed-dbc6-495e-9af0-92136b253cc1"
     },
     {
       "score": 25,
@@ -802,9 +995,11 @@
         "data_lifetime_pressure": 5
       },
       "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
+        "category": "cryptographic-format",
+        "purpose": [
+          "raw-cryptographic-representation"
+        ],
+        "quantum_status": "contextual",
         "business_criticality": "MEDIUM",
         "exposure": "INTERNAL",
         "migration_time_years": 2,
@@ -814,28 +1009,69 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "DH has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
+        "summary": "RAW has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
         "reasons": [
-          "Cryptographic category: unknown.",
+          "Cryptographic category: cryptographic-format.",
+          "Cryptographic purpose: raw-cryptographic-representation.",
           "1 direct dependent asset(s) increase migration complexity.",
           "1 transitive dependent asset(s) may be affected.",
           "Estimated migration time: 2 year(s).",
           "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
+          "Quantum status: contextual."
         ]
       },
-      "asset": "DH",
-      "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13"
+      "asset": "RAW",
+      "bom_ref": "98cea199-87b5-41f3-a575-a9d7e33fca23"
     },
     {
       "score": 25,
       "level": "MEDIUM",
       "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 5,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "cryptographic-component",
+        "purpose": [
+          "mask-generation"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 1,
+        "transitive_dependents": 1,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "MGF1 has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
+        "reasons": [
+          "Cryptographic category: cryptographic-component.",
+          "Cryptographic purpose: mask-generation.",
+          "1 direct dependent asset(s) increase migration complexity.",
+          "1 transitive dependent asset(s) may be affected.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "MGF1",
+      "bom_ref": "29066004-6550-4638-9f87-18212059f39f"
+    },
+    {
+      "score": 23,
+      "level": "LOW",
+      "factors": {
         "cryptographic_complexity": 8,
         "dependency_complexity": 0,
         "migration_time_complexity": 8,
-        "evidence_surface": 4,
+        "evidence_surface": 2,
         "data_lifetime_pressure": 5
       },
       "context": {
@@ -850,161 +1086,97 @@
         "data_lifetime_years": 5,
         "direct_dependents": 0,
         "transitive_dependents": 0,
-        "evidence_count": 2
+        "evidence_count": 1
       },
       "explanation": {
-        "summary": "HMAC-SHA256 has an estimated migration complexity score of 25/100 and a complexity level of MEDIUM.",
+        "summary": "HMAC-SHA512 has an estimated migration complexity score of 23/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: mac.",
           "Cryptographic purpose: message-authentication.",
           "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: quantum-aware."
         ]
       },
-      "asset": "HMAC-SHA256",
-      "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f"
+      "asset": "HMAC-SHA512",
+      "bom_ref": "cc271e7f-60f3-4c7f-a16c-2658ddf851d8"
     },
     {
-      "score": 22,
+      "score": 23,
       "level": "LOW",
       "factors": {
-        "cryptographic_complexity": 5,
+        "cryptographic_complexity": 8,
         "dependency_complexity": 0,
         "migration_time_complexity": 8,
-        "evidence_surface": 4,
+        "evidence_surface": 2,
         "data_lifetime_pressure": 5
       },
       "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware",
         "business_criticality": "MEDIUM",
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
         "direct_dependents": 0,
         "transitive_dependents": 0,
-        "evidence_count": 2
+        "evidence_count": 1
       },
       "explanation": {
-        "summary": "x25519 has an estimated migration complexity score of 22/100 and a complexity level of LOW.",
+        "summary": "HMAC-SHA384 has an estimated migration complexity score of 23/100 and a complexity level of LOW.",
         "reasons": [
-          "Cryptographic category: unknown.",
+          "Cryptographic category: mac.",
+          "Cryptographic purpose: message-authentication.",
           "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
+          "Quantum status: quantum-aware."
         ]
       },
-      "asset": "x25519",
-      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"
+      "asset": "HMAC-SHA384",
+      "bom_ref": "f34d180b-8844-4880-832f-f24085f83cb1"
     },
     {
-      "score": 22,
+      "score": 23,
       "level": "LOW",
       "factors": {
-        "cryptographic_complexity": 5,
+        "cryptographic_complexity": 8,
         "dependency_complexity": 0,
         "migration_time_complexity": 8,
-        "evidence_surface": 4,
+        "evidence_surface": 2,
         "data_lifetime_pressure": 5
       },
       "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "weak",
         "business_criticality": "MEDIUM",
         "exposure": "INTERNAL",
         "migration_time_years": 2,
         "data_lifetime_years": 5,
         "direct_dependents": 0,
         "transitive_dependents": 0,
-        "evidence_count": 2
+        "evidence_count": 1
       },
       "explanation": {
-        "summary": "x448 has an estimated migration complexity score of 22/100 and a complexity level of LOW.",
+        "summary": "MD5 has an estimated migration complexity score of 23/100 and a complexity level of LOW.",
         "reasons": [
-          "Cryptographic category: unknown.",
+          "Cryptographic category: hash.",
+          "Cryptographic purpose: hash.",
           "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
+          "Quantum status: weak."
         ]
       },
-      "asset": "x448",
-      "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b"
-    },
-    {
-      "score": 22,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "x25519 has an estimated migration complexity score of 22/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "x25519",
-      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"
-    },
-    {
-      "score": 22,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 4,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 2
-      },
-      "explanation": {
-        "summary": "x448 has an estimated migration complexity score of 22/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: unknown.",
-          "Estimated migration time: 2 year(s).",
-          "2 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: unknown."
-        ]
-      },
-      "asset": "x448",
-      "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b"
+      "asset": "MD5",
+      "bom_ref": "f68f769c-0186-49d2-9f21-5a6931f70840"
     },
     {
       "score": 20,
@@ -1019,7 +1191,7 @@
       "context": {
         "category": "crypto-material",
         "purpose": [
-          "private-key"
+          "key"
         ],
         "quantum_status": "contextual",
         "business_criticality": "MEDIUM",
@@ -1031,94 +1203,18 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "key@7ec82636-0987-4d06-a8fa-c58fd7d99b00 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
+          "Cryptographic purpose: key.",
           "Estimated migration time: 2 year(s).",
           "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: contextual."
         ]
       },
-      "asset": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
-      "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
-      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca"
+      "asset": "key@7ec82636-0987-4d06-a8fa-c58fd7d99b00",
+      "bom_ref": "7ec82636-0987-4d06-a8fa-c58fd7d99b00"
     },
     {
       "score": 20,
@@ -1145,7 +1241,7 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "public-key@bedd9443-4b38-46c4-9376-56470f4f1d61 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
           "Cryptographic purpose: public-key.",
@@ -1155,8 +1251,46 @@
           "Quantum status: contextual."
         ]
       },
-      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
-      "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c"
+      "asset": "public-key@bedd9443-4b38-46c4-9376-56470f4f1d61",
+      "bom_ref": "bedd9443-4b38-46c4-9376-56470f4f1d61"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@2ee4ba9f-8158-4c38-9b8c-514d4f1d1267 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@2ee4ba9f-8158-4c38-9b8c-514d4f1d1267",
+      "bom_ref": "2ee4ba9f-8158-4c38-9b8c-514d4f1d1267"
     },
     {
       "score": 20,
@@ -1183,7 +1317,7 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "private-key@b7a91807-d26b-4c20-9ee0-a3ff2610e59c has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
           "Cryptographic purpose: private-key.",
@@ -1193,8 +1327,806 @@
           "Quantum status: contextual."
         ]
       },
-      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
-      "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667"
+      "asset": "private-key@b7a91807-d26b-4c20-9ee0-a3ff2610e59c",
+      "bom_ref": "b7a91807-d26b-4c20-9ee0-a3ff2610e59c"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@e336b953-bacc-4b33-a373-a5b54ae5c3f6 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@e336b953-bacc-4b33-a373-a5b54ae5c3f6",
+      "bom_ref": "e336b953-bacc-4b33-a373-a5b54ae5c3f6"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@fd8f5bc5-0bf8-44e6-aa1b-d2253312995d has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@fd8f5bc5-0bf8-44e6-aa1b-d2253312995d",
+      "bom_ref": "fd8f5bc5-0bf8-44e6-aa1b-d2253312995d"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@6a9e9ef8-9d6d-403a-90db-346ccecfa603 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@6a9e9ef8-9d6d-403a-90db-346ccecfa603",
+      "bom_ref": "6a9e9ef8-9d6d-403a-90db-346ccecfa603"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "private-key@7b0e2681-aece-44cb-b65d-682e31b3949c has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: private-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "private-key@7b0e2681-aece-44cb-b65d-682e31b3949c",
+      "bom_ref": "7b0e2681-aece-44cb-b65d-682e31b3949c"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@ce4a129b-e78a-4eae-94ec-926cdb246ce6 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@ce4a129b-e78a-4eae-94ec-926cdb246ce6",
+      "bom_ref": "ce4a129b-e78a-4eae-94ec-926cdb246ce6"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "private-key@9ddf49c3-b522-4be7-9ae6-4a4240e4a22b has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: private-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "private-key@9ddf49c3-b522-4be7-9ae6-4a4240e4a22b",
+      "bom_ref": "9ddf49c3-b522-4be7-9ae6-4a4240e4a22b"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@64e30937-2fd7-4d97-a0cb-c36223c5b125 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@64e30937-2fd7-4d97-a0cb-c36223c5b125",
+      "bom_ref": "64e30937-2fd7-4d97-a0cb-c36223c5b125"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@7860b937-ece5-41e2-a560-a52543af28de has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@7860b937-ece5-41e2-a560-a52543af28de",
+      "bom_ref": "7860b937-ece5-41e2-a560-a52543af28de"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@c8dbb1ed-ebd2-4702-8aa9-b5717b6c47f3 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@c8dbb1ed-ebd2-4702-8aa9-b5717b6c47f3",
+      "bom_ref": "c8dbb1ed-ebd2-4702-8aa9-b5717b6c47f3"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "private-key@a51ac580-bf55-4c1e-bf18-7e0a930b2a31 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: private-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "private-key@a51ac580-bf55-4c1e-bf18-7e0a930b2a31",
+      "bom_ref": "a51ac580-bf55-4c1e-bf18-7e0a930b2a31"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "key@f921da60-964d-4de4-bc18-1ee9126a1875 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "key@f921da60-964d-4de4-bc18-1ee9126a1875",
+      "bom_ref": "f921da60-964d-4de4-bc18-1ee9126a1875"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "key@73ead9c3-f48c-4f34-a1c7-ad41fe269de0 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "key@73ead9c3-f48c-4f34-a1c7-ad41fe269de0",
+      "bom_ref": "73ead9c3-f48c-4f34-a1c7-ad41fe269de0"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@6b1c3523-ad59-41c8-a388-7a352c875532 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@6b1c3523-ad59-41c8-a388-7a352c875532",
+      "bom_ref": "6b1c3523-ad59-41c8-a388-7a352c875532"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@46f8bdaf-6cf1-4676-be3d-924c7aa9f369 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@46f8bdaf-6cf1-4676-be3d-924c7aa9f369",
+      "bom_ref": "46f8bdaf-6cf1-4676-be3d-924c7aa9f369"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@21a4e44d-498a-4aa6-ac3a-a6badad09783 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@21a4e44d-498a-4aa6-ac3a-a6badad09783",
+      "bom_ref": "21a4e44d-498a-4aa6-ac3a-a6badad09783"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "secret-key@60d9251a-4da5-40d8-9895-242c2e5bd2b5 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: secret-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "secret-key@60d9251a-4da5-40d8-9895-242c2e5bd2b5",
+      "bom_ref": "60d9251a-4da5-40d8-9895-242c2e5bd2b5"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@d8b0b027-dd96-4747-ac04-9cd7e2ef14be has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@d8b0b027-dd96-4747-ac04-9cd7e2ef14be",
+      "bom_ref": "d8b0b027-dd96-4747-ac04-9cd7e2ef14be"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "public-key@c9da4368-6dc1-4173-a512-c84543e9fc9f has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: public-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "public-key@c9da4368-6dc1-4173-a512-c84543e9fc9f",
+      "bom_ref": "c9da4368-6dc1-4173-a512-c84543e9fc9f"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "key@8908f512-bdf6-42a6-9776-62e5eafe6ecb has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "key@8908f512-bdf6-42a6-9776-62e5eafe6ecb",
+      "bom_ref": "8908f512-bdf6-42a6-9776-62e5eafe6ecb"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "private-key@b467f5c0-5da9-4466-9aa6-4657c94c24be has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: private-key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "private-key@b467f5c0-5da9-4466-9aa6-4657c94c24be",
+      "bom_ref": "b467f5c0-5da9-4466-9aa6-4657c94c24be"
+    },
+    {
+      "score": 20,
+      "level": "LOW",
+      "factors": {
+        "cryptographic_complexity": 5,
+        "dependency_complexity": 0,
+        "migration_time_complexity": 8,
+        "evidence_surface": 2,
+        "data_lifetime_pressure": 5
+      },
+      "context": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "business_criticality": "MEDIUM",
+        "exposure": "INTERNAL",
+        "migration_time_years": 2,
+        "data_lifetime_years": 5,
+        "direct_dependents": 0,
+        "transitive_dependents": 0,
+        "evidence_count": 1
+      },
+      "explanation": {
+        "summary": "key@3f4c5573-7ce0-4f3f-a032-5bbad2758d77 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "reasons": [
+          "Cryptographic category: crypto-material.",
+          "Cryptographic purpose: key.",
+          "Estimated migration time: 2 year(s).",
+          "1 evidence occurrence(s) indicate source-level migration surface.",
+          "Protected data lifetime: 5 year(s).",
+          "Quantum status: contextual."
+        ]
+      },
+      "asset": "key@3f4c5573-7ce0-4f3f-a032-5bbad2758d77",
+      "bom_ref": "3f4c5573-7ce0-4f3f-a032-5bbad2758d77"
     },
     {
       "score": 20,
@@ -1221,7 +2153,7 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "HKDF-SHA256 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "ConcatenationKDF has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: key-derivation.",
           "Cryptographic purpose: key-derivation.",
@@ -1231,46 +2163,8 @@
           "Quantum status: contextual."
         ]
       },
-      "asset": "HKDF-SHA256",
-      "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087"
+      "asset": "ConcatenationKDF",
+      "bom_ref": "366264a3-eee8-419b-9ce3-89d8abf85717"
     },
     {
       "score": 20,
@@ -1297,7 +2191,7 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "public-key@d510a558-18c2-4b61-b548-5cce9ad1e034 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
           "Cryptographic purpose: public-key.",
@@ -1307,8 +2201,8 @@
           "Quantum status: contextual."
         ]
       },
-      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
-      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe"
+      "asset": "public-key@d510a558-18c2-4b61-b548-5cce9ad1e034",
+      "bom_ref": "d510a558-18c2-4b61-b548-5cce9ad1e034"
     },
     {
       "score": 20,
@@ -1335,7 +2229,7 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "public-key@e8327716-f2e2-4b84-9825-f77a2d849da6 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
           "Cryptographic purpose: public-key.",
@@ -1345,8 +2239,8 @@
           "Quantum status: contextual."
         ]
       },
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212"
+      "asset": "public-key@e8327716-f2e2-4b84-9825-f77a2d849da6",
+      "bom_ref": "e8327716-f2e2-4b84-9825-f77a2d849da6"
     },
     {
       "score": 20,
@@ -1361,7 +2255,7 @@
       "context": {
         "category": "crypto-material",
         "purpose": [
-          "private-key"
+          "secret-key"
         ],
         "quantum_status": "contextual",
         "business_criticality": "MEDIUM",
@@ -1373,816 +2267,18 @@
         "evidence_count": 1
       },
       "explanation": {
-        "summary": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
+        "summary": "secret-key@f63dfb4d-24e4-4131-acec-403bc85c911b has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
         "reasons": [
           "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
+          "Cryptographic purpose: secret-key.",
           "Estimated migration time: 2 year(s).",
           "1 evidence occurrence(s) indicate source-level migration surface.",
           "Protected data lifetime: 5 year(s).",
           "Quantum status: contextual."
         ]
       },
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
-      "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
-      "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
-      "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
-      "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
-      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
-      "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
-      "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "key-derivation",
-        "purpose": [
-          "key-derivation"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "HKDF-SHA256 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: key-derivation.",
-          "Cryptographic purpose: key-derivation.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "HKDF-SHA256",
-      "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
-      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
-      "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: public-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
-      "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
-      "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e"
-    },
-    {
-      "score": 20,
-      "level": "LOW",
-      "factors": {
-        "cryptographic_complexity": 5,
-        "dependency_complexity": 0,
-        "migration_time_complexity": 8,
-        "evidence_surface": 2,
-        "data_lifetime_pressure": 5
-      },
-      "context": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "business_criticality": "MEDIUM",
-        "exposure": "INTERNAL",
-        "migration_time_years": 2,
-        "data_lifetime_years": 5,
-        "direct_dependents": 0,
-        "transitive_dependents": 0,
-        "evidence_count": 1
-      },
-      "explanation": {
-        "summary": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35 has an estimated migration complexity score of 20/100 and a complexity level of LOW.",
-        "reasons": [
-          "Cryptographic category: crypto-material.",
-          "Cryptographic purpose: private-key.",
-          "Estimated migration time: 2 year(s).",
-          "1 evidence occurrence(s) indicate source-level migration surface.",
-          "Protected data lifetime: 5 year(s).",
-          "Quantum status: contextual."
-        ]
-      },
-      "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
-      "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35"
+      "asset": "secret-key@f63dfb4d-24e4-4131-acec-403bc85c911b",
+      "bom_ref": "f63dfb4d-24e4-4131-acec-403bc85c911b"
     }
   ]
 }
