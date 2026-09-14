@@ -1,9 +1,14 @@
 from pathlib import Path
 import json
+import subprocess
+import sys
+import threading
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
+from services.ai_advisor import generate_advice
 
 # ============================================================
 # ECDAT API CONFIGURATION
@@ -1419,3 +1424,16 @@ def get_asset(asset_name: str):
             else None
         ),
     }
+class AIAdviceRequest(BaseModel):
+    asset: str
+
+
+@app.post("/api/ai/advice")
+def ai_advice(request: AIAdviceRequest):
+    try:
+        return generate_advice(request.asset)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI advisor failed: {str(exc)}"
+        )

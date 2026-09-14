@@ -8,6 +8,8 @@ import sys
 import threading
 from pathlib import Path
 from pydantic import BaseModel
+from services.ai_advisor import generate_advice
+
 
 
 # ============================================================
@@ -38,6 +40,8 @@ analysis_state = {
     "message": "No analysis running.",
     "error": None
 }
+class AIAdvisorRequest(BaseModel):
+    asset_name: str
 
 
 def run_repository_analysis(repository: str, branch: str):
@@ -1510,3 +1514,30 @@ def start_analysis(request: AnalyzeRequest):
 @app.get("/api/analyze/status")
 def get_analysis_status():
     return analysis_state
+@app.post("/api/ai/advisor")
+def ai_advisor(request: AIAdvisorRequest):
+
+    try:
+        result = generate_advice(
+            request.asset_name
+        )
+
+        return result
+
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc)
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=404,
+            detail=str(exc)
+        )
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI advisor failed: {exc}"
+        )
