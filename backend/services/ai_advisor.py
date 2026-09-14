@@ -21,35 +21,48 @@ def load_json(filename):
         return json.load(file)
 
 
-def get_records(data):
-    if not data:
-        return []
-
-    if isinstance(data, list):
-        return data
-
-    return data.get(
-        "assets",
-        data.get("records", [])
-    )
+REPORT_FILE = "ecdat-migration-report.json"
 
 
-def find_asset(data, asset_name):
+def find_report_asset(report, asset_name):
+    """
+    Look up one asset record in the unified ECDAT migration report.
 
-    records = get_records(data)
+    ecdat-migration-report.json is the same authoritative dataset that
+    backend/main.py's /api/asset/{name}, /api/migration-report/assets,
+    and the dashboard itself are built from (see generate_migration_report.py).
+    Reading it here -- instead of re-deriving risk/priority/pqc figures
+    from separate intermediate pipeline files -- is what guarantees the
+    AI advisor can never report a different risk/migration value than
+    the rest of the UI for the same asset. See docs/ARCHITECTURE.md §5
+    and docs/CHANGELOG.md (2026-09-14 AI data-consistency fix).
 
-    for record in records:
+    Matching is case-insensitive, consistent with every other
+    asset-lookup endpoint in backend/main.py.
+    """
 
-        name = (
-            record.get("name")
-            or record.get("asset")
-            or record.get("asset_name")
-        )
+    if not isinstance(report, dict):
+        return None
 
-        if name == asset_name:
+    assets = report.get("assets", [])
+
+    if not isinstance(assets, list):
+        return None
+
+    target = str(asset_name).strip().lower()
+
+    for record in assets:
+
+        if not isinstance(record, dict):
+            continue
+
+        name = record.get("asset")
+
+        if name and str(name).strip().lower() == target:
             return record
 
     return None
+
 
 def build_context(asset_name):
 
@@ -57,184 +70,108 @@ def build_context(asset_name):
         "asset": asset_name
     }
 
+    report = load_json(REPORT_FILE)
+
+    record = find_report_asset(report, asset_name)
+
+    if record is None:
+        return context
+
     # ---------------------------------------------------------
-    # Risk
+    # Risk (identical source/values to the dashboard's "current risk")
     # ---------------------------------------------------------
 
-    risk_data = load_json(
-        "ecdat-contextual-risk-assets.json"
-    )
+    current_risk = record.get("current_risk", {}) or {}
+    classification = record.get("classification", {}) or {}
 
-    risk_record = find_asset(
-        risk_data,
-        asset_name
-    )
+    context["risk"] = {
+        "score": current_risk.get("score"),
+        "severity": current_risk.get("severity"),
+        "quantum_status": classification.get("quantum_status"),
+        "category": classification.get("category"),
+    }
 
-    if risk_record:
-        risk = risk_record.get(
-            "contextual_risk",
-            {}
-        )
+    # ---------------------------------------------------------
+    # Migration impact: priority / blast radius / complexity
+    # ---------------------------------------------------------
 
-        context["risk"] = {
-            "final_score": risk.get(
-                "final_score"
-            ),
-            "severity": risk.get(
-                "severity"
-            ),
-            "quantum_status": risk.get(
-                "base_risk",
-                {}
-            ).get("quantum_status"),
-            "category": risk.get(
-                "base_risk",
-                {}
-            ).get("category"),
-            "migration_urgency": risk.get(
-                "mosca_analysis",
-                {}
-            ).get("migration_urgency"),
+    migration_impact = record.get("migration_impact", {}) or {}
+    priority = migration_impact.get("priority", {}) or {}
+    blast_radius = migration_impact.get("blast_radius", {}) or {}
+    complexity = migration_impact.get("complexity", {}) or {}
+
+    context["priority"] = {
+        "priority_score": priority.get("score"),
+        "priority": priority.get("level"),
+    }
+
+    context["blast_radius"] = {
+        "score": blast_radius.get("score"),
+        "severity": blast_radius.get("severity"),
+    }
+
+    context["complexity"] = {
+        "score": complexity.get("score"),
+        "level": complexity.get("level"),
+    }
+
+    # ---------------------------------------------------------
+    # PQC migration + recommended candidate
+    # ---------------------------------------------------------
+
+    pqc_migration = record.get("pqc_migration", {}) or {}
+    recommendation = record.get("recommendation", {}) or {}
+    ranked_candidates = record.get("ranked_candidates", []) or []
+
+    context["pqc"] = {
+        "migration_type": pqc_migration.get("migration_type"),
+        "pqc_applicable": pqc_migration.get("pqc_applicable"),
+        "confidence": pqc_migration.get("confidence"),
+    }
+
+    if recommendation.get("candidate"):
+
+        recommended = {
+            "candidate": recommendation.get("candidate"),
+            "score": recommendation.get("candidate_score"),
+            "rank": recommendation.get("candidate_rank"),
+            "confidence": recommendation.get("confidence"),
+            "reason": recommendation.get("reason"),
         }
 
-    # ---------------------------------------------------------
-    # Priority
-    # ---------------------------------------------------------
+        if isinstance(ranked_candidates, list) and ranked_candidates:
 
-    priority_data = load_json(
-        "ecdat-migration-priority.json"
-    )
+            top = ranked_candidates[0]
 
-    priority_record = find_asset(
-        priority_data,
-        asset_name
-    )
+            if isinstance(top, dict):
+                recommended["family"] = top.get("family")
+                recommended["compatibility"] = top.get("compatibility")
+                recommended["tradeoffs"] = top.get("tradeoffs", [])
 
-    if priority_record:
-
-        priority = priority_record.get(
-            "migration_priority",
-            {}
-        )
-
-        context["priority"] = {
-            "priority_score": priority.get(
-                "priority_score"
-            ),
-            "priority": priority.get(
-                "priority"
-            ),
-        }
-
-        context["blast_radius"] = {
-            "score": priority_record.get(
-                "blast_radius",
-                {}
-            ).get("score"),
-            "severity": priority_record.get(
-                "blast_radius",
-                {}
-            ).get("severity"),
-        }
-
-        context["complexity"] = {
-            "score": priority_record.get(
-                "migration_complexity",
-                {}
-            ).get("score"),
-            "level": priority_record.get(
-                "migration_complexity",
-                {}
-            ).get("level"),
-        }
+        context["pqc"]["recommended_candidate"] = recommended
 
     # ---------------------------------------------------------
-    # PQC Migration Plan
+    # Source impact (previously omitted, despite the dashboard's AI
+    # advisor panel already claiming to review it)
     # ---------------------------------------------------------
 
-    pqc_data = load_json(
-        "ecdat-pqc-migration-plan.json"
-    )
+    source_impact = record.get("source_impact", {}) or {}
 
-    pqc_record = find_asset(
-        pqc_data,
-        asset_name
-    )
-
-    if pqc_record:
-
-        context["pqc"] = {
-            "migration_type": pqc_record.get(
-                "pqc_analysis",
-                {}
-            ).get("migration_type"),
-            "pqc_applicable": pqc_record.get(
-                "pqc_analysis",
-                {}
-            ).get("pqc_applicable"),
-            "confidence": pqc_record.get(
-                "pqc_analysis",
-                {}
-            ).get("confidence"),
-        }
-
-        candidates = pqc_record.get(
-            "ranked_candidates",
-            []
-        )
-
-        if candidates:
-
-            best = candidates[0]
-
-            context["pqc"]["recommended_candidate"] = {
-                "candidate": best.get(
-                    "candidate"
-                ),
-                "family": best.get(
-                    "family"
-                ),
-                "score": best.get(
-                    "score"
-                ),
-                "rank": best.get(
-                    "rank"
-                ),
-                "compatibility": best.get(
-                    "compatibility"
-                ),
-                "reason": best.get(
-                    "reason"
-                ),
-                "tradeoffs": best.get(
-                    "tradeoffs",
-                    []
-                ),
-            }
+    context["source_impact"] = {
+        "impact_level": source_impact.get("impact_level"),
+        "affected_file_count": source_impact.get("affected_file_count"),
+        "affected_class_count": source_impact.get("affected_class_count"),
+        "affected_function_count": source_impact.get("affected_function_count"),
+    }
 
     # ---------------------------------------------------------
-    # Migration Actions
+    # Migration actions
     # ---------------------------------------------------------
 
-    actions_data = load_json(
-        "ecdat-migration-actions.json"
-    )
+    actions = record.get("migration_actions", [])
 
-    actions_record = find_asset(
-        actions_data,
-        asset_name
-    )
-
-    if actions_record:
-
-        actions = actions_record.get(
-            "actions",
-            []
-        )
-
-        if isinstance(actions, list):
-
-            context["actions"] = actions[:5]
+    if isinstance(actions, list):
+        context["actions"] = actions[:5]
 
     return context
 

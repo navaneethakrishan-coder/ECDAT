@@ -5,12 +5,22 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 
+# Risk-scoring unification (see docs/ARCHITECTURE.md): explain_cbom.py
+# is the single authoritative risk computation. Every downstream stage
+# (blast radius, complexity, priority, PQC mapping, migration report)
+# already read its output (ecdat-explainable-risk.json) directly.
+# "Basic Risk Assessment" now re-projects that same authoritative
+# figure into its legacy output shape instead of recomputing
+# independently, so it must run AFTER Explainable Risk, not before.
+# "Contextual Risk Assessment" was a byte-for-byte duplicate of
+# Explainable Risk's own computation with no remaining reader
+# anywhere in the codebase, so it has been retired from the active
+# pipeline (the script itself is kept, deprecated, for manual use).
 PIPELINE = [
     ("CBOM Parser", "cbom_parser.py"),
     ("Classification", "classify_cbom.py"),
-    ("Basic Risk Assessment", "score_cbom.py"),
-    ("Contextual Risk Assessment", "score_contextual_cbom.py"),
     ("Explainable Risk", "explain_cbom.py"),
+    ("Basic Risk Assessment (legacy view)", "score_cbom.py"),
     ("Blast Radius", "generate_blast_radius.py"),
     ("Migration Complexity", "generate_migration_complexity.py"),
     ("Migration Priority", "generate_migration_priority.py"),
@@ -19,6 +29,7 @@ PIPELINE = [
     ("PQC Migration Plan", "generate_pqc_migration_plan.py"),
     ("Migration Actions", "generate_migration_actions.py"),
     ("Migration Report", "generate_migration_report.py"),
+    ("Risk Consistency Check", "check_risk_consistency.py"),
 ]
 
 

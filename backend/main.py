@@ -1175,18 +1175,6 @@ def get_migration_actions():
 
 
 # ============================================================
-# PQC CANDIDATE RANKING
-# ============================================================
-
-@app.get("/api/pqc-ranking")
-def get_pqc_ranking():
-
-    return load_json(
-        "ecdat-pqc-ranked.json"
-    )
-
-
-# ============================================================
 # PQC MIGRATION PLAN
 # ============================================================
 
@@ -1196,6 +1184,13 @@ def get_pqc_migration_plan():
     return load_json(
         "ecdat-pqc-migration-plan.json"
     )
+
+
+# NOTE: a second, bare `@app.get("/api/pqc-ranking")` used to be defined
+# here as well. Starlette matches routes in registration order, so that
+# later definition was always dead code (the richer handler above,
+# defined first, is the one that ever actually ran) — removed as part
+# of the 2026-09-14 backend consolidation. See docs/CHANGELOG.md.
 
 
 # ============================================================
@@ -1540,4 +1535,29 @@ def ai_advisor(request: AIAdvisorRequest):
         raise HTTPException(
             status_code=500,
             detail=f"AI advisor failed: {exc}"
+        )
+
+
+# ============================================================
+# AI MIGRATION ADVISOR (frontend contract)
+# ============================================================
+#
+# This is the endpoint frontend/src/api.js:getAIAdvice() actually
+# calls (POST /api/ai/advice, body {"asset": "<name>"}). It was
+# previously only defined in the now-deprecated backend/api/main.py.
+# Consolidated here as part of the 2026-09-14 backend architecture
+# fix — see docs/ARCHITECTURE.md and docs/CHANGELOG.md.
+
+class AIAdviceRequest(BaseModel):
+    asset: str
+
+
+@app.post("/api/ai/advice")
+def ai_advice(request: AIAdviceRequest):
+    try:
+        return generate_advice(request.asset)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"AI advisor failed: {str(exc)}"
         )

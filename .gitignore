@@ -6,3 +6,11 @@ __pycache__/
 .env
 .env.*
 !.env.example
+
+# Local Claude Code worktrees/scratch state — not project config,
+# just a local git worktree checkout used during an isolated session.
+.claude/
+
+# Throwaway runtime logs from local dev servers
+backend/.scratch_backend.log
+*.scratch*

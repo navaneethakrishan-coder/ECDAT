@@ -6,7 +6,7 @@ from services.evidence_engine import extract_evidence
 from services.evidence_confidence import calculate_evidence_confidence
 from services.contextual_risk import calculate_contextual_risk
 from services.explanation_engine import generate_risk_explanation
-from models.risk_factors import RiskContext
+from services.risk_context import derive_risk_context
 
 
 BASE_DIR = Path(__file__).parent.parent
@@ -39,15 +39,6 @@ def main():
         []
     )
 
-    # Current prototype context
-    context = RiskContext(
-        business_criticality="MEDIUM",
-        data_lifetime_years=5,
-        migration_time_years=2,
-        exposure="INTERNAL",
-        quantum_threat_horizon_years=10
-    )
-
     analyzed_assets = []
 
     for asset in assets:
@@ -55,6 +46,17 @@ def main():
         # -------------------------------
         # Risk
         # -------------------------------
+
+        # Each asset gets its own RiskContext, derived from that
+        # asset's own CBOM evidence (occurrence file paths, API
+        # context strings, occurrence count, classification
+        # category) instead of one context object shared identically
+        # by every asset in every repository. See
+        # services/risk_context.py for exactly what is derived and
+        # why two dimensions (data lifetime, quantum threat horizon)
+        # remain fixed, documented assumptions rather than invented
+        # per-asset values.
+        context = derive_risk_context(asset)
 
         risk = calculate_contextual_risk(
             asset,

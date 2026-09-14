@@ -127,7 +127,7 @@ def main():
         print()
         print(
             f"{item['asset']} "
-            f"→ {item['pqc_candidate'] or 'None'}"
+            f"-> {item['pqc_candidate'] or 'None'}"
         )
 
         print(
