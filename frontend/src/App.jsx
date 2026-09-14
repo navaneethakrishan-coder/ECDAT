@@ -1,2309 +1,561 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { AlertTriangle, FileWarning, ShieldAlert, Zap } from "lucide-react";
 
 import {
-  Activity,
-  AlertTriangle,
-  ArrowUpRight,
-  Database,
-  FileWarning,
-  Gauge,
-  ShieldAlert,
-  ShieldCheck,
-  Zap,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
-import {
-  getSummary,
   getAssets,
   getAsset,
-  getMigrationReportAssets,
-  startAnalysis,
-  getAnalysisStatus,
   getAIAdvice,
+  getAnalysisStatus,
+  getHealth,
+  getMigrationReportAssets,
+  getPriority,
+  getSummary,
+  startAnalysis,
 } from "./api";
+import { AnalyticsPanel } from "./components/AnalyticsPanel";
+import { AssetDetailPanel } from "./components/AssetDetailPanel";
+import { AssetExplorer } from "./components/AssetExplorer";
+import { AssetFilters } from "./components/AssetFilters";
+import { CriticalFindingsPanel } from "./components/CriticalFindingsPanel";
+import { HeroOverview } from "./components/HeroOverview";
+import { RepositoryAnalysisPanel } from "./components/RepositoryAnalysisPanel";
+import { Sidebar } from "./components/Sidebar";
 import "./App.css";
 
-
-function StatCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-}) {
-  return (
-    <div className="stat-card">
-
-      <div className="stat-card-top">
-        <span>{title}</span>
-
-        <div className="stat-icon">
-          <Icon size={20} />
-        </div>
-      </div>
-
-      <div className="stat-value">
-        {value}
-      </div>
-
-      <div className="stat-subtitle">
-        {subtitle}
-      </div>
-
-    </div>
-  );
-}
-
-
-function DistributionBar({
-  label,
-  value,
-  total,
-}) {
-  const percentage =
-    total > 0
-      ? Math.round((value / total) * 100)
-      : 0;
-
-  return (
-    <div className="distribution-row">
-
-      <div className="distribution-header">
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-
-      <div className="distribution-track">
-
-        <div
-          className="distribution-fill"
-          style={{
-            width: `${percentage}%`,
-          }}
-        />
-
-      </div>
-
-      <span className="distribution-percent">
-        {percentage}%
-      </span>
-
-    </div>
-  );
-}
-
-
-function RiskBadge({ severity }) {
-  const normalized =
-    severity?.toLowerCase() || "unknown";
-
-  return (
-    <span
-      className={`risk-badge risk-${normalized}`}
-    >
-      {severity || "UNKNOWN"}
-    </span>
-  );
-}
-
+// Ordinal used only to sort the dashboard's "Critical Findings" list --
+// not a new score, just a ranking of the severity strings the backend
+// already returns.
+const SEVERITY_RANK = { CRITICAL: 3, HIGH: 2, MEDIUM: 1, LOW: 0 };
 
 function App() {
-
   // ==========================================================
   // STATE
   // ==========================================================
 
-  const [summary, setSummary] =
-    useState(null);
+  const [summary, setSummary] = useState(null);
+  const [assets, setAssets] = useState([]);
+  const [riskAssets, setRiskAssets] = useState([]);
+  const [priorityAssets, setPriorityAssets] = useState([]);
 
-  const [assets, setAssets] =
-    useState([]);
-  const [riskAssets, setRiskAssets] =
-  useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [backendConnected, setBackendConnected] = useState(true);
 
-  const [loading, setLoading] =
-  useState(false);
-
-  const [error, setError] =
-    useState(null);
-
-  const [search, setSearch] =
-    useState("");
-
-  const [selectedAsset, setSelectedAsset] =
-    useState(null);
-
-  const [assetDetail, setAssetDetail] =
-    useState(null);
-
-  const [assetDetailLoading, setAssetDetailLoading] =
-    useState(false);
-  const [riskFilter, setRiskFilter] =
-  useState("ALL");
-  const [migrationFilter, setMigrationFilter] =
-  useState("ALL");
+  const [search, setSearch] = useState("");
+  const [riskFilter, setRiskFilter] = useState("ALL");
+  const [migrationFilter, setMigrationFilter] = useState("ALL");
   const [pqcFilter, setPqcFilter] = useState("ALL");
-  const [sourceImpactFilter, setSourceImpactFilter] =
-  useState("ALL");
+  const [sourceImpactFilter, setSourceImpactFilter] = useState("ALL");
+
+  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [assetDetail, setAssetDetail] = useState(null);
+  const [assetDetailLoading, setAssetDetailLoading] = useState(false);
+  const [assetDetailError, setAssetDetailError] = useState("");
+
   const [repository, setRepository] = useState("");
-const [branch, setBranch] = useState("main");
-const [analysisStatus, setAnalysisStatus] = useState("idle");
-const [analysisMessage, setAnalysisMessage] = useState("");
-const [analysisError, setAnalysisError] = useState("");const [aiAdvice, setAiAdvice] = useState("");
+  const [branch, setBranch] = useState("main");
+  const [analysisStatus, setAnalysisStatus] = useState("idle");
+  const [analysisMessage, setAnalysisMessage] = useState("");
+  const [analysisError, setAnalysisError] = useState("");
+  const [analysisRunning, setAnalysisRunning] = useState(false);
 
-const [analysisRunning, setAnalysisRunning] = useState(false);
-const [aiLoading, setAiLoading] = useState(false);
-const [aiError, setAiError] = useState("");
-async function handleGenerateAIAdvice() {
-  if (!selectedAsset) {
-    setAiError("Please select an asset first.");
-    return;
-  }
+  const [aiAdvice, setAiAdvice] = useState(null);
+  // "idle" | "loading" | "success" | "error"
+  const [aiStatus, setAiStatus] = useState("idle");
+  const [aiError, setAiError] = useState("");
 
-  try {
-    setAiLoading(true);
+  // Tracks the currently-selected asset synchronously so an in-flight AI
+  // request that resolves *after* the user has switched to a different
+  // asset can detect it is stale and discard itself instead of showing
+  // the wrong asset's recommendation.
+  const selectedAssetRef = useRef(selectedAsset);
+
+  useEffect(() => {
+    selectedAssetRef.current = selectedAsset;
+
+    // Selecting a different asset invalidates any AI result on screen —
+    // it belongs to whatever was selected before.
+    setAiStatus("idle");
     setAiError("");
     setAiAdvice(null);
+  }, [selectedAsset]);
 
-    const result = await getAIAdvice(selectedAsset);
+  async function handleGenerateAIAdvice() {
+    // Guards against duplicate/overlapping requests: the button is also
+    // disabled while loading, but this protects against re-entrancy from
+    // keyboard activation or rapid repeated calls.
+    if (!selectedAsset || aiStatus === "loading") {
+      return;
+    }
 
-    setAiAdvice(result);
-  } catch (error) {
-    console.error("AI advice error:", error);
+    const requestedAsset = selectedAsset;
 
-    setAiError(
-      error?.message || "Failed to generate AI advice."
-    );
-  } finally {
-    setAiLoading(false);
+    try {
+      setAiStatus("loading");
+      setAiError("");
+
+      const result = await getAIAdvice(requestedAsset);
+
+      if (selectedAssetRef.current !== requestedAsset) {
+        // The user moved on to a different asset while this was in
+        // flight — drop the stale result rather than misattribute it.
+        return;
+      }
+
+      setAiAdvice(result);
+      setAiStatus("success");
+    } catch (err) {
+      console.error("AI advice error:", err);
+
+      if (selectedAssetRef.current !== requestedAsset) {
+        return;
+      }
+
+      setAiError(err?.message || "Failed to generate AI advice.");
+      setAiStatus("error");
+    }
   }
-}
 
-async function handleAnalyzeRepository() {
-  if (!repository.trim()) {
-    setAnalysisError("Please enter a GitHub repository URL.");
-    return;
+  async function handleAnalyzeRepository() {
+    if (!repository.trim()) {
+      setAnalysisError("Please enter a GitHub repository URL.");
+      setAnalysisStatus("failed");
+      return;
+    }
+
+    try {
+      setAnalysisRunning(true);
+      setAnalysisError("");
+      setAnalysisStatus("starting");
+      setAnalysisMessage("Starting CBOMKit scan...");
+
+      await startAnalysis(repository.trim(), branch.trim() || "main");
+
+      setAnalysisStatus("running");
+      setAnalysisMessage(
+        "CBOMKit is scanning the repository and ECDAT is processing the results..."
+      );
+    } catch (err) {
+      console.error("Repository analysis error:", err);
+
+      setAnalysisStatus("failed");
+      setAnalysisError(err?.message || "Unable to start repository analysis.");
+      setAnalysisRunning(false);
+    }
   }
-
-  try {
-    setAnalysisRunning(true);
-    setAnalysisError("");
-    setAnalysisStatus("starting");
-    setAnalysisMessage("Starting CBOMKit scan...");
-
-    await startAnalysis(repository.trim(), branch.trim() || "main");
-
-    setAnalysisStatus("running");
-    setAnalysisMessage(
-      "CBOMKit is scanning the repository and ECDAT is processing the results..."
-    );
-  } catch (error) {
-    console.error("Repository analysis error:", error);
-
-    setAnalysisStatus("failed");
-    setAnalysisError(
-      error?.message || "Unable to start repository analysis."
-    );
-    setAnalysisRunning(false);
-  }
-}
-
-
-
 
   // ==========================================================
   // LOAD DASHBOARD
   // ==========================================================
 
+  const loadDashboard = useCallback(async () => {
+    const [summaryData, assetsData, riskData, priorityData] = await Promise.all([
+      getSummary(),
+      getAssets(),
+      getMigrationReportAssets(),
+      getPriority(),
+    ]);
+
+    setSummary(summaryData);
+    setAssets(assetsData.assets || []);
+    setRiskAssets(riskData.assets || []);
+    setPriorityAssets(priorityData.assets || []);
+  }, []);
+
   useEffect(() => {
-
-    async function loadDashboard() {
-
+    async function initialLoad() {
       try {
-
         setLoading(true);
         setError(null);
 
-        const [
-  summaryData,
-  assetsData,
-  riskData,
-] = await Promise.all([
-  getSummary(),
-  getAssets(),
-  getMigrationReportAssets(),
-]);
-
-        setSummary(summaryData);
-
-        setAssets(
-          assetsData.assets || []
-        );
-        setRiskAssets(
-  riskData.assets || []
-);
-
+        await loadDashboard();
+        setBackendConnected(true);
       } catch (err) {
-
-        console.error(
-          "Dashboard API error:",
-          err
-        );
-
-        setError(
-          err?.message ||
-          "Unable to connect to backend"
-        );
-
+        console.error("Dashboard API error:", err);
+        setError(err?.message || "Unable to connect to backend");
+        setBackendConnected(false);
       } finally {
-
         setLoading(false);
-
       }
     }
 
-    loadDashboard();
+    initialLoad();
+  }, [loadDashboard]);
 
+  // Lightweight live health check — makes the sidebar's connection
+  // indicator reflect reality instead of always claiming "Connected".
+  // Uses the existing, already-implemented GET /health endpoint.
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        await getHealth();
+        setBackendConnected(true);
+      } catch {
+        setBackendConnected(false);
+      }
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, []);
-
 
   // ==========================================================
   // LOAD SELECTED ASSET
   // ==========================================================
 
-  useEffect(() => {
-
+  const loadAssetDetail = useCallback(async () => {
     if (!selectedAsset) {
-
-      setAssetDetail(null);
-
       return;
     }
 
-    async function loadAssetDetail() {
+    try {
+      setAssetDetailLoading(true);
+      setAssetDetailError("");
 
-      try {
+      const data = await getAsset(selectedAsset);
 
-        setAssetDetailLoading(true);
+      setAssetDetail(data);
+    } catch (err) {
+      console.error("Asset detail error:", err);
 
-        const data =
-          await getAsset(selectedAsset);
+      setAssetDetail(null);
+      setAssetDetailError(err?.message || "Unable to load asset analysis.");
+    } finally {
+      setAssetDetailLoading(false);
+    }
+  }, [selectedAsset]);
 
-        setAssetDetail(data);
-
-      } catch (err) {
-
-        console.error(
-          "Asset detail error:",
-          err
-        );
-
-        setAssetDetail(null);
-
-      } finally {
-
-        setAssetDetailLoading(false);
-
-      }
+  useEffect(() => {
+    if (!selectedAsset) {
+      setAssetDetail(null);
+      setAssetDetailError("");
+      return;
     }
 
     loadAssetDetail();
-
-  }, [selectedAsset]);
-  useEffect(() => {
-  if (!analysisRunning) {
-    return;
-  }
-
-  const interval = setInterval(async () => {
-    try {
-      const status = await getAnalysisStatus();
-
-      setAnalysisStatus(status.status);
-      setAnalysisMessage(status.message || "");
-
-      if (status.status === "completed") {
-        setAnalysisRunning(false);
-
-        // Reload dashboard data
-        try {
-          const [
-            summaryData,
-            assetsData,
-            riskData,
-          ] = await Promise.all([
-            getSummary(),
-            getAssets(),
-            getMigrationReportAssets(),
-          ]);
-
-          setSummary(summaryData);
-          setAssets(assetsData.assets || []);
-          setRiskAssets(riskData.assets || []);
-        } catch (error) {
-          console.error(
-            "Failed to refresh dashboard:",
-            error
-          );
-        }
-      }
-
-      if (status.status === "failed") {
-        setAnalysisRunning(false);
-        setAnalysisError(
-          status.error ||
-            "Repository analysis failed."
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Analysis status error:",
-        error
-      );
-    }
-  }, 3000);
-
-  return () => clearInterval(interval);
-}, [analysisRunning]);
-
-
+  }, [selectedAsset, loadAssetDetail]);
 
   // ==========================================================
-  // LOADING
+  // CLOSE ASSET DETAIL ON ESCAPE
+  // ==========================================================
+
+  useEffect(() => {
+    if (!selectedAsset) {
+      return;
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setSelectedAsset(null);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedAsset]);
+
+  // ==========================================================
+  // POLL REPOSITORY ANALYSIS STATUS
+  // ==========================================================
+
+  useEffect(() => {
+    if (!analysisRunning) {
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      try {
+        const status = await getAnalysisStatus();
+
+        setAnalysisStatus(status.status);
+        setAnalysisMessage(status.message || "");
+
+        if (status.status === "completed") {
+          setAnalysisRunning(false);
+
+          try {
+            await loadDashboard();
+          } catch (err) {
+            console.error("Failed to refresh dashboard:", err);
+          }
+        }
+
+        if (status.status === "failed") {
+          setAnalysisRunning(false);
+          setAnalysisError(status.error || "Repository analysis failed.");
+        }
+      } catch (err) {
+        console.error("Analysis status error:", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [analysisRunning, loadDashboard]);
+
+  // ==========================================================
+  // LOADING / ERROR (full page)
   // ==========================================================
 
   if (loading) {
-
     return (
       <div className="app-shell">
-
         <div className="loading-screen">
-
           <div className="loading-spinner" />
-
-          <h2>
-            Loading ECDAT
-          </h2>
-
-          <p>
-            Connecting to the cryptographic
-            analysis backend...
-          </p>
-
+          <h2>Loading ECDAT</h2>
+          <p>Connecting to the cryptographic analysis backend...</p>
         </div>
-
       </div>
     );
   }
-
-
-  // ==========================================================
-  // ERROR
-  // ==========================================================
 
   if (error) {
-
     return (
       <div className="app-shell">
-
         <div className="error-screen">
-
           <AlertTriangle size={42} />
-
-          <h2>
-            Backend Connection Failed
-          </h2>
-
-          <p>
-            {error}
-          </p>
-
-          <p className="error-help">
-            Make sure the ECDAT FastAPI server
-            is running on port 8000.
-          </p>
-
+          <h2>Backend Connection Failed</h2>
+          <p>{error}</p>
+          <p className="error-help">Make sure the ECDAT FastAPI server is running on port 8000.</p>
         </div>
-
       </div>
     );
   }
 
-
   // ==========================================================
-  // DASHBOARD DATA
+  // DERIVED DATA
   // ==========================================================
 
-  const riskDistribution =
-    summary?.risk_severity_distribution || {};
+  const riskDistribution = summary?.risk_severity_distribution || {};
+  const migrationDistribution = summary?.migration_type_distribution || {};
+  const sourceImpactDistribution = summary?.source_impact_distribution || {};
 
-  const migrationDistribution =
-    summary?.migration_type_distribution || {};
-  const sourceImpactDistribution =
-  summary?.source_impact_distribution || {};
   const riskChartData = [
-  {
-    name: "HIGH",
-    value: riskDistribution.HIGH || 0,
-  },
-  {
-    name: "MEDIUM",
-    value: riskDistribution.MEDIUM || 0,
-  },
-  {
-    name: "CRITICAL",
-    value: riskDistribution.CRITICAL || 0,
-  },
-];
+    { name: "CRITICAL", value: riskDistribution.CRITICAL || 0 },
+    { name: "HIGH", value: riskDistribution.HIGH || 0 },
+    { name: "MEDIUM", value: riskDistribution.MEDIUM || 0 },
+    { name: "LOW", value: riskDistribution.LOW || 0 },
+  ];
 
-const migrationChartData = [
-  {
-    name: "Architectural",
-    value:
-      migrationDistribution[
-        "architectural-migration"
-      ] || 0,
-  },
-  {
-    name: "PQC Candidate",
-    value:
-      migrationDistribution[
-        "pqc-candidate"
-      ] || 0,
-  },
-  {
-    name: "No Direct Replacement",
-    value:
-      migrationDistribution[
-        "no-direct-pqc-replacement"
-      ] || 0,
-  },
-];
-const sourceImpactChartData = [
-  {
-    name: "HIGH",
-    value: sourceImpactDistribution.HIGH || 0,
-  },
-  {
-    name: "MEDIUM",
-    value: sourceImpactDistribution.MEDIUM || 0,
-  },
-  {
-    name: "LOW",
-    value: sourceImpactDistribution.LOW || 0,
-  },
-];
-  
-    // ==========================================================
-// REAL RISK LOOKUP
-// ==========================================================
+  const migrationChartData = [
+    { name: "PQC Candidate", value: migrationDistribution["pqc-candidate"] || 0 },
+    { name: "Architectural", value: migrationDistribution["architectural-migration"] || 0 },
+    { name: "No Direct Replacement", value: migrationDistribution["no-direct-pqc-replacement"] || 0 },
+  ];
 
-const assetAnalysisByName = {};
+  const sourceImpactChartData = [
+    { name: "HIGH", value: sourceImpactDistribution.HIGH || 0 },
+    { name: "MEDIUM", value: sourceImpactDistribution.MEDIUM || 0 },
+    { name: "LOW", value: sourceImpactDistribution.LOW || 0 },
+  ];
 
-riskAssets.forEach((item) => {
-  const name =
-    item.asset ||
-    item.name;
+  // Two already-existing bulk endpoints (migration-report/assets +
+  // priority), joined by asset name, so the explorer can show every
+  // scored dimension per row without any new backend call.
+  const priorityByName = {};
+  priorityAssets.forEach((item) => {
+    if (item.asset) priorityByName[item.asset] = item;
+  });
 
-  if (name) {
-    assetAnalysisByName[name] = item;
-  }
-});
+  const enrichedAssets = riskAssets.map((item) => {
+    const name = item.asset || item.name || "Unknown";
+    const priorityInfo = priorityByName[name] || {};
 
+    return {
+      key: name,
+      name,
+      type: item.asset_type || "Unknown",
+      primitive: item.primitive || "Unknown",
+      riskSeverity: item.risk_severity || "UNKNOWN",
+      migrationType: item.migration_type || "",
+      pqcApplicable: Boolean(item.pqc_applicable),
+      pqcCandidate: item.candidate,
+      sourceImpact: item.source_impact || "UNKNOWN",
+      priorityLevel: priorityInfo?.migration_priority?.priority || "UNKNOWN",
+      complexityLevel: priorityInfo?.migration_complexity?.level || "UNKNOWN",
+      blastSeverity: priorityInfo?.blast_radius?.severity || "UNKNOWN",
+    };
+  });
 
-  // ==========================================================
-  // FILTER ASSETS
-  // ==========================================================
+  // Top 5 HIGH/CRITICAL assets, surfaced on the dashboard's first
+  // viewport next to the repository-analysis panel -- a client-side
+  // sort of already-fetched data, not a new backend call or metric.
+  const criticalFindings = enrichedAssets
+    .filter((asset) => asset.riskSeverity === "HIGH" || asset.riskSeverity === "CRITICAL")
+    .sort((a, b) => (SEVERITY_RANK[b.riskSeverity] ?? -1) - (SEVERITY_RANK[a.riskSeverity] ?? -1))
+    .slice(0, 5);
 
-const filteredAssets = assets.filter((asset) => {
-  const name = String(
-    asset.asset ||
-    asset.name ||
-    ""
-  );
+  const filteredAssets = enrichedAssets.filter((asset) => {
+    const query = search.trim().toLowerCase();
 
-  const type = String(
-    asset.asset_type ||
-    asset.type ||
-    ""
-  );
+    const matchesSearch =
+      !query ||
+      asset.name.toLowerCase().includes(query) ||
+      asset.type.toLowerCase().includes(query) ||
+      asset.primitive.toLowerCase().includes(query);
 
-  const primitive = String(
-    asset.primitive ||
-    ""
-  );
+    const matchesRisk = riskFilter === "ALL" || asset.riskSeverity === riskFilter;
+    const matchesMigration = migrationFilter === "ALL" || asset.migrationType === migrationFilter;
+    const matchesPqc =
+      pqcFilter === "ALL" ||
+      (pqcFilter === "APPLICABLE" && asset.pqcApplicable) ||
+      (pqcFilter === "NOT_APPLICABLE" && !asset.pqcApplicable);
+    const matchesSourceImpact = sourceImpactFilter === "ALL" || asset.sourceImpact === sourceImpactFilter;
 
-  const analysis =
-    assetAnalysisByName[name] || {};
+    return matchesSearch && matchesRisk && matchesMigration && matchesPqc && matchesSourceImpact;
+  });
 
-  const risk = String(
-    analysis.risk_severity ||
-    "MEDIUM"
-  )
-    .trim()
-    .toUpperCase();
-
-  const migrationType = String(
-    analysis.migration_type ||
-    ""
-  )
-    .trim()
-    .toLowerCase();
-
-  const sourceImpact = String(
-    analysis.source_impact ||
-    ""
-  )
-    .trim()
-    .toUpperCase();
-
-  const pqcApplicable =
-    Boolean(analysis.pqc_applicable);
-
-  const selectedRisk =
-    String(riskFilter)
-      .trim()
-      .toUpperCase();
-
-  const query =
-    search.trim().toLowerCase();
-
-  const matchesSearch =
-    !query ||
-    name.toLowerCase().includes(query) ||
-    type.toLowerCase().includes(query) ||
-    primitive.toLowerCase().includes(query);
-
-  const matchesRisk =
-    selectedRisk === "ALL" ||
-    risk === selectedRisk;
-
-  const matchesMigration =
-    migrationFilter === "ALL" ||
-    migrationType === migrationFilter;
-
-  const matchesPqc =
-    pqcFilter === "ALL" ||
-    (pqcFilter === "APPLICABLE" &&
-      pqcApplicable) ||
-    (pqcFilter === "NOT_APPLICABLE" &&
-      !pqcApplicable);
-
-  const matchesSourceImpact =
-    sourceImpactFilter === "ALL" ||
-    sourceImpact === sourceImpactFilter;
-
-  return (
-    matchesSearch &&
-    matchesRisk &&
-    matchesMigration &&
-    matchesPqc &&
-    matchesSourceImpact
-  );
-});
   // ==========================================================
   // MAIN UI
   // ==========================================================
 
   return (
     <div className="app-shell">
-
-
-      {/* ====================================================
-          SIDEBAR
-      ==================================================== */}
-
-      <aside className="sidebar">
-
-        <div className="brand">
-
-          <div className="brand-mark">
-            <ShieldCheck size={24} />
-          </div>
-
-          <div>
-
-            <div className="brand-name">
-              ECDAT
-            </div>
-
-            <div className="brand-subtitle">
-              PQC Migration Intelligence
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <nav className="sidebar-nav">
-
-          <div className="nav-section">
-            OVERVIEW
-          </div>
-
-          <div className="nav-item active">
-            <Gauge size={18} />
-            Dashboard
-          </div>
-
-          <div
-  className="nav-item"
-  onClick={() => {
-    document
-      .querySelector(".asset-panel")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-  }}
->
-  <Database size={18} />
-  Assets
-</div>
-
-          <div
-  className="nav-item"
-  onClick={() =>
-    document
-      .getElementById("risk-analysis-section")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      })
-  }
->
-  <ShieldAlert size={18} />
-  Risk Analysis
-</div>
-
-          <div
-  className="nav-item"
-  onClick={() =>
-    document
-      .getElementById("pqc-migration-section")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      })
-  }
->
-  <Zap size={18} />
-  PQC Migration
-</div>
-
-          <div
-  className="nav-item"
-  onClick={() => {
-    if (selectedAsset) {
-      document
-        .getElementById("migration-actions-section")
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-      return;
-    }
-
-    document
-      .querySelector(".stats-grid")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-  }}
->
-  <ArrowUpRight size={18} />
-  Migration Actions
-</div>
-          <div
-  className="nav-item"
-  onClick={() => {
-    const target = selectedAsset
-      ? document.getElementById("asset-source-impact-section")
-      : document.getElementById("global-source-impact-section");
-
-    target?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }}
->
-  <FileWarning size={18} />
-  Source Impact
-</div>
-        </nav>
-
-
-        <div className="sidebar-footer">
-
-          <div className="connection-dot" />
-
-          <div>
-
-            <div className="connection-title">
-              Backend Connected
-            </div>
-
-            <div className="connection-url">
-              127.0.0.1:8000
-            </div>
-
-          </div>
-
-        </div>
-
-      </aside>
-
-
-      {/* ====================================================
-          MAIN
-      ==================================================== */}
+      <Sidebar backendConnected={backendConnected} />
 
       <main className="main-content">
+        <HeroOverview summary={summary} totalAssetsScanned={assets.length} />
 
+        {/* ================================================
+            FIRST VIEWPORT: repository analysis + security
+            posture, side by side rather than stacked -- an
+            asymmetric two-column row instead of another full-
+            width card.
+        ================================================ */}
 
-        {/* ==================================================
-            HEADER
-        ================================================== */}
+        <div className="dashboard-row dashboard-row-primary">
+          <RepositoryAnalysisPanel
+            repository={repository}
+            branch={branch}
+            status={analysisStatus}
+            message={analysisMessage}
+            error={analysisError}
+            running={analysisRunning}
+            onRepositoryChange={setRepository}
+            onBranchChange={setBranch}
+            onSubmit={handleAnalyzeRepository}
+          />
 
-        <header className="topbar">
+          <CriticalFindingsPanel assets={criticalFindings} onSelectAsset={setSelectedAsset} />
+        </div>
 
-          <div>
+        {/* ================================================
+            MIGRATION INTELLIGENCE
+        ================================================ */}
 
-            <div className="breadcrumb">
-              ECDAT / Overview
-            </div>
-
-            <h1>
-              Cryptographic Migration Dashboard
-            </h1>
-            <section className="repository-analysis-panel">
-
-  <div className="repository-analysis-header">
-    <div>
-      <h2>Analyze Repository</h2>
-
-      <p>
-        Scan a GitHub repository with CBOMKit and
-        automatically run the complete ECDAT migration
-        analysis.
-      </p>
-    </div>
-  </div>
-
-  <div className="repository-analysis-form">
-
-    <div className="repository-input-group">
-      <label>GitHub Repository URL</label>
-
-      <input
-        type="text"
-        value={repository}
-        onChange={(event) =>
-          setRepository(event.target.value)
-        }
-        placeholder="https://github.com/owner/repository"
-        disabled={analysisRunning}
-      />
-    </div>
-
-    <div className="repository-input-group branch-input">
-      <label>Branch</label>
-
-      <input
-        type="text"
-        value={branch}
-        onChange={(event) =>
-          setBranch(event.target.value)
-        }
-        placeholder="main"
-        disabled={analysisRunning}
-      />
-    </div>
-
-    <button
-      type="button"
-      className="analyze-repository-button"
-      onClick={handleAnalyzeRepository}
-      disabled={analysisRunning}
-    >
-      {analysisRunning
-        ? "Analyzing..."
-        : "Analyze Repository"}
-    </button>
-
-  </div>
-
-  {analysisStatus !== "idle" && (
-    <div
-      className={`analysis-status analysis-${analysisStatus}`}
-    >
-      <span className="analysis-status-dot" />
-
-      <div>
-        <strong>
-          {analysisStatus === "completed"
-            ? "Analysis Complete"
-            : analysisStatus === "failed"
-            ? "Analysis Failed"
-            : "Analysis Running"}
-        </strong>
-
-        <p>
-          {analysisError ||
-            analysisMessage ||
-            "Processing repository..."}
-        </p>
-      </div>
-    </div>
-  )}
-
-</section>
-
-            <p className="page-description">
-              Post-quantum readiness and migration
-              intelligence across the analyzed
-              cryptographic inventory.
-            </p>
-
+        <section className="migration-intelligence-section">
+          <div className="section-heading">
+            <span className="section-eyebrow">Migration Intelligence</span>
+            <h2>How risk, migration strategy and source impact are distributed</h2>
           </div>
 
+          <div className="analytics-grid">
+            <AnalyticsPanel
+              id="risk-analysis-section"
+              icon={ShieldAlert}
+              title="Risk Distribution"
+              description="Current migration risk severity"
+              data={riskChartData}
+              color="#f87171"
+              onBarClick={(name) => name && setRiskFilter(String(name).toUpperCase())}
+            />
 
-          <div className="status-pill">
+            <AnalyticsPanel
+              id="pqc-migration-section"
+              icon={Zap}
+              title="Migration Distribution"
+              description="Recommended migration strategy"
+              data={migrationChartData}
+              color="#8b5cf6"
+              onBarClick={(name) => {
+                const migrationMap = {
+                  "PQC Candidate": "pqc-candidate",
+                  Architectural: "architectural-migration",
+                  "No Direct Replacement": "no-direct-pqc-replacement",
+                };
+                const value = migrationMap[name];
+                if (value) setMigrationFilter(value);
+              }}
+            />
 
-            <Activity size={16} />
-
-            Analysis Ready
-
+            <AnalyticsPanel
+              id="global-source-impact-section"
+              icon={FileWarning}
+              title="Source Impact"
+              description="Estimated source-code migration impact"
+              data={sourceImpactChartData}
+              color="#3b82f6"
+              onBarClick={(name) => name && setSourceImpactFilter(String(name).toUpperCase())}
+            />
           </div>
-
-        </header>
-
-
-        {/* ==================================================
-            STAT CARDS
-        ================================================== */}
-
-        <section className="stats-grid">
-
-          <StatCard
-            title="Cryptographic Assets"
-            value={
-              summary?.total_assets ?? 0
-            }
-            subtitle="Assets discovered"
-            icon={Database}
-          />
-
-          <StatCard
-            title="Migration Actions"
-            value={
-              summary?.total_migration_actions ?? 0
-            }
-            subtitle="Generated actions"
-            icon={ArrowUpRight}
-          />
-
-          <StatCard
-            title="PQC Candidates"
-            value={
-              summary?.assets_with_pqc_candidates ?? 0
-            }
-            subtitle="Assets requiring PQC migration"
-            icon={ShieldAlert}
-          />
-
-          <StatCard
-            title="High / Critical Priority"
-            value={
-              summary
-                ?.high_or_critical_priority_assets ?? 0
-            }
-            subtitle="Priority assets"
-            icon={AlertTriangle}
-          />
-
         </section>
 
+        {/* ================================================
+            ASSET EXPLORER
+        ================================================ */}
 
-        {/* ==================================================
-            ANALYTICS
-        ================================================== */}
-
-        <section className="analytics-grid">
-
-  <div className="panel" id="risk-analysis-section">
-
-    <div className="panel-header">
-
-      <div>
-        <h2>Risk Distribution</h2>
-
-        <p>
-          Current migration risk severity
-        </p>
-      </div>
-
-      <ShieldAlert size={20} />
-
-    </div>
-
-    <div
-      style={{
-        width: "100%",
-        height: 260,
-      }}
-    >
-      <ResponsiveContainer>
-        <BarChart
-  data={riskChartData}
-  margin={{
-    top: 10,
-    right: 10,
-    left: -20,
-    bottom: 5,
-  }}
->
-
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#1e2b42"
-          />
-
-          <XAxis
-            dataKey="name"
-            stroke="#7185a5"
-            tick={{
-              fontSize: 11,
-            }}
-          />
-
-          <YAxis
-            stroke="#7185a5"
-            allowDecimals={false}
-            tick={{
-              fontSize: 11,
-            }}
-          />
-
-          <Tooltip />
-
-          <Bar
-  dataKey="value"
-  name="Assets"
-  fill="#f87171"
-  radius={[5, 5, 0, 0]}
-  cursor="pointer"
-  onClick={(data) => {
-    const risk = data?.name;
-
-    if (risk) {
-      setRiskFilter(
-        String(risk).toUpperCase()
-      );
-    }
-  }}
-/>
-
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-
-  </div>
-
-
-  <div className="panel" id="pqc-migration-section">
-
-    <div className="panel-header">
-
-      <div>
-        <h2>Migration Distribution</h2>
-
-        <p>
-          Recommended migration strategy
-        </p>
-      </div>
-
-      <Zap size={20} />
-
-    </div>
-
-    <div
-      style={{
-        width: "100%",
-        height: 260,
-      }}
-    >
-      <ResponsiveContainer>
-        <BarChart
-          data={migrationChartData}
-          margin={{
-            top: 10,
-            right: 10,
-            left: -20,
-            bottom: 5,
-          }}
-        >
-
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="#1e2b42"
-          />
-
-          <XAxis
-            dataKey="name"
-            stroke="#7185a5"
-            tick={{
-              fontSize: 10,
-            }}
-          />
-
-          <YAxis
-            stroke="#7185a5"
-            allowDecimals={false}
-            tick={{
-              fontSize: 11,
-            }}
-          />
-
-          <Tooltip />
-
-          <Bar
-  dataKey="value"
-  name="Assets"
-  fill="#8b5cf6"
-  radius={[5, 5, 0, 0]}
-  cursor="pointer"
-  onClick={(data) => {
-    const migration = data?.name;
-
-    if (!migration) return;
-
-    const migrationMap = {
-      Architectural:
-        "architectural-migration",
-
-      "PQC Candidate":
-        "pqc-candidate",
-
-      "No Direct Replacement":
-        "no-direct-pqc-replacement",
-    };
-
-    const value =
-      migrationMap[migration];
-
-    if (value) {
-      setMigrationFilter(value);
-    }
-  }}
-/>
-
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-
-  </div>
-  <div className="panel" id="global-source-impact-section">
-
-  <div className="panel-header">
-
-    <div>
-      <h2>Source Impact</h2>
-
-      <p>
-        Estimated source-code migration impact
-      </p>
-    </div>
-
-    <FileWarning size={20} />
-
-  </div>
-
-  <div
-    style={{
-      width: "100%",
-      height: 260,
-    }}
-  >
-    <ResponsiveContainer>
-      <BarChart
-        data={sourceImpactChartData}
-        margin={{
-          top: 10,
-          right: 10,
-          left: -20,
-          bottom: 5,
-        }}
-      >
-
-        <CartesianGrid
-          strokeDasharray="3 3"
-          stroke="#1e2b42"
-        />
-
-        <XAxis
-          dataKey="name"
-          stroke="#7185a5"
-          tick={{
-            fontSize: 11,
-          }}
-        />
-
-        <YAxis
-          stroke="#7185a5"
-          allowDecimals={false}
-          tick={{
-            fontSize: 11,
-          }}
-        />
-
-        <Tooltip />
-
-        <Bar
-  dataKey="value"
-  name="Assets"
-  radius={[5, 5, 0, 0]}
-  fill="#3b82f6"
-  cursor="pointer"
-  onClick={(data) => {
-    const impact = data?.name;
-
-    if (impact) {
-      setSourceImpactFilter(
-        String(impact).toUpperCase()
-      );
-    }
-  }}
-/>
-
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
-
-</div>
-
-
-</section>
-
-        {/* ==================================================
-            ASSET INVENTORY
-        ================================================== */}
-
-        <section className="panel asset-panel">
-
-
+        <section className="panel asset-explorer">
           <div className="panel-header">
-
-            <div>
-
-              <h2>
-                Cryptographic Asset Inventory
-              </h2>
-
-              <p>
-                Search and explore the cryptographic
-                assets discovered by ECDAT.
-              </p>
-
+            <div className="section-heading">
+              <span className="section-eyebrow">Findings</span>
+              <h2>Cryptographic Asset Explorer</h2>
+              <p>Every analyzed asset, as a full security assessment.</p>
             </div>
-
 
             <div className="asset-count">
-
-              {filteredAssets.length}
-              {" / "}
-              {assets.length}
-
+              {filteredAssets.length} / {enrichedAssets.length}
             </div>
-
           </div>
 
-
-          {/* SEARCH */}
-
-          <div className="asset-toolbar">
-
-            <div className="asset-search">
-
-              <span className="search-icon">
-                🔎
-              </span>
-
-              <input
-                type="text"
-                value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                placeholder="Search assets, types or primitives..."
-              />
-              <select
-  value={riskFilter}
-  onChange={(event) =>
-    setRiskFilter(event.target.value)
-  }
-  className="asset-filter"
->
-  <option value="ALL">
-    All Risk Levels
-  </option>
-
-  <option value="HIGH">
-    High Risk
-  </option>
-
-  <option value="MEDIUM">
-    Medium Risk
-  </option>
-
-  <option value="LOW">
-    Low Risk
-  </option>
-
-  <option value="CRITICAL">
-    Critical Risk
-  </option>
-</select>
-<select
-  value={migrationFilter}
-  onChange={(event) =>
-    setMigrationFilter(event.target.value)
-  }
-  className="asset-filter"
->
-  <option value="ALL">
-    All Migration Types
-  </option>
-
-  <option value="pqc-candidate">
-    PQC Candidate
-  </option>
-
-  <option value="architectural-migration">
-    Architectural Migration
-  </option>
-
-  <option value="no-direct-pqc-replacement">
-    No Direct PQC Replacement
-  </option>
-</select>
-<select
-  value={pqcFilter}
-  onChange={(event) =>
-    setPqcFilter(event.target.value)
-  }
-  className="asset-filter"
->
-  <option value="ALL">
-    All PQC Status
-  </option>
-
-  <option value="APPLICABLE">
-    PQC Applicable
-  </option>
-
-  <option value="NOT_APPLICABLE">
-    No Direct PQC
-  </option>
-</select>
-<select
-  value={sourceImpactFilter}
-  onChange={(event) =>
-    setSourceImpactFilter(event.target.value)
-  }
-  className="asset-filter"
->
-  <option value="ALL">
-    All Source Impact
-  </option>
-
-  <option value="HIGH">
-    High Impact
-  </option>
-
-  <option value="MEDIUM">
-    Medium Impact
-  </option>
-
-  <option value="LOW">
-    Low Impact
-  </option>
-</select>
-
-              {search && (
-
-                <button
-                  type="button"
-                  className="clear-search"
-                  onClick={() =>
-                    setSearch("")
-                  }
-                >
-                  ×
-                </button>
-
-              )}
-
-            </div>
-
-          </div>
-
-
-          {/* TABLE */}
-
-          <div className="asset-table">
-
-            <div className="table-header">
-
-              <span>
-                Asset
-              </span>
-
-              <span>
-                Type
-              </span>
-
-              <span>
-                Primitive
-              </span>
-
-              <span>
-                Status
-              </span>
-
-            </div>
-
-
-            {filteredAssets.length === 0 ? (
-
-              <div className="empty-assets">
-
-                <Database size={28} />
-
-                <strong>
-                  No assets found
-                </strong>
-
-                <span>
-                  Try a different search term.
-                </span>
-
-              </div>
-
-            ) : (
-
-              filteredAssets.map(
-                (asset, index) => {
-
-                  const name =
-                    asset.name ||
-                    asset.asset ||
-                    "Unknown";
-
-                  const type =
-                    asset.asset_type ||
-                    asset.type ||
-                    "Unknown";
-
-                  const primitive =
-                    asset.primitive ||
-                    "Unknown";
-
-
-                  /*
-                   * IMPORTANT:
-                   *
-                   * The inventory endpoint does not
-                   * contain the full risk assessment.
-                   *
-                   * Therefore we DO NOT invent a risk
-                   * value here.
-                   *
-                   * Until the inventory is connected
-                   * to the migration-report dataset,
-                   * display the asset's quantum status.
-                   */
-
-                  const severity =
-  String(
-    assetAnalysisByName[name]
-      ?.risk_severity ||
-    "MEDIUM"
-  ).toUpperCase();
-
-                  return (
-
-                    <button
-                      type="button"
-                      className="table-row asset-row-button"
-
-                      key={
-                        asset.bom_ref ||
-                        asset.id ||
-                        `${name}-${index}`
-                      }
-
-                      onClick={() =>
-                        setSelectedAsset(name)
-                      }
-                    >
-
-                      <div className="asset-name">
-
-                        <div className="asset-avatar">
-
-                          {name
-                            .charAt(0)
-                            .toUpperCase()}
-
-                        </div>
-
-                        <span>
-                          {name}
-                        </span>
-
-                      </div>
-
-
-                      <span className="muted">
-                        {type}
-                      </span>
-
-
-                      <span className="muted">
-                        {primitive}
-                      </span>
-
-
-                      <RiskBadge
-                        severity={severity}
-                      />
-
-                    </button>
-
-                  );
-                }
-              )
-
-            )}
-
-          </div>
-
-
-          {/* =================================================
-              ASSET DETAIL
-          ================================================= */}
+          <AssetFilters
+            search={search}
+            onSearchChange={setSearch}
+            riskFilter={riskFilter}
+            onRiskFilterChange={setRiskFilter}
+            migrationFilter={migrationFilter}
+            onMigrationFilterChange={setMigrationFilter}
+            pqcFilter={pqcFilter}
+            onPqcFilterChange={setPqcFilter}
+            sourceImpactFilter={sourceImpactFilter}
+            onSourceImpactFilterChange={setSourceImpactFilter}
+          />
+
+          <AssetExplorer
+            assets={filteredAssets}
+            totalCount={enrichedAssets.length}
+            selectedAsset={selectedAsset}
+            onSelectAsset={setSelectedAsset}
+          />
 
           {selectedAsset && (
-
-            <div className="asset-detail-panel">
-
-
-              <div className="asset-detail-header">
-
-                <div>
-
-                  <div className="breadcrumb">
-                    Asset / {selectedAsset}
-                  </div>
-
-                  <h2>
-                    {selectedAsset}
-                  </h2>
-
-                  <p>
-                    Unified cryptographic asset analysis
-                  </p>
-
-                </div>
-
-
-                <button
-                  type="button"
-                  className="asset-detail-close"
-                  onClick={() => {
-
-                    setSelectedAsset(null);
-                    setAssetDetail(null);
-
-                  }}
-                >
-                  Close
-                </button>
-
-              </div>
-                            {/* =====================================================
-                  ANALYSIS SUMMARY
-              ====================================================== */}
-
-              <div className="detail-summary-grid top-summary-grid">
-
-                <div className="detail-stat-card">
-                  <span>Risk</span>
-
-                  <strong>
-                    {assetDetail?.current_risk?.severity || "—"}
-                  </strong>
-
-                  <small>
-                    Score{" "}
-                    {assetDetail?.current_risk?.score ??
-                      assetDetail?.risk_assessment?.final_score ??
-                      "—"}
-                  </small>
-                </div>
-
-
-                <div className="detail-stat-card">
-                  <span>Priority</span>
-
-                  <strong>
-                    {assetDetail?.priority?.level ||
-                      assetDetail?.migration_impact?.priority?.level ||
-                      "—"}
-                  </strong>
-
-                  <small>
-                    Score{" "}
-                    {assetDetail?.priority?.score ??
-                      assetDetail?.migration_impact?.priority?.score ??
-                      "—"}
-                  </small>
-                </div>
-
-
-                <div className="detail-stat-card">
-                  <span>Complexity</span>
-
-                  <strong>
-                    {assetDetail?.complexity?.level || "—"}
-                  </strong>
-
-                  <small>
-                    Score{" "}
-                    {assetDetail?.complexity?.score ?? "—"}
-                  </small>
-                </div>
-
-
-                <div className="detail-stat-card">
-                  <span>Blast Radius</span>
-
-                  <strong>
-                    {assetDetail?.blast_radius?.severity || "—"}
-                  </strong>
-
-                  <small>
-                    Score{" "}
-                    {assetDetail?.blast_radius?.blast_radius_score ??
-                      assetDetail?.blast_radius?.score ??
-                      assetDetail?.blast_radius_score ??
-                      "—"}
-                  </small>
-                </div>
-
-              </div>
-
-
-              {/* =====================================================
-                  PQC CANDIDATE RANKING
-              ====================================================== */}
-
-              <section className="detail-section">
-
-                <div className="detail-section-header">
-
-                  <div>
-                    <h3>PQC Candidate Ranking</h3>
-
-                    <p>
-                      Ranked post-quantum migration candidates
-                    </p>
-                  </div>
-
-                </div>
-
-
-                <div className="candidate-ranking-list">
-
-                  {(assetDetail?.ranked_candidates || []).map(
-                    (candidate, index) => (
-
-                      <div
-                        className="candidate-ranking-row"
-                        key={
-                          candidate.candidate ||
-                          candidate.name ||
-                          index
-                        }
-                      >
-
-                        <div className="candidate-rank">
-                          #{candidate.rank || index + 1}
-                        </div>
-
-
-                        <div className="candidate-info">
-
-                          <strong>
-                            {candidate.candidate ||
-                              candidate.name ||
-                              "Unknown"}
-                          </strong>
-
-                          <span>
-                            {candidate.family || "PQC candidate"}
-                          </span>
-
-                        </div>
-
-
-                        <div className="candidate-score">
-
-                          <strong>
-                            {candidate.score ?? "—"}
-                          </strong>
-
-                          <span>
-                            Score
-                          </span>
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )}
-
-                </div>
-
-              </section>
-
-
-              {assetDetailLoading ? (
-
-                <div className="asset-detail-loading">
-                  Loading asset analysis...
-                </div>
-
-              ) : assetDetail ? (
-
-                <>
-
-
-
-
-                  {/* ==========================================
-                      CLASSIFICATION
-                  ========================================== */}
-
-                  <div className="detail-card">
-
-                    <h3>
-                      Classification
-                    </h3>
-
-
-                    <div className="detail-grid classification-grid">
-
-                      <div>
-
-                        <span>
-                          Category
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .classification
-                              ?.category ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Primitive
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .inventory
-                              ?.primitive ||
-                            assetDetail
-                              .primitive ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Quantum Status
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .classification
-                              ?.quantum_status ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* ==========================================
-                      CURRENT RISK
-                  ========================================== */}
-
-                  <div className="detail-card" id="asset-risk-section">
-
-  <h3>
-    Current Risk
-  </h3>
-
-  <div className="detail-grid current-risk-grid">
-
-    <div>
-
-      <span>
-        Score
-      </span>
-
-      <strong>
-        {
-          assetDetail
-            .current_risk
-            ?.score ??
-          assetDetail
-            .risk_assessment
-            ?.final_score ??
-          "N/A"
-        }
-      </strong>
-
-    </div>
-
-
-    <div>
-
-      <span>
-        Severity
-      </span>
-
-      <strong>
-        {
-          assetDetail
-            .current_risk
-            ?.severity ||
-          assetDetail
-            .risk_assessment
-            ?.severity ||
-          "N/A"
-        }
-      </strong>
-
-    </div>
-
-
-    <div>
-
-      <span>
-        Reason
-      </span>
-
-      <strong>
-        {
-          assetDetail
-            .classification
-            ?.risk_reason ||
-          "N/A"
-        }
-      </strong>
-
-    </div>
-
-  </div>
-
-</div>
-
-                  {/* ==========================================
-                      PQC MIGRATION
-                  ========================================== */}
-
-                  <div className="detail-card" id="pqc-migration-section">
-
-                    <h3>
-                      PQC Migration
-                    </h3>
-
-
-                    <div className="detail-grid pqc-migration-grid">
-
-                      <div>
-
-                        <span>
-                          Migration Type
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .pqc_migration
-                              ?.migration_type ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          PQC Applicable
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .pqc_migration
-                              ?.pqc_applicable
-                              ? "YES"
-                              : "NO"
-                          }
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        <span>
-                          Confidence
-                        </span>
-
-                        <strong>
-                          {
-                            assetDetail
-                              .pqc_migration
-                              ?.confidence ||
-                            "N/A"
-                          }
-                        </strong>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  {/* ==========================================
-                      RECOMMENDATION
-                  ========================================== */}
-
-                  <div className="detail-card">
-
-  <h3>
-    PQC Recommendation
-  </h3>
-
-  <div className="pqc-recommendation-card">
-
-    <div className="pqc-recommendation-item">
-      <span className="pqc-recommendation-item-label">
-        Recommended Candidate
-      </span>
-
-      <div className="pqc-recommendation-item-value">
-        {assetDetail.recommendation?.candidate ||
-          "No direct replacement"}
-      </div>
-    </div>
-
-    <div className="pqc-recommendation-item">
-      <span className="pqc-recommendation-item-label">
-        Candidate Score
-      </span>
-
-      <div className="pqc-recommendation-item-score">
-        {assetDetail.recommendation?.candidate_score ?? "N/A"}
-      </div>
-    </div>
-
-    <div className="pqc-recommendation-item">
-      <span className="pqc-recommendation-item-label">
-        Rank
-      </span>
-
-      <div className="pqc-recommendation-item-rank">
-        {assetDetail.recommendation?.candidate_rank
-          ? `#${assetDetail.recommendation.candidate_rank}`
-          : "N/A"}
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-                  {/* ==========================================
-                      SOURCE IMPACT
-                  ========================================== */}
-
-                  <div
-  className="detail-card source-impact-card"
-  id="asset-source-impact-section"
->
-
-  <div className="detail-card-heading">
-    <div>
-      <h3>Source Impact</h3>
-      <p>
-        Estimated source-code changes required for migration
-      </p>
-    </div>
-
-    <span
-      className={`impact-badge impact-${
-        String(
-          assetDetail?.source_impact?.impact_level || "unknown"
-        ).toLowerCase()
-      }`}
-    >
-      {assetDetail?.source_impact?.impact_level || "N/A"}
-    </span>
-  </div>
-
-  <div className="source-impact-stats">
-
-    <div className="impact-stat">
-      <span>Files</span>
-      <strong>
-        {assetDetail?.source_impact?.affected_file_count ?? 0}
-      </strong>
-    </div>
-
-    <div className="impact-stat">
-      <span>Classes</span>
-      <strong>
-        {assetDetail?.source_impact?.affected_class_count ?? 0}
-      </strong>
-    </div>
-
-    <div className="impact-stat">
-      <span>Functions</span>
-      <strong>
-        {assetDetail?.source_impact?.affected_function_count ?? 0}
-      </strong>
-    </div>
-
-  </div>
-
-  <div className="source-impact-lists">
-
-    <div className="impact-list">
-      <div className="impact-list-title">
-        Affected Files
-      </div>
-
-      {(
-        assetDetail?.source_impact?.affected_files || []
-      ).length > 0 ? (
-        assetDetail.source_impact.affected_files.map(
-          (file, index) => (
-            <div
-              className="impact-list-item"
-              key={`${file}-${index}`}
-            >
-              <FileWarning size={14} />
-              <span>{file}</span>
-            </div>
-          )
-        )
-      ) : (
-        <div className="impact-empty">
-          No affected files
-        </div>
-      )}
-    </div>
-
-    <div className="impact-list">
-      <div className="impact-list-title">
-        Affected Classes
-      </div>
-
-      {(
-        assetDetail?.source_impact?.affected_classes || []
-      ).length > 0 ? (
-        assetDetail.source_impact.affected_classes.map(
-          (item, index) => (
-            <div
-              className="impact-list-item"
-              key={`${item}-${index}`}
-            >
-              <Database size={14} />
-              <span>{item}</span>
-            </div>
-          )
-        )
-      ) : (
-        <div className="impact-empty">
-          No affected classes
-        </div>
-      )}
-    </div>
-
-    <div className="impact-list">
-      <div className="impact-list-title">
-        Affected Functions
-      </div>
-
-      {(
-        assetDetail?.source_impact?.affected_functions || []
-      ).length > 0 ? (
-        assetDetail.source_impact.affected_functions.map(
-          (item, index) => (
-            <div
-              className="impact-list-item"
-              key={`${item}-${index}`}
-            >
-              <Activity size={14} />
-              <span>{item}</span>
-            </div>
-          )
-        )
-      ) : (
-        <div className="impact-empty">
-          No affected functions
-        </div>
-      )}
-    </div>
-
-  </div>
-
-</div>
-                  {/* ==========================================
-                      MIGRATION ACTIONS
-                  ========================================== */}
-
-                  <div className="detail-card" id="migration-actions-section">
-
-                    <h3>
-                      Migration Actions
-                    </h3>
-
-
-                    <div className="action-list">
-
-                      {(
-                        assetDetail
-                          .migration_actions ||
-                        []
-                      ).map(
-                        (action, index) => (
-
-                          <div
-                            className="migration-action"
-                            key={
-                              action.step ||
-                              index
-                            }
-                          >
-
-                            <div className="action-number">
-                              {
-                                action.step ||
-                                index + 1
-                              }
-                            </div>
-
-                            <span>
-                              {action.action}
-                            </span>
-
-                          </div>
-
-                        )
-                      )}
-
-                    </div>
-
-                  </div>
-
-                </>
-
-              ) : (
-
-                <div className="asset-detail-loading">
-                  Unable to load asset analysis.
-                </div>
-
-              )}
-
-            </div>
-
+            <AssetDetailPanel
+              assetName={selectedAsset}
+              assetDetail={assetDetail}
+              loading={assetDetailLoading}
+              error={assetDetailError}
+              onRetry={loadAssetDetail}
+              onClose={() => {
+                setSelectedAsset(null);
+                setAssetDetail(null);
+              }}
+              aiStatus={aiStatus}
+              aiAdvice={aiAdvice}
+              aiError={aiError}
+              onGenerateAdvice={handleGenerateAIAdvice}
+            />
           )}
-
         </section>
-        <section className="ai-advisor-panel">
-
-  <div className="ai-advisor-header">
-
-    <div>
-      <div className="ai-advisor-title">
-        AI Migration Advisor
-      </div>
-
-      <p>
-        Qwen3 14B analyzes the ECDAT results and
-        provides an explainable migration recommendation.
-      </p>
-    </div>
-
-    <div className="ai-model-badge">
-      Qwen3:14B
-    </div>
-
-  </div>
-
-  <button
-  type="button"
-  className="ai-advice-button"
-  onClick={handleGenerateAIAdvice}
-  disabled={aiLoading || !selectedAsset}
->
-  {aiLoading ? "Generating..." : "Generate AI Advice"}
-</button>
-
-  {aiError && (
-    <div className="ai-error">
-      {aiError}
-    </div>
-  )}
-
-  {aiLoading && (
-    <div className="ai-loading">
-      <div className="loading-spinner" />
-
-      <div>
-        <strong>
-          Qwen3 14B is analyzing {selectedAsset}
-        </strong>
-
-        <p>
-          Reviewing ECDAT risk, migration,
-          PQC and source-impact results...
-        </p>
-      </div>
-    </div>
-  )}
-
-  {aiAdvice?.advice && (
-    <div className="ai-advice-result">
-
-      <div className="ai-result-header">
-        <span>AI Recommendation</span>
-
-        <span className="ai-model-label">
-          Powered by {aiAdvice.model}
-        </span>
-      </div>
-
-      <div className="ai-advice-content">
-        {aiAdvice.advice
-          .split("\n")
-          .map((line, index) => {
-
-            const trimmed = line.trim();
-
-            if (!trimmed) {
-              return (
-                <div
-                  key={index}
-                  className="ai-space"
-                />
-              );
-            }
-
-            const section =
-              /^(RISK|MIGRATION|PQC|ACTIONS|IMPACT|SUMMARY):$/i
-                .test(trimmed);
-
-            if (section) {
-              return (
-                <h4 key={index}>
-                  {trimmed}
-                </h4>
-              );
-            }
-
-            return (
-              <p key={index}>
-                {trimmed}
-              </p>
-            );
-          })}
-      </div>
-
-    </div>
-  )}
-
-</section>
-
-
-        {/* ==================================================
-            FOOTER
-        ================================================== */}
 
         <footer className="dashboard-footer">
-
+          <span>ECDAT Quantum Migration Intelligence</span>
           <span>
-            ECDAT Quantum Migration Intelligence
+            Backend API • {summary?.total_assets ?? 0} Assets • {summary?.total_migration_actions ?? 0}{" "}
+            Actions
           </span>
-
-          <span>
-            Backend API •{" "}
-            {assets.length} Assets •{" "}
-            {
-              summary
-                ?.total_migration_actions ?? 0
-            } Actions
-          </span>
-
         </footer>
-
-
       </main>
-
     </div>
   );
 }
-
 
 export default App;
