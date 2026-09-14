@@ -27,6 +27,7 @@ import {
   getMigrationReportAssets,
   startAnalysis,
   getAnalysisStatus,
+  getAIAdvice,
 } from "./api";
 import "./App.css";
 
@@ -128,7 +129,7 @@ function App() {
   useState([]);
 
   const [loading, setLoading] =
-    useState(true);
+  useState(false);
 
   const [error, setError] =
     useState(null);
@@ -155,8 +156,36 @@ function App() {
 const [branch, setBranch] = useState("main");
 const [analysisStatus, setAnalysisStatus] = useState("idle");
 const [analysisMessage, setAnalysisMessage] = useState("");
-const [analysisError, setAnalysisError] = useState("");
+const [analysisError, setAnalysisError] = useState("");const [aiAdvice, setAiAdvice] = useState("");
+
 const [analysisRunning, setAnalysisRunning] = useState(false);
+const [aiLoading, setAiLoading] = useState(false);
+const [aiError, setAiError] = useState("");
+async function handleGenerateAIAdvice() {
+  if (!selectedAsset) {
+    setAiError("Please select an asset first.");
+    return;
+  }
+
+  try {
+    setAiLoading(true);
+    setAiError("");
+    setAiAdvice(null);
+
+    const result = await getAIAdvice(selectedAsset);
+
+    setAiAdvice(result);
+  } catch (error) {
+    console.error("AI advice error:", error);
+
+    setAiError(
+      error?.message || "Failed to generate AI advice."
+    );
+  } finally {
+    setAiLoading(false);
+  }
+}
+
 async function handleAnalyzeRepository() {
   if (!repository.trim()) {
     setAnalysisError("Please enter a GitHub repository URL.");
@@ -185,6 +214,8 @@ async function handleAnalyzeRepository() {
     setAnalysisRunning(false);
   }
 }
+
+
 
 
   // ==========================================================
@@ -2140,6 +2171,110 @@ const filteredAssets = assets.filter((asset) => {
           )}
 
         </section>
+        <section className="ai-advisor-panel">
+
+  <div className="ai-advisor-header">
+
+    <div>
+      <div className="ai-advisor-title">
+        AI Migration Advisor
+      </div>
+
+      <p>
+        Qwen3 14B analyzes the ECDAT results and
+        provides an explainable migration recommendation.
+      </p>
+    </div>
+
+    <div className="ai-model-badge">
+      Qwen3:14B
+    </div>
+
+  </div>
+
+  <button
+  type="button"
+  className="ai-advice-button"
+  onClick={handleGenerateAIAdvice}
+  disabled={aiLoading || !selectedAsset}
+>
+  {aiLoading ? "Generating..." : "Generate AI Advice"}
+</button>
+
+  {aiError && (
+    <div className="ai-error">
+      {aiError}
+    </div>
+  )}
+
+  {aiLoading && (
+    <div className="ai-loading">
+      <div className="loading-spinner" />
+
+      <div>
+        <strong>
+          Qwen3 14B is analyzing {selectedAsset}
+        </strong>
+
+        <p>
+          Reviewing ECDAT risk, migration,
+          PQC and source-impact results...
+        </p>
+      </div>
+    </div>
+  )}
+
+  {aiAdvice?.advice && (
+    <div className="ai-advice-result">
+
+      <div className="ai-result-header">
+        <span>AI Recommendation</span>
+
+        <span className="ai-model-label">
+          Powered by {aiAdvice.model}
+        </span>
+      </div>
+
+      <div className="ai-advice-content">
+        {aiAdvice.advice
+          .split("\n")
+          .map((line, index) => {
+
+            const trimmed = line.trim();
+
+            if (!trimmed) {
+              return (
+                <div
+                  key={index}
+                  className="ai-space"
+                />
+              );
+            }
+
+            const section =
+              /^(RISK|MIGRATION|PQC|ACTIONS|IMPACT|SUMMARY):$/i
+                .test(trimmed);
+
+            if (section) {
+              return (
+                <h4 key={index}>
+                  {trimmed}
+                </h4>
+              );
+            }
+
+            return (
+              <p key={index}>
+                {trimmed}
+              </p>
+            );
+          })}
+      </div>
+
+    </div>
+  )}
+
+</section>
 
 
         {/* ==================================================

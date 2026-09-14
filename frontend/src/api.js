@@ -214,3 +214,40 @@ export async function startAnalysis(repository, branch = "main") {
 export function getAnalysisStatus() {
   return request("/api/analyze/status");
 }
+// ------------------------------------------------------------
+// AI Migration Advisor
+// ------------------------------------------------------------
+
+export async function getAIAdvice(assetName) {
+  const response = await fetch(`${API_BASE_URL}/api/ai/advice`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      asset: assetName,
+    }),
+  });
+
+  if (!response.ok) {
+    let detail = `AI advice request failed: ${response.status}`;
+
+    try {
+      const error = await response.json();
+
+      if (error.detail) {
+        detail = error.detail;
+      }
+    } catch {
+      // Keep default error message.
+    }
+
+    throw new Error(detail);
+  }
+
+  return response.json();
+}
+// ------------------------------------------------------------
+// AI Migration Advisor
+// ------------------------------------------------------------
+
