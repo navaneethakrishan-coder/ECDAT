@@ -39,8 +39,8 @@ def test_pqc_migration_plan():
 
     print("Running total asset validation...", end=" ")
 
-    assert len(assets) == 59
-    assert summary["total_assets"] == 59
+    assert len(assets) == 30
+    assert summary["total_assets"] == 30
 
     print("PASSED")
 

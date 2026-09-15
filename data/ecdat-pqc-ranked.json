@@ -6,92 +6,107 @@
     "description": "Batch ranking of PQC migration candidates using the deterministic ECDAT PQC ranking engine."
   },
   "summary": {
-    "total_assets": 57,
-    "pqc_applicable_assets": 8,
-    "assets_with_candidates": 8,
+    "total_assets": 30,
+    "pqc_applicable_assets": 10,
+    "assets_with_candidates": 10,
     "migration_types": {
-      "pqc-candidate": 8,
-      "architectural-migration": 29,
-      "not-applicable": 12,
-      "no-direct-pqc-replacement": 8
+      "pqc-candidate": 10,
+      "architectural-migration": 15,
+      "no-direct-pqc-replacement": 5
     }
   },
   "mapping_validation": {
-    "risk_mapped": 57,
-    "blast_radius_mapped": 57,
-    "complexity_mapped": 57,
-    "priority_mapped": 57
+    "risk_mapped": 30,
+    "blast_radius_mapped": 30,
+    "complexity_mapped": 30,
+    "priority_mapped": 30
   },
   "top_candidates": [
     {
-      "asset": "DSA",
-      "candidate": "ML-DSA-65",
-      "family": "digital-signature",
-      "score": 87.66,
-      "rank": 1
-    },
-    {
-      "asset": "DSA",
-      "candidate": "ML-DSA-65",
-      "family": "digital-signature",
-      "score": 87.66,
-      "rank": 1
-    },
-    {
       "asset": "RSA",
       "candidate": "ML-DSA-65",
       "family": "digital-signature",
-      "score": 87.26,
+      "score": 93.84,
       "rank": 1
     },
     {
-      "asset": "RSA",
+      "asset": "DSA",
       "candidate": "ML-DSA-65",
       "family": "digital-signature",
-      "score": 87.26,
+      "score": 92.15,
+      "rank": 1
+    },
+    {
+      "asset": "Ed25519",
+      "candidate": "ML-DSA-65",
+      "family": "digital-signature",
+      "score": 90.46,
+      "rank": 1
+    },
+    {
+      "asset": "Ed448",
+      "candidate": "ML-DSA-65",
+      "family": "digital-signature",
+      "score": 90.46,
+      "rank": 1
+    },
+    {
+      "asset": "DH",
+      "candidate": "ML-KEM-768",
+      "family": "KEM",
+      "score": 87.88,
+      "rank": 1
+    },
+    {
+      "asset": "x25519",
+      "candidate": "ML-KEM-768",
+      "family": "KEM",
+      "score": 86.96,
+      "rank": 1
+    },
+    {
+      "asset": "x448",
+      "candidate": "ML-KEM-768",
+      "family": "KEM",
+      "score": 86.96,
       "rank": 1
     },
     {
       "asset": "RSA-2048",
       "candidate": "ML-DSA-65",
       "family": "digital-signature",
-      "score": 85.47,
+      "score": 86.72,
       "rank": 1
     },
     {
       "asset": "RSA-2048",
       "candidate": "ML-DSA-65",
       "family": "digital-signature",
-      "score": 85.47,
-      "rank": 1
-    },
-    {
-      "asset": "RSA-2048",
-      "candidate": "ML-DSA-65",
-      "family": "digital-signature",
-      "score": 85.47,
+      "score": 86.72,
       "rank": 1
     },
     {
       "asset": "RSA-OAEP",
-      "candidate": "ML-DSA-65",
-      "family": "digital-signature",
-      "score": 84.26,
+      "candidate": "ML-KEM-768",
+      "family": "KEM",
+      "score": 73.93,
       "rank": 1
     }
   ],
   "assets": [
     {
       "asset": "RSA-OAEP",
+      "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1",
       "identity": {
         "id": null,
+        "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1",
         "asset_type": "algorithm",
         "primitive": "pke"
       },
       "classification": {
         "category": "asymmetric",
         "purpose": [
-          "digital-signature"
+          "encryption"
         ],
         "quantum_status": "vulnerable"
       },
@@ -99,26 +114,26 @@
         "migration_type": "pqc-candidate",
         "pqc_applicable": true,
         "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+        "reason": "The asset's resolved purpose is public-key encryption/key transport (not digital signing), so a post-quantum KEM -- the standard replacement for that role -- is recommended rather than a signature family."
       },
       "current_context": {
-        "quantum_risk": 65.75,
-        "blast_radius": 19.86,
-        "migration_complexity": 43.0,
-        "migration_priority": 44.0
+        "quantum_risk": 56.75,
+        "blast_radius": 18.51,
+        "migration_complexity": 16.0,
+        "migration_priority": 33.18
       },
-      "candidate_count": 4,
+      "candidate_count": 3,
       "ranked_candidates": [
         {
-          "candidate": "ML-DSA-65",
-          "family": "digital-signature",
-          "score": 84.26,
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 73.93,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
-              "raw_score": 100.0,
+              "raw_score": 60.0,
               "weight": 0.3,
-              "weighted_score": 30.0
+              "weighted_score": 18.0
             },
             "candidate_compatibility": {
               "raw_score": 100,
@@ -131,29 +146,29 @@
               "weighted_score": 15.0
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 56.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 5.675000000000001
             },
             "blast_radius": {
-              "raw_score": 19.86,
+              "raw_score": 18.51,
               "weight": 0.1,
-              "weighted_score": 1.986
+              "weighted_score": 1.8510000000000002
             },
             "migration_complexity": {
-              "raw_score": 57.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 5.7
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 84.26/100.",
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 73.93/100.",
             "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate family has partial compatibility with the purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
               "Candidate uses a strong parameter-set suitability score."
             ]
@@ -161,15 +176,15 @@
           "rank": 1
         },
         {
-          "candidate": "ML-DSA-87",
-          "family": "digital-signature",
-          "score": 82.76,
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 72.43,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
-              "raw_score": 100.0,
+              "raw_score": 60.0,
               "weight": 0.3,
-              "weighted_score": 30.0
+              "weighted_score": 18.0
             },
             "candidate_compatibility": {
               "raw_score": 100,
@@ -182,29 +197,29 @@
               "weighted_score": 13.5
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 56.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 5.675000000000001
             },
             "blast_radius": {
-              "raw_score": 19.86,
+              "raw_score": 18.51,
               "weight": 0.1,
-              "weighted_score": 1.986
+              "weighted_score": 1.8510000000000002
             },
             "migration_complexity": {
-              "raw_score": 57.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 5.7
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
+            "Higher computational and communication overhead than lower parameter sets."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 82.76/100.",
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 72.43/100.",
             "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate family has partial compatibility with the purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
               "Candidate uses a strong parameter-set suitability score."
             ]
@@ -212,15 +227,15 @@
           "rank": 2
         },
         {
-          "candidate": "ML-DSA-44",
-          "family": "digital-signature",
-          "score": 80.51,
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 70.18,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
-              "raw_score": 100.0,
+              "raw_score": 60.0,
               "weight": 0.3,
-              "weighted_score": 30.0
+              "weighted_score": 18.0
             },
             "candidate_compatibility": {
               "raw_score": 100,
@@ -233,128 +248,71 @@
               "weighted_score": 11.25
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 56.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 5.675000000000001
             },
             "blast_radius": {
-              "raw_score": 19.86,
+              "raw_score": 18.51,
               "weight": 0.1,
-              "weighted_score": 1.986
+              "weighted_score": 1.8510000000000002
             },
             "migration_complexity": {
-              "raw_score": 57.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 5.7
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
           "tradeoffs": [
-            "Lower ML-DSA parameter set."
+            "Lower security parameter than ML-KEM-768/1024."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 80.51/100.",
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 70.18/100.",
             "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate family has partial compatibility with the purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry."
             ]
           },
           "rank": 3
-        },
-        {
-          "candidate": "SLH-DSA",
-          "family": "digital-signature",
-          "score": 73.76,
-          "compatibility": "MEDIUM",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 70,
-              "weight": 0.25,
-              "weighted_score": 17.5
-            },
-            "parameter_suitability": {
-              "raw_score": 80.0,
-              "weight": 0.15,
-              "weighted_score": 12.0
-            },
-            "quantum_risk": {
-              "raw_score": 65.75,
-              "weight": 0.1,
-              "weighted_score": 6.575
-            },
-            "blast_radius": {
-              "raw_score": 19.86,
-              "weight": 0.1,
-              "weighted_score": 1.986
-            },
-            "migration_complexity": {
-              "raw_score": 57.0,
-              "weight": 0.1,
-              "weighted_score": 5.7
-            }
-          },
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
-          ],
-          "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 73.76/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
-            ]
-          },
-          "rank": 4
         }
       ],
       "original_candidates": [
         {
-          "name": "ML-DSA-44",
-          "family": "digital-signature",
+          "name": "ML-KEM-512",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
           "tradeoffs": [
-            "Lower ML-DSA parameter set."
+            "Lower security parameter than ML-KEM-768/1024."
           ]
         },
         {
-          "name": "ML-DSA-65",
-          "family": "digital-signature",
+          "name": "ML-KEM-768",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ]
         },
         {
-          "name": "ML-DSA-87",
-          "family": "digital-signature",
+          "name": "ML-KEM-1024",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
-          ]
-        },
-        {
-          "name": "SLH-DSA",
-          "family": "digital-signature",
-          "compatibility": "MEDIUM",
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
+            "Higher computational and communication overhead than lower parameter sets."
           ]
         }
       ]
     },
     {
       "asset": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
+      "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "identity": {
         "id": null,
+        "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
@@ -372,10 +330,10 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 30.8,
+        "blast_radius": 14.62,
+        "migration_complexity": 16.0,
+        "migration_priority": 21.44
       },
       "candidate_count": 0,
       "ranked_candidates": [],
@@ -383,8 +341,10 @@
     },
     {
       "asset": "RSA-2048",
+      "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
       "identity": {
         "id": null,
+        "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
         "asset_type": "algorithm",
         "primitive": "pke"
       },
@@ -399,21 +359,21 @@
       "migration": {
         "migration_type": "pqc-candidate",
         "pqc_applicable": true,
-        "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+        "confidence": "LOW",
+        "reason": "The resolved purpose for this finding is ambiguous (['encryption', 'digital-signature']), so both post-quantum key-encapsulation and signature families are offered rather than assuming one role -- the exact usage should be confirmed from source evidence before committing to a single migration path."
       },
       "current_context": {
-        "quantum_risk": 65.0,
-        "blast_radius": 29.75,
-        "migration_complexity": 40.0,
-        "migration_priority": 46.41
+        "quantum_risk": 55.0,
+        "blast_radius": 28.25,
+        "migration_complexity": 16.0,
+        "migration_priority": 35.89
       },
-      "candidate_count": 4,
+      "candidate_count": 7,
       "ranked_candidates": [
         {
           "candidate": "ML-DSA-65",
           "family": "digital-signature",
-          "score": 85.47,
+          "score": 86.72,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -432,19 +392,19 @@
               "weighted_score": 15.0
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 55.0,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 5.5
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 28.25,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 2.825
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
@@ -452,7 +412,7 @@
             "Requires application and interoperability testing."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 85.47/100.",
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 86.72/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -464,7 +424,7 @@
         {
           "candidate": "ML-DSA-87",
           "family": "digital-signature",
-          "score": 83.97,
+          "score": 85.22,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -483,19 +443,19 @@
               "weighted_score": 13.5
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 55.0,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 5.5
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 28.25,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 2.825
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
@@ -503,7 +463,7 @@
             "Higher computational and signature-size overhead."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 83.97/100.",
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 85.22/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -515,7 +475,7 @@
         {
           "candidate": "ML-DSA-44",
           "family": "digital-signature",
-          "score": 81.72,
+          "score": 82.97,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -534,19 +494,19 @@
               "weighted_score": 11.25
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 55.0,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 5.5
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 28.25,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 2.825
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
@@ -554,7 +514,7 @@
             "Lower ML-DSA parameter set."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 81.72/100.",
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 82.97/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry."
@@ -565,7 +525,7 @@
         {
           "candidate": "SLH-DSA",
           "family": "digital-signature",
-          "score": 74.97,
+          "score": 76.22,
           "compatibility": "MEDIUM",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -584,19 +544,19 @@
               "weighted_score": 12.0
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 55.0,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 5.5
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 28.25,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 2.825
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
@@ -604,16 +564,195 @@
             "Different performance and signature-size characteristics require application-specific evaluation."
           ],
           "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 74.97/100.",
+            "summary": "SLH-DSA received an ECDAT candidate score of 76.22/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
             ]
           },
           "rank": 4
+        },
+        {
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 62.73,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 62.73/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 5
+        },
+        {
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 61.23,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 61.23/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 6
+        },
+        {
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 58.98,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 58.98/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry."
+            ]
+          },
+          "rank": 7
         }
       ],
       "original_candidates": [
+        {
+          "name": "ML-KEM-512",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ]
+        },
+        {
+          "name": "ML-KEM-768",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ]
+        },
+        {
+          "name": "ML-KEM-1024",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ]
+        },
         {
           "name": "ML-DSA-44",
           "family": "digital-signature",
@@ -654,8 +793,10 @@
     },
     {
       "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
+      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
       "identity": {
         "id": null,
+        "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
@@ -673,10 +814,10 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 30.8,
+        "blast_radius": 14.62,
+        "migration_complexity": 16.0,
+        "migration_priority": 21.44
       },
       "candidate_count": 0,
       "ranked_candidates": [],
@@ -684,161 +825,17 @@
     },
     {
       "asset": "SHAKE256",
+      "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8",
       "identity": {
         "id": null,
+        "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8",
         "asset_type": "algorithm",
         "primitive": "xof"
       },
       "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 38.86,
-        "migration_complexity": 31.0,
-        "migration_priority": 31.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "DH",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "pke"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.0,
-        "blast_radius": 23.75,
-        "migration_complexity": 25.0,
-        "migration_priority": 24.56
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
+        "category": "hash",
         "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "HMAC-SHA256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "mac"
-      },
-      "classification": {
-        "category": "mac",
-        "purpose": [
-          "message-authentication"
+          "hash"
         ],
         "quantum_status": "quantum-aware"
       },
@@ -846,90 +843,31 @@
         "migration_type": "no-direct-pqc-replacement",
         "pqc_applicable": false,
         "confidence": "HIGH",
-        "reason": "Message-authentication codes do not have a direct PQC algorithm replacement in the ML-KEM/ML-DSA families."
+        "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
       },
       "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 20.36,
-        "migration_complexity": 25.0,
-        "migration_priority": 27.68
+        "quantum_risk": 34.75,
+        "blast_radius": 40.21,
+        "migration_complexity": 16.0,
+        "migration_priority": 31.97
       },
       "candidate_count": 0,
       "ranked_candidates": [],
       "original_candidates": []
     },
     {
-      "asset": "HKDF-SHA256",
+      "asset": "DH",
+      "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13",
       "identity": {
         "id": null,
-        "asset_type": "algorithm",
-        "primitive": "kdf"
-      },
-      "classification": {
-        "category": "key-derivation",
-        "purpose": [
-          "key-derivation"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "This cryptographic component does not have a direct ML-KEM or ML-DSA replacement. Its migration impact should be evaluated through the surrounding cryptographic workflow."
-      },
-      "current_context": {
-        "quantum_risk": 41.0,
-        "blast_radius": 16.15,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.05
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "RSA-2048",
-      "identity": {
-        "id": null,
+        "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13",
         "asset_type": "algorithm",
         "primitive": "pke"
       },
       "classification": {
         "category": "asymmetric",
         "purpose": [
-          "encryption",
-          "digital-signature"
+          "key-agreement"
         ],
         "quantum_status": "vulnerable"
       },
@@ -937,20 +875,20 @@
         "migration_type": "pqc-candidate",
         "pqc_applicable": true,
         "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+        "reason": "The asset performs key agreement or key establishment, so a post-quantum KEM is a plausible migration family."
       },
       "current_context": {
         "quantum_risk": 65.0,
         "blast_radius": 29.75,
-        "migration_complexity": 40.0,
-        "migration_priority": 46.41
+        "migration_complexity": 16.0,
+        "migration_priority": 40.41
       },
-      "candidate_count": 4,
+      "candidate_count": 3,
       "ranked_candidates": [
         {
-          "candidate": "ML-DSA-65",
-          "family": "digital-signature",
-          "score": 85.47,
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 87.88,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -979,17 +917,17 @@
               "weighted_score": 2.975
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 85.47/100.",
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 87.88/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -999,9 +937,9 @@
           "rank": 1
         },
         {
-          "candidate": "ML-DSA-87",
-          "family": "digital-signature",
-          "score": 83.97,
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 86.38,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1030,17 +968,17 @@
               "weighted_score": 2.975
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
+            "Higher computational and communication overhead than lower parameter sets."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 83.97/100.",
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 86.38/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -1050,9 +988,9 @@
           "rank": 2
         },
         {
-          "candidate": "ML-DSA-44",
-          "family": "digital-signature",
-          "score": 81.72,
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 84.12,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1081,9 +1019,415 @@
               "weighted_score": 2.975
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 84.12/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry."
+            ]
+          },
+          "rank": 3
+        }
+      ],
+      "original_candidates": [
+        {
+          "name": "ML-KEM-512",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ]
+        },
+        {
+          "name": "ML-KEM-768",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ]
+        },
+        {
+          "name": "ML-KEM-1024",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ]
+        }
+      ]
+    },
+    {
+      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
+      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
+      "identity": {
+        "id": null,
+        "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 40.8,
+        "blast_radius": 16.12,
+        "migration_complexity": 16.0,
+        "migration_priority": 25.96
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
+      "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c",
+      "identity": {
+        "id": null,
+        "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
+      "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667",
+      "identity": {
+        "id": null,
+        "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 40.8,
+        "blast_radius": 16.12,
+        "migration_complexity": 16.0,
+        "migration_priority": 25.96
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "HMAC-SHA256",
+      "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f",
+      "identity": {
+        "id": null,
+        "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f",
+        "asset_type": "algorithm",
+        "primitive": "mac"
+      },
+      "classification": {
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware"
+      },
+      "migration": {
+        "migration_type": "no-direct-pqc-replacement",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Message-authentication codes do not have a direct PQC algorithm replacement in the ML-KEM/ML-DSA families."
+      },
+      "current_context": {
+        "quantum_risk": 39.75,
+        "blast_radius": 20.96,
+        "migration_complexity": 16.0,
+        "migration_priority": 27.24
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "HKDF-SHA256",
+      "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3",
+      "identity": {
+        "id": null,
+        "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3",
+        "asset_type": "algorithm",
+        "primitive": "kdf"
+      },
+      "classification": {
+        "category": "key-derivation",
+        "purpose": [
+          "key-derivation"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "no-direct-pqc-replacement",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "This cryptographic component does not have a direct ML-KEM or ML-DSA replacement. Its migration impact should be evaluated through the surrounding cryptographic workflow."
+      },
+      "current_context": {
+        "quantum_risk": 30.0,
+        "blast_radius": 14.5,
+        "migration_complexity": 16.0,
+        "migration_priority": 21.07
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
+      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
+      "identity": {
+        "id": null,
+        "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "RSA-2048",
+      "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
+      "identity": {
+        "id": null,
+        "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
+        "asset_type": "algorithm",
+        "primitive": "pke"
+      },
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable"
+      },
+      "migration": {
+        "migration_type": "pqc-candidate",
+        "pqc_applicable": true,
+        "confidence": "LOW",
+        "reason": "The resolved purpose for this finding is ambiguous (['encryption', 'digital-signature']), so both post-quantum key-encapsulation and signature families are offered rather than assuming one role -- the exact usage should be confirmed from source evidence before committing to a single migration path."
+      },
+      "current_context": {
+        "quantum_risk": 55.0,
+        "blast_radius": 28.25,
+        "migration_complexity": 16.0,
+        "migration_priority": 35.89
+      },
+      "candidate_count": 7,
+      "ranked_candidates": [
+        {
+          "candidate": "ML-DSA-65",
+          "family": "digital-signature",
+          "score": 86.72,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "tradeoffs": [
+            "Requires application and interoperability testing."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 86.72/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 1
+        },
+        {
+          "candidate": "ML-DSA-87",
+          "family": "digital-signature",
+          "score": 85.22,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and signature-size overhead."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 85.22/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 2
+        },
+        {
+          "candidate": "ML-DSA-44",
+          "family": "digital-signature",
+          "score": 82.97,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
@@ -1091,7 +1435,7 @@
             "Lower ML-DSA parameter set."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 81.72/100.",
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 82.97/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry."
@@ -1102,7 +1446,7 @@
         {
           "candidate": "SLH-DSA",
           "family": "digital-signature",
-          "score": 74.97,
+          "score": 76.22,
           "compatibility": "MEDIUM",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1121,19 +1465,19 @@
               "weighted_score": 12.0
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 55.0,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 5.5
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 28.25,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 2.825
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
@@ -1141,16 +1485,195 @@
             "Different performance and signature-size characteristics require application-specific evaluation."
           ],
           "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 74.97/100.",
+            "summary": "SLH-DSA received an ECDAT candidate score of 76.22/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
             ]
           },
           "rank": 4
+        },
+        {
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 62.73,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 62.73/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 5
+        },
+        {
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 61.23,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 61.23/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 6
+        },
+        {
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 58.98,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 55.0,
+              "weight": 0.1,
+              "weighted_score": 5.5
+            },
+            "blast_radius": {
+              "raw_score": 28.25,
+              "weight": 0.1,
+              "weighted_score": 2.825
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 58.98/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry."
+            ]
+          },
+          "rank": 7
         }
       ],
       "original_candidates": [
+        {
+          "name": "ML-KEM-512",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ]
+        },
+        {
+          "name": "ML-KEM-768",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ]
+        },
+        {
+          "name": "ML-KEM-1024",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ]
+        },
         {
           "name": "ML-DSA-44",
           "family": "digital-signature",
@@ -1191,8 +1714,10 @@
     },
     {
       "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
+      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
       "identity": {
         "id": null,
+        "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
@@ -1210,10 +1735,10 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
       },
       "candidate_count": 0,
       "ranked_candidates": [],
@@ -1221,8 +1746,10 @@
     },
     {
       "asset": "DSA",
+      "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea",
       "identity": {
         "id": null,
+        "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea",
         "asset_type": "algorithm",
         "primitive": "signature"
       },
@@ -1240,17 +1767,17 @@
         "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
       },
       "current_context": {
-        "quantum_risk": 65.75,
-        "blast_radius": 64.86,
-        "migration_complexity": 54.0,
-        "migration_priority": 62.5
+        "quantum_risk": 71.75,
+        "blast_radius": 65.76,
+        "migration_complexity": 16.0,
+        "migration_priority": 55.72
       },
       "candidate_count": 4,
       "ranked_candidates": [
         {
           "candidate": "ML-DSA-65",
           "family": "digital-signature",
-          "score": 87.66,
+          "score": 92.15,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1269,19 +1796,19 @@
               "weighted_score": 15.0
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 71.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 7.175000000000001
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 65.76,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 6.5760000000000005
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
@@ -1289,11 +1816,12 @@
             "Requires application and interoperability testing."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 87.66/100.",
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 92.15/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score."
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure."
             ]
           },
           "rank": 1
@@ -1301,7 +1829,7 @@
         {
           "candidate": "ML-DSA-87",
           "family": "digital-signature",
-          "score": 86.16,
+          "score": 90.65,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1320,19 +1848,19 @@
               "weighted_score": 13.5
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 71.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 7.175000000000001
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 65.76,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 6.5760000000000005
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
@@ -1340,11 +1868,12 @@
             "Higher computational and signature-size overhead."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 86.16/100.",
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 90.65/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score."
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure."
             ]
           },
           "rank": 2
@@ -1352,7 +1881,7 @@
         {
           "candidate": "ML-DSA-44",
           "family": "digital-signature",
-          "score": 83.91,
+          "score": 88.4,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1371,19 +1900,19 @@
               "weighted_score": 11.25
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 71.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 7.175000000000001
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 65.76,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 6.5760000000000005
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
@@ -1391,10 +1920,11 @@
             "Lower ML-DSA parameter set."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 83.91/100.",
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 88.4/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has HIGH compatibility in the ECDAT PQC registry."
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "The current asset has high quantum-risk pressure."
             ]
           },
           "rank": 3
@@ -1402,7 +1932,7 @@
         {
           "candidate": "SLH-DSA",
           "family": "digital-signature",
-          "score": 77.16,
+          "score": 81.65,
           "compatibility": "MEDIUM",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1421,19 +1951,19 @@
               "weighted_score": 12.0
             },
             "quantum_risk": {
-              "raw_score": 65.75,
+              "raw_score": 71.75,
               "weight": 0.1,
-              "weighted_score": 6.575
+              "weighted_score": 7.175000000000001
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 65.76,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 6.5760000000000005
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
           "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
@@ -1441,10 +1971,11 @@
             "Different performance and signature-size characteristics require application-specific evaluation."
           ],
           "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 77.16/100.",
+            "summary": "SLH-DSA received an ECDAT candidate score of 81.65/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
+              "Candidate has MEDIUM compatibility in the ECDAT PQC registry.",
+              "The current asset has high quantum-risk pressure."
             ]
           },
           "rank": 4
@@ -1491,191 +2022,16 @@
     },
     {
       "asset": "Ed25519",
+      "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e",
       "identity": {
         "id": null,
+        "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e",
         "asset_type": "algorithm",
         "primitive": "signature"
       },
       "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 48.86,
-        "migration_complexity": 32.0,
-        "migration_priority": 35.4
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "x25519",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "key-agree"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 13.86,
-        "migration_complexity": 22.0,
-        "migration_priority": 20.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "RSA",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "pke"
-      },
-      "classification": {
         "category": "asymmetric",
         "purpose": [
-          "encryption",
           "digital-signature"
         ],
         "quantum_status": "vulnerable"
@@ -1688,16 +2044,16 @@
       },
       "current_context": {
         "quantum_risk": 65.75,
-        "blast_radius": 74.86,
-        "migration_complexity": 68.0,
-        "migration_priority": 69.5
+        "blast_radius": 54.86,
+        "migration_complexity": 16.0,
+        "migration_priority": 49.5
       },
       "candidate_count": 4,
       "ranked_candidates": [
         {
           "candidate": "ML-DSA-65",
           "family": "digital-signature",
-          "score": 87.26,
+          "score": 90.46,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1721,14 +2077,14 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 54.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 5.486000000000001
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
@@ -1736,12 +2092,11 @@
             "Requires application and interoperability testing."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 87.26/100.",
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 90.46/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score.",
-              "The current asset has a large potential migration blast radius."
+              "Candidate uses a strong parameter-set suitability score."
             ]
           },
           "rank": 1
@@ -1749,7 +2104,7 @@
         {
           "candidate": "ML-DSA-87",
           "family": "digital-signature",
-          "score": 85.76,
+          "score": 88.96,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1773,14 +2128,14 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 54.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 5.486000000000001
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
@@ -1788,12 +2143,11 @@
             "Higher computational and signature-size overhead."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 85.76/100.",
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 88.96/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score.",
-              "The current asset has a large potential migration blast radius."
+              "Candidate uses a strong parameter-set suitability score."
             ]
           },
           "rank": 2
@@ -1801,7 +2155,7 @@
         {
           "candidate": "ML-DSA-44",
           "family": "digital-signature",
-          "score": 83.51,
+          "score": 86.71,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -1825,14 +2179,14 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 54.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 5.486000000000001
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
@@ -1840,782 +2194,7 @@
             "Lower ML-DSA parameter set."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 83.51/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "The current asset has a large potential migration blast radius."
-            ]
-          },
-          "rank": 3
-        },
-        {
-          "candidate": "SLH-DSA",
-          "family": "digital-signature",
-          "score": 76.76,
-          "compatibility": "MEDIUM",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 70,
-              "weight": 0.25,
-              "weighted_score": 17.5
-            },
-            "parameter_suitability": {
-              "raw_score": 80.0,
-              "weight": 0.15,
-              "weighted_score": 12.0
-            },
-            "quantum_risk": {
-              "raw_score": 65.75,
-              "weight": 0.1,
-              "weighted_score": 6.575
-            },
-            "blast_radius": {
-              "raw_score": 74.86,
-              "weight": 0.1,
-              "weighted_score": 7.486000000000001
-            },
-            "migration_complexity": {
-              "raw_score": 32.0,
-              "weight": 0.1,
-              "weighted_score": 3.2
-            }
-          },
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
-          ],
-          "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 76.76/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has MEDIUM compatibility in the ECDAT PQC registry.",
-              "The current asset has a large potential migration blast radius."
-            ]
-          },
-          "rank": 4
-        }
-      ],
-      "original_candidates": [
-        {
-          "name": "ML-DSA-44",
-          "family": "digital-signature",
-          "compatibility": "HIGH",
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
-          "tradeoffs": [
-            "Lower ML-DSA parameter set."
-          ]
-        },
-        {
-          "name": "ML-DSA-65",
-          "family": "digital-signature",
-          "compatibility": "HIGH",
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
-          "tradeoffs": [
-            "Requires application and interoperability testing."
-          ]
-        },
-        {
-          "name": "ML-DSA-87",
-          "family": "digital-signature",
-          "compatibility": "HIGH",
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
-          "tradeoffs": [
-            "Higher computational and signature-size overhead."
-          ]
-        },
-        {
-          "name": "SLH-DSA",
-          "family": "digital-signature",
-          "compatibility": "MEDIUM",
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
-          ]
-        }
-      ]
-    },
-    {
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "Ed448",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "signature"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 48.86,
-        "migration_complexity": 32.0,
-        "migration_priority": 35.4
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "SHA256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "hash"
-      },
-      "classification": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
-      },
-      "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 45.36,
-        "migration_complexity": 37.0,
-        "migration_priority": 39.43
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "x448",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "key-agree"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 13.86,
-        "migration_complexity": 22.0,
-        "migration_priority": 20.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "SHA512",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "hash"
-      },
-      "classification": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
-      },
-      "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 40.36,
-        "migration_complexity": 34.0,
-        "migration_priority": 36.93
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "SHAKE256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "xof"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 38.86,
-        "migration_complexity": 31.0,
-        "migration_priority": 31.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "DH",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "pke"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.0,
-        "blast_radius": 23.75,
-        "migration_complexity": 25.0,
-        "migration_priority": 24.56
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "HMAC-SHA256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "mac"
-      },
-      "classification": {
-        "category": "mac",
-        "purpose": [
-          "message-authentication"
-        ],
-        "quantum_status": "quantum-aware"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Message-authentication codes do not have a direct PQC algorithm replacement in the ML-KEM/ML-DSA families."
-      },
-      "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 20.36,
-        "migration_complexity": 25.0,
-        "migration_priority": 27.68
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "HKDF-SHA256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "kdf"
-      },
-      "classification": {
-        "category": "key-derivation",
-        "purpose": [
-          "key-derivation"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "This cryptographic component does not have a direct ML-KEM or ML-DSA replacement. Its migration impact should be evaluated through the surrounding cryptographic workflow."
-      },
-      "current_context": {
-        "quantum_risk": 41.0,
-        "blast_radius": 16.15,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.05
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "RSA-2048",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "pke"
-      },
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable"
-      },
-      "migration": {
-        "migration_type": "pqc-candidate",
-        "pqc_applicable": true,
-        "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
-      },
-      "current_context": {
-        "quantum_risk": 65.0,
-        "blast_radius": 29.75,
-        "migration_complexity": 40.0,
-        "migration_priority": 46.41
-      },
-      "candidate_count": 4,
-      "ranked_candidates": [
-        {
-          "candidate": "ML-DSA-65",
-          "family": "digital-signature",
-          "score": 85.47,
-          "compatibility": "HIGH",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 100,
-              "weight": 0.25,
-              "weighted_score": 25.0
-            },
-            "parameter_suitability": {
-              "raw_score": 100.0,
-              "weight": 0.15,
-              "weighted_score": 15.0
-            },
-            "quantum_risk": {
-              "raw_score": 65.0,
-              "weight": 0.1,
-              "weighted_score": 6.5
-            },
-            "blast_radius": {
-              "raw_score": 29.75,
-              "weight": 0.1,
-              "weighted_score": 2.975
-            },
-            "migration_complexity": {
-              "raw_score": 60.0,
-              "weight": 0.1,
-              "weighted_score": 6.0
-            }
-          },
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
-          "tradeoffs": [
-            "Requires application and interoperability testing."
-          ],
-          "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 85.47/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score."
-            ]
-          },
-          "rank": 1
-        },
-        {
-          "candidate": "ML-DSA-87",
-          "family": "digital-signature",
-          "score": 83.97,
-          "compatibility": "HIGH",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 100,
-              "weight": 0.25,
-              "weighted_score": 25.0
-            },
-            "parameter_suitability": {
-              "raw_score": 90.0,
-              "weight": 0.15,
-              "weighted_score": 13.5
-            },
-            "quantum_risk": {
-              "raw_score": 65.0,
-              "weight": 0.1,
-              "weighted_score": 6.5
-            },
-            "blast_radius": {
-              "raw_score": 29.75,
-              "weight": 0.1,
-              "weighted_score": 2.975
-            },
-            "migration_complexity": {
-              "raw_score": 60.0,
-              "weight": 0.1,
-              "weighted_score": 6.0
-            }
-          },
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
-          "tradeoffs": [
-            "Higher computational and signature-size overhead."
-          ],
-          "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 83.97/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score."
-            ]
-          },
-          "rank": 2
-        },
-        {
-          "candidate": "ML-DSA-44",
-          "family": "digital-signature",
-          "score": 81.72,
-          "compatibility": "HIGH",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 100,
-              "weight": 0.25,
-              "weighted_score": 25.0
-            },
-            "parameter_suitability": {
-              "raw_score": 75.0,
-              "weight": 0.15,
-              "weighted_score": 11.25
-            },
-            "quantum_risk": {
-              "raw_score": 65.0,
-              "weight": 0.1,
-              "weighted_score": 6.5
-            },
-            "blast_radius": {
-              "raw_score": 29.75,
-              "weight": 0.1,
-              "weighted_score": 2.975
-            },
-            "migration_complexity": {
-              "raw_score": 60.0,
-              "weight": 0.1,
-              "weighted_score": 6.0
-            }
-          },
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
-          "tradeoffs": [
-            "Lower ML-DSA parameter set."
-          ],
-          "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 81.72/100.",
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 86.71/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry."
@@ -2626,7 +2205,7 @@
         {
           "candidate": "SLH-DSA",
           "family": "digital-signature",
-          "score": 74.97,
+          "score": 79.96,
           "compatibility": "MEDIUM",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -2645,19 +2224,19 @@
               "weighted_score": 12.0
             },
             "quantum_risk": {
-              "raw_score": 65.0,
+              "raw_score": 65.75,
               "weight": 0.1,
-              "weighted_score": 6.5
+              "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 29.75,
+              "raw_score": 54.86,
               "weight": 0.1,
-              "weighted_score": 2.975
+              "weighted_score": 5.486000000000001
             },
             "migration_complexity": {
-              "raw_score": 60.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 6.0
+              "weighted_score": 8.4
             }
           },
           "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
@@ -2665,7 +2244,7 @@
             "Different performance and signature-size characteristics require application-specific evaluation."
           ],
           "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 74.97/100.",
+            "summary": "SLH-DSA received an ECDAT candidate score of 79.96/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
@@ -2714,9 +2293,11 @@
       ]
     },
     {
-      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
+      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
+      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
       "identity": {
         "id": null,
+        "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
@@ -2734,26 +2315,28 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 30.8,
+        "blast_radius": 14.62,
+        "migration_complexity": 16.0,
+        "migration_priority": 21.44
       },
       "candidate_count": 0,
       "ranked_candidates": [],
       "original_candidates": []
     },
     {
-      "asset": "DSA",
+      "asset": "x25519",
+      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
       "identity": {
         "id": null,
+        "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
         "asset_type": "algorithm",
-        "primitive": "signature"
+        "primitive": "key-agree"
       },
       "classification": {
         "category": "asymmetric",
         "purpose": [
-          "digital-signature"
+          "key-agreement"
         ],
         "quantum_status": "vulnerable"
       },
@@ -2761,20 +2344,20 @@
         "migration_type": "pqc-candidate",
         "pqc_applicable": true,
         "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+        "reason": "The asset performs key agreement or key establishment, so a post-quantum KEM is a plausible migration family."
       },
       "current_context": {
         "quantum_risk": 65.75,
-        "blast_radius": 64.86,
-        "migration_complexity": 54.0,
-        "migration_priority": 62.5
+        "blast_radius": 19.86,
+        "migration_complexity": 16.0,
+        "migration_priority": 37.25
       },
-      "candidate_count": 4,
+      "candidate_count": 3,
       "ranked_candidates": [
         {
-          "candidate": "ML-DSA-65",
-          "family": "digital-signature",
-          "score": 87.66,
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 86.96,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -2798,22 +2381,22 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 87.66/100.",
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 86.96/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -2823,9 +2406,9 @@
           "rank": 1
         },
         {
-          "candidate": "ML-DSA-87",
-          "family": "digital-signature",
-          "score": 86.16,
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 85.46,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -2849,22 +2432,22 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
+            "Higher computational and communication overhead than lower parameter sets."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 86.16/100.",
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 85.46/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
@@ -2874,9 +2457,9 @@
           "rank": 2
         },
         {
-          "candidate": "ML-DSA-44",
-          "family": "digital-signature",
-          "score": 83.91,
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 83.21,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -2900,14 +2483,328 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 83.21/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry."
+            ]
+          },
+          "rank": 3
+        }
+      ],
+      "original_candidates": [
+        {
+          "name": "ML-KEM-512",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ]
+        },
+        {
+          "name": "ML-KEM-768",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ]
+        },
+        {
+          "name": "ML-KEM-1024",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ]
+        }
+      ]
+    },
+    {
+      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
+      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
+      "identity": {
+        "id": null,
+        "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 40.8,
+        "blast_radius": 16.12,
+        "migration_complexity": 16.0,
+        "migration_priority": 25.96
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
+      "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba",
+      "identity": {
+        "id": null,
+        "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
+      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
+      "identity": {
+        "id": null,
+        "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 40.8,
+        "blast_radius": 16.12,
+        "migration_complexity": 16.0,
+        "migration_priority": 25.96
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "RSA",
+      "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69",
+      "identity": {
+        "id": null,
+        "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69",
+        "asset_type": "algorithm",
+        "primitive": "pke"
+      },
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable"
+      },
+      "migration": {
+        "migration_type": "pqc-candidate",
+        "pqc_applicable": true,
+        "confidence": "LOW",
+        "reason": "The resolved purpose for this finding is ambiguous (['encryption', 'digital-signature']), so both post-quantum key-encapsulation and signature families are offered rather than assuming one role -- the exact usage should be confirmed from source evidence before committing to a single migration path."
+      },
+      "current_context": {
+        "quantum_risk": 77.75,
+        "blast_radius": 76.66,
+        "migration_complexity": 16.0,
+        "migration_priority": 61.93
+      },
+      "candidate_count": 7,
+      "ranked_candidates": [
+        {
+          "candidate": "ML-DSA-65",
+          "family": "digital-signature",
+          "score": 93.84,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "tradeoffs": [
+            "Requires application and interoperability testing."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 93.84/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 1
+        },
+        {
+          "candidate": "ML-DSA-87",
+          "family": "digital-signature",
+          "score": 92.34,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and signature-size overhead."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 92.34/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 2
+        },
+        {
+          "candidate": "ML-DSA-44",
+          "family": "digital-signature",
+          "score": 90.09,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
             }
           },
           "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
@@ -2915,7 +2812,532 @@
             "Lower ML-DSA parameter set."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 83.91/100.",
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 90.09/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 3
+        },
+        {
+          "candidate": "SLH-DSA",
+          "family": "digital-signature",
+          "score": 83.34,
+          "compatibility": "MEDIUM",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 70,
+              "weight": 0.25,
+              "weighted_score": 17.5
+            },
+            "parameter_suitability": {
+              "raw_score": 80.0,
+              "weight": 0.15,
+              "weighted_score": 12.0
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
+          "tradeoffs": [
+            "Different performance and signature-size characteristics require application-specific evaluation."
+          ],
+          "explanation": {
+            "summary": "SLH-DSA received an ECDAT candidate score of 83.34/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has MEDIUM compatibility in the ECDAT PQC registry.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 4
+        },
+        {
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 69.84,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 69.84/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 5
+        },
+        {
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 68.34,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 68.34/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 6
+        },
+        {
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 66.09,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 20.0,
+              "weight": 0.3,
+              "weighted_score": 6.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 77.75,
+              "weight": 0.1,
+              "weighted_score": 7.775
+            },
+            "blast_radius": {
+              "raw_score": 76.66,
+              "weight": 0.1,
+              "weighted_score": 7.666
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ],
+          "explanation": {
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 66.09/100.",
+            "reasons": [
+              "Candidate family has weak purpose compatibility.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "The current asset has high quantum-risk pressure.",
+              "The current asset has a large potential migration blast radius."
+            ]
+          },
+          "rank": 7
+        }
+      ],
+      "original_candidates": [
+        {
+          "name": "ML-KEM-512",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
+          "tradeoffs": [
+            "Lower security parameter than ML-KEM-768/1024."
+          ]
+        },
+        {
+          "name": "ML-KEM-768",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
+          "tradeoffs": [
+            "Requires compatibility and performance validation."
+          ]
+        },
+        {
+          "name": "ML-KEM-1024",
+          "family": "KEM",
+          "compatibility": "HIGH",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and communication overhead than lower parameter sets."
+          ]
+        },
+        {
+          "name": "ML-DSA-44",
+          "family": "digital-signature",
+          "compatibility": "HIGH",
+          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "tradeoffs": [
+            "Lower ML-DSA parameter set."
+          ]
+        },
+        {
+          "name": "ML-DSA-65",
+          "family": "digital-signature",
+          "compatibility": "HIGH",
+          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "tradeoffs": [
+            "Requires application and interoperability testing."
+          ]
+        },
+        {
+          "name": "ML-DSA-87",
+          "family": "digital-signature",
+          "compatibility": "HIGH",
+          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and signature-size overhead."
+          ]
+        },
+        {
+          "name": "SLH-DSA",
+          "family": "digital-signature",
+          "compatibility": "MEDIUM",
+          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
+          "tradeoffs": [
+            "Different performance and signature-size characteristics require application-specific evaluation."
+          ]
+        }
+      ]
+    },
+    {
+      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
+      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
+      "identity": {
+        "id": null,
+        "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
+      "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61",
+      "identity": {
+        "id": null,
+        "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61",
+        "asset_type": "related-crypto-material",
+        "primitive": null
+      },
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual"
+      },
+      "migration": {
+        "migration_type": "architectural-migration",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
+      },
+      "current_context": {
+        "quantum_risk": 45.8,
+        "blast_radius": 16.87,
+        "migration_complexity": 16.0,
+        "migration_priority": 28.22
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "Ed448",
+      "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2",
+      "identity": {
+        "id": null,
+        "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2",
+        "asset_type": "algorithm",
+        "primitive": "signature"
+      },
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable"
+      },
+      "migration": {
+        "migration_type": "pqc-candidate",
+        "pqc_applicable": true,
+        "confidence": "HIGH",
+        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+      },
+      "current_context": {
+        "quantum_risk": 65.75,
+        "blast_radius": 54.86,
+        "migration_complexity": 16.0,
+        "migration_priority": 49.5
+      },
+      "candidate_count": 4,
+      "ranked_candidates": [
+        {
+          "candidate": "ML-DSA-65",
+          "family": "digital-signature",
+          "score": 90.46,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 100.0,
+              "weight": 0.15,
+              "weighted_score": 15.0
+            },
+            "quantum_risk": {
+              "raw_score": 65.75,
+              "weight": 0.1,
+              "weighted_score": 6.575
+            },
+            "blast_radius": {
+              "raw_score": 54.86,
+              "weight": 0.1,
+              "weighted_score": 5.486000000000001
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "tradeoffs": [
+            "Requires application and interoperability testing."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-65 received an ECDAT candidate score of 90.46/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 1
+        },
+        {
+          "candidate": "ML-DSA-87",
+          "family": "digital-signature",
+          "score": 88.96,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 90.0,
+              "weight": 0.15,
+              "weighted_score": 13.5
+            },
+            "quantum_risk": {
+              "raw_score": 65.75,
+              "weight": 0.1,
+              "weighted_score": 6.575
+            },
+            "blast_radius": {
+              "raw_score": 54.86,
+              "weight": 0.1,
+              "weighted_score": 5.486000000000001
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "tradeoffs": [
+            "Higher computational and signature-size overhead."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-87 received an ECDAT candidate score of 88.96/100.",
+            "reasons": [
+              "Candidate family strongly matches the cryptographic purpose.",
+              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
+              "Candidate uses a strong parameter-set suitability score."
+            ]
+          },
+          "rank": 2
+        },
+        {
+          "candidate": "ML-DSA-44",
+          "family": "digital-signature",
+          "score": 86.71,
+          "compatibility": "HIGH",
+          "score_breakdown": {
+            "purpose_compatibility": {
+              "raw_score": 100.0,
+              "weight": 0.3,
+              "weighted_score": 30.0
+            },
+            "candidate_compatibility": {
+              "raw_score": 100,
+              "weight": 0.25,
+              "weighted_score": 25.0
+            },
+            "parameter_suitability": {
+              "raw_score": 75.0,
+              "weight": 0.15,
+              "weighted_score": 11.25
+            },
+            "quantum_risk": {
+              "raw_score": 65.75,
+              "weight": 0.1,
+              "weighted_score": 6.575
+            },
+            "blast_radius": {
+              "raw_score": 54.86,
+              "weight": 0.1,
+              "weighted_score": 5.486000000000001
+            },
+            "migration_complexity": {
+              "raw_score": 84.0,
+              "weight": 0.1,
+              "weighted_score": 8.4
+            }
+          },
+          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "tradeoffs": [
+            "Lower ML-DSA parameter set."
+          ],
+          "explanation": {
+            "summary": "ML-DSA-44 received an ECDAT candidate score of 86.71/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry."
@@ -2926,7 +3348,7 @@
         {
           "candidate": "SLH-DSA",
           "family": "digital-signature",
-          "score": 77.16,
+          "score": 79.96,
           "compatibility": "MEDIUM",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -2950,14 +3372,14 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 64.86,
+              "raw_score": 54.86,
               "weight": 0.1,
-              "weighted_score": 6.486000000000001
+              "weighted_score": 5.486000000000001
             },
             "migration_complexity": {
-              "raw_score": 46.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 4.6000000000000005
+              "weighted_score": 8.4
             }
           },
           "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
@@ -2965,7 +3387,7 @@
             "Different performance and signature-size characteristics require application-specific evaluation."
           ],
           "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 77.16/100.",
+            "summary": "SLH-DSA received an ECDAT candidate score of 79.96/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has MEDIUM compatibility in the ECDAT PQC registry."
@@ -3014,44 +3436,18 @@
       ]
     },
     {
-      "asset": "Ed25519",
+      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
+      "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e",
       "identity": {
         "id": null,
-        "asset_type": "algorithm",
-        "primitive": "signature"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 48.86,
-        "migration_complexity": 32.0,
-        "migration_priority": 35.4
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "identity": {
-        "id": null,
+        "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
       "classification": {
         "category": "crypto-material",
         "purpose": [
-          "public-key"
+          "private-key"
         ],
         "quantum_status": "contextual"
       },
@@ -3062,145 +3458,60 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 30.8,
+        "blast_radius": 14.62,
+        "migration_complexity": 16.0,
+        "migration_priority": 21.44
       },
       "candidate_count": 0,
       "ranked_candidates": [],
       "original_candidates": []
     },
     {
-      "asset": "x25519",
+      "asset": "SHA256",
+      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
       "identity": {
         "id": null,
+        "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
+        "asset_type": "algorithm",
+        "primitive": "hash"
+      },
+      "classification": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware"
+      },
+      "migration": {
+        "migration_type": "no-direct-pqc-replacement",
+        "pqc_applicable": false,
+        "confidence": "HIGH",
+        "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
+      },
+      "current_context": {
+        "quantum_risk": 40.75,
+        "blast_radius": 46.11,
+        "migration_complexity": 16.0,
+        "migration_priority": 36.44
+      },
+      "candidate_count": 0,
+      "ranked_candidates": [],
+      "original_candidates": []
+    },
+    {
+      "asset": "x448",
+      "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b",
+      "identity": {
+        "id": null,
+        "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b",
         "asset_type": "algorithm",
         "primitive": "key-agree"
       },
       "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 13.86,
-        "migration_complexity": 22.0,
-        "migration_priority": 20.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "RSA",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "pke"
-      },
-      "classification": {
         "category": "asymmetric",
         "purpose": [
-          "encryption",
-          "digital-signature"
+          "key-agreement"
         ],
         "quantum_status": "vulnerable"
       },
@@ -3208,20 +3519,20 @@
         "migration_type": "pqc-candidate",
         "pqc_applicable": true,
         "confidence": "HIGH",
-        "reason": "The asset performs digital signatures, so standardized post-quantum signature algorithms are plausible migration candidates."
+        "reason": "The asset performs key agreement or key establishment, so a post-quantum KEM is a plausible migration family."
       },
       "current_context": {
         "quantum_risk": 65.75,
-        "blast_radius": 74.86,
-        "migration_complexity": 68.0,
-        "migration_priority": 69.5
+        "blast_radius": 19.86,
+        "migration_complexity": 16.0,
+        "migration_priority": 37.25
       },
-      "candidate_count": 4,
+      "candidate_count": 3,
       "ranked_candidates": [
         {
-          "candidate": "ML-DSA-65",
-          "family": "digital-signature",
-          "score": 87.26,
+          "candidate": "ML-KEM-768",
+          "family": "KEM",
+          "score": 86.96,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -3245,35 +3556,34 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ],
           "explanation": {
-            "summary": "ML-DSA-65 received an ECDAT candidate score of 87.26/100.",
+            "summary": "ML-KEM-768 received an ECDAT candidate score of 86.96/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score.",
-              "The current asset has a large potential migration blast radius."
+              "Candidate uses a strong parameter-set suitability score."
             ]
           },
           "rank": 1
         },
         {
-          "candidate": "ML-DSA-87",
-          "family": "digital-signature",
-          "score": 85.76,
+          "candidate": "ML-KEM-1024",
+          "family": "KEM",
+          "score": 85.46,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -3297,35 +3607,34 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
+            "Higher computational and communication overhead than lower parameter sets."
           ],
           "explanation": {
-            "summary": "ML-DSA-87 received an ECDAT candidate score of 85.76/100.",
+            "summary": "ML-KEM-1024 received an ECDAT candidate score of 85.46/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
               "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "Candidate uses a strong parameter-set suitability score.",
-              "The current asset has a large potential migration blast radius."
+              "Candidate uses a strong parameter-set suitability score."
             ]
           },
           "rank": 2
         },
         {
-          "candidate": "ML-DSA-44",
-          "family": "digital-signature",
-          "score": 83.51,
+          "candidate": "ML-KEM-512",
+          "family": "KEM",
+          "score": 83.21,
           "compatibility": "HIGH",
           "score_breakdown": {
             "purpose_compatibility": {
@@ -3349,301 +3658,66 @@
               "weighted_score": 6.575
             },
             "blast_radius": {
-              "raw_score": 74.86,
+              "raw_score": 19.86,
               "weight": 0.1,
-              "weighted_score": 7.486000000000001
+              "weighted_score": 1.986
             },
             "migration_complexity": {
-              "raw_score": 32.0,
+              "raw_score": 84.0,
               "weight": 0.1,
-              "weighted_score": 3.2
+              "weighted_score": 8.4
             }
           },
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
           "tradeoffs": [
-            "Lower ML-DSA parameter set."
+            "Lower security parameter than ML-KEM-768/1024."
           ],
           "explanation": {
-            "summary": "ML-DSA-44 received an ECDAT candidate score of 83.51/100.",
+            "summary": "ML-KEM-512 received an ECDAT candidate score of 83.21/100.",
             "reasons": [
               "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has HIGH compatibility in the ECDAT PQC registry.",
-              "The current asset has a large potential migration blast radius."
+              "Candidate has HIGH compatibility in the ECDAT PQC registry."
             ]
           },
           "rank": 3
-        },
-        {
-          "candidate": "SLH-DSA",
-          "family": "digital-signature",
-          "score": 76.76,
-          "compatibility": "MEDIUM",
-          "score_breakdown": {
-            "purpose_compatibility": {
-              "raw_score": 100.0,
-              "weight": 0.3,
-              "weighted_score": 30.0
-            },
-            "candidate_compatibility": {
-              "raw_score": 70,
-              "weight": 0.25,
-              "weighted_score": 17.5
-            },
-            "parameter_suitability": {
-              "raw_score": 80.0,
-              "weight": 0.15,
-              "weighted_score": 12.0
-            },
-            "quantum_risk": {
-              "raw_score": 65.75,
-              "weight": 0.1,
-              "weighted_score": 6.575
-            },
-            "blast_radius": {
-              "raw_score": 74.86,
-              "weight": 0.1,
-              "weighted_score": 7.486000000000001
-            },
-            "migration_complexity": {
-              "raw_score": 32.0,
-              "weight": 0.1,
-              "weighted_score": 3.2
-            }
-          },
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
-          ],
-          "explanation": {
-            "summary": "SLH-DSA received an ECDAT candidate score of 76.76/100.",
-            "reasons": [
-              "Candidate family strongly matches the cryptographic purpose.",
-              "Candidate has MEDIUM compatibility in the ECDAT PQC registry.",
-              "The current asset has a large potential migration blast radius."
-            ]
-          },
-          "rank": 4
         }
       ],
       "original_candidates": [
         {
-          "name": "ML-DSA-44",
-          "family": "digital-signature",
+          "name": "ML-KEM-512",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA is a standardized post-quantum digital-signature family and can be evaluated as a signature migration candidate.",
+          "reason": "ML-KEM is a standardized post-quantum key-encapsulation mechanism suitable for key establishment.",
           "tradeoffs": [
-            "Lower ML-DSA parameter set."
+            "Lower security parameter than ML-KEM-768/1024."
           ]
         },
         {
-          "name": "ML-DSA-65",
-          "family": "digital-signature",
+          "name": "ML-KEM-768",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA-65 is a standardized post-quantum digital-signature candidate.",
+          "reason": "ML-KEM-768 provides a standardized post-quantum key-establishment mechanism and is a strong general candidate for migration planning.",
           "tradeoffs": [
-            "Requires application and interoperability testing."
+            "Requires compatibility and performance validation."
           ]
         },
         {
-          "name": "ML-DSA-87",
-          "family": "digital-signature",
+          "name": "ML-KEM-1024",
+          "family": "KEM",
           "compatibility": "HIGH",
-          "reason": "ML-DSA-87 is a standardized post-quantum digital-signature candidate with a higher parameter set.",
+          "reason": "ML-KEM-1024 is a standardized post-quantum KEM with a higher parameter set.",
           "tradeoffs": [
-            "Higher computational and signature-size overhead."
-          ]
-        },
-        {
-          "name": "SLH-DSA",
-          "family": "digital-signature",
-          "compatibility": "MEDIUM",
-          "reason": "SLH-DSA provides a standardized post-quantum digital-signature alternative based on a different cryptographic construction.",
-          "tradeoffs": [
-            "Different performance and signature-size characteristics require application-specific evaluation."
+            "Higher computational and communication overhead than lower parameter sets."
           ]
         }
       ]
     },
     {
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "Ed448",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "signature"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 48.86,
-        "migration_complexity": 32.0,
-        "migration_priority": 35.4
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
-      "identity": {
-        "id": null,
-        "asset_type": "related-crypto-material",
-        "primitive": null
-      },
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual"
-      },
-      "migration": {
-        "migration_type": "architectural-migration",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
-      },
-      "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "SHA256",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "hash"
-      },
-      "classification": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware"
-      },
-      "migration": {
-        "migration_type": "no-direct-pqc-replacement",
-        "pqc_applicable": false,
-        "confidence": "HIGH",
-        "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
-      },
-      "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 45.36,
-        "migration_complexity": 37.0,
-        "migration_priority": 39.43
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
-      "asset": "x448",
-      "identity": {
-        "id": null,
-        "asset_type": "algorithm",
-        "primitive": "key-agree"
-      },
-      "classification": {
-        "category": "unknown",
-        "purpose": [],
-        "quantum_status": "unknown"
-      },
-      "migration": {
-        "migration_type": "not-applicable",
-        "pqc_applicable": false,
-        "confidence": "LOW",
-        "reason": "No sufficiently specific PQC migration rule was identified for this asset."
-      },
-      "current_context": {
-        "quantum_risk": 25.75,
-        "blast_radius": 13.86,
-        "migration_complexity": 22.0,
-        "migration_priority": 20.65
-      },
-      "candidate_count": 0,
-      "ranked_candidates": [],
-      "original_candidates": []
-    },
-    {
       "asset": "SHA512",
+      "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c",
       "identity": {
         "id": null,
+        "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c",
         "asset_type": "algorithm",
         "primitive": "hash"
       },
@@ -3661,10 +3735,10 @@
         "reason": "Hash functions do not have a direct ML-KEM or ML-DSA replacement. Quantum impact should instead be evaluated according to the hash's role, strength and security margin."
       },
       "current_context": {
-        "quantum_risk": 35.75,
-        "blast_radius": 40.36,
-        "migration_complexity": 34.0,
-        "migration_priority": 36.93
+        "quantum_risk": 34.75,
+        "blast_radius": 40.21,
+        "migration_complexity": 16.0,
+        "migration_priority": 31.97
       },
       "candidate_count": 0,
       "ranked_candidates": [],
@@ -3672,8 +3746,10 @@
     },
     {
       "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
+      "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "identity": {
         "id": null,
+        "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35",
         "asset_type": "related-crypto-material",
         "primitive": null
       },
@@ -3691,10 +3767,10 @@
         "reason": "Cryptographic key material is not itself a PQC algorithm. Migration depends on the algorithm and purpose associated with the key."
       },
       "current_context": {
-        "quantum_risk": 41.8,
-        "blast_radius": 16.27,
-        "migration_complexity": 20.0,
-        "migration_priority": 27.41
+        "quantum_risk": 40.8,
+        "blast_radius": 16.12,
+        "migration_complexity": 16.0,
+        "migration_priority": 25.96
       },
       "candidate_count": 0,
       "ranked_candidates": [],

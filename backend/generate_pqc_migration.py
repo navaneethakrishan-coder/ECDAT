@@ -41,12 +41,14 @@ def generate_migration_analysis(assets):
         # Build the input expected by the PQC mapper.
         mapper_asset = {
             "name": asset.get("name"),
+            "bom_ref": asset.get("bom_ref"),
             "classification": classification,
         }
 
         mapping = map_asset_to_pqc(mapper_asset)
 
         result = {
+            "bom_ref": asset.get("bom_ref"),
             "id": asset.get("id"),
             "name": asset.get("name"),
             "asset_type": asset.get("asset_type"),

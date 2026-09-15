@@ -34,14 +34,8 @@ def assets_from(data):
 
 def index_by_asset(data):
     """
-    Normalize the different asset naming conventions used
-    by previous ECDAT stages.
-
-    Some datasets use:
-        "asset"
-
-    while the explainable-risk dataset uses:
-        "name"
+    Index every pipeline stage by its CBOM bom-ref. Algorithm names are
+    display labels and can legitimately repeat across findings.
     """
 
     result = {}
@@ -51,10 +45,10 @@ def index_by_asset(data):
         if not isinstance(item, dict):
             continue
 
-        asset_name = (
-            item.get("asset")
-            or item.get("name")
-        )
+        identity = item.get("identity", {})
+        if not isinstance(identity, dict):
+            identity = {}
+        asset_name = item.get("bom_ref") or item.get("asset_ref") or identity.get("bom_ref")
 
         if asset_name is None:
             continue
@@ -96,7 +90,7 @@ def build_report(
     pqc_map = index_by_asset(pqc_data)
     actions_map = index_by_asset(actions_data)
 
-    asset_names = sorted(
+    finding_ids = sorted(
         name
         for name in (
             set(risk_map)
@@ -111,35 +105,35 @@ def build_report(
 
     reports = []
 
-    for asset_name in asset_names:
+    for bom_ref in finding_ids:
 
         risk = risk_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
         blast = blast_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
         complexity = complexity_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
         priority = priority_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
         pqc = pqc_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
         actions = actions_map.get(
-            asset_name,
+            bom_ref,
             {},
         )
 
@@ -236,6 +230,21 @@ def build_report(
         if blast_score is None:
             blast_score = blast.get(
                 "score"
+            )
+
+        # generate_blast_radius.py's actual per-asset field is
+        # "blast_radius_score" (flat, not nested), which the checks
+        # above never matched -- silently leaving this null for every
+        # asset in the report and in the AI Advisor's context even
+        # though a real score was always computed upstream.
+        if blast_score is None:
+            blast_score = blast_section.get(
+                "blast_radius_score"
+            )
+
+        if blast_score is None:
+            blast_score = blast.get(
+                "blast_radius_score"
             )
 
         if blast_severity is None:
@@ -491,13 +500,15 @@ def build_report(
 
         report = {
 
-            "asset": asset_name,
+            "asset": risk.get("name") or pqc.get("asset") or actions.get("asset") or "Unknown",
+            "bom_ref": bom_ref,
 
             "identity": {
                 "id": (
                     risk.get("id")
                     or pqc.get("id")
                 ),
+                "bom_ref": bom_ref,
                 "asset_type": (
                     risk.get("asset_type")
                     or pqc.get("asset_type")
@@ -516,11 +527,35 @@ def build_report(
                     "purpose",
                     [],
                 ),
+                "usage": classification.get(
+                    "usage"
+                ),
                 "quantum_status": classification.get(
                     "quantum_status"
                 ),
                 "risk_reason": classification.get(
                     "risk_reason"
+                ),
+                # Repository-specific purpose-resolution evidence (see
+                # services/purpose_resolver.py) -- exposed so the API
+                # and frontend can show *why* this finding's purpose
+                # was resolved the way it was, not just the result.
+                "purpose_confidence": classification.get(
+                    "purpose_confidence"
+                ),
+                "purpose_evidence_source": classification.get(
+                    "purpose_evidence_source"
+                ),
+                "purpose_evidence_reason": classification.get(
+                    "purpose_evidence_reason"
+                ),
+                "purpose_needs_review": classification.get(
+                    "purpose_needs_review",
+                    False,
+                ),
+                "purpose_evidence": classification.get(
+                    "purpose_evidence",
+                    {},
                 ),
             },
 

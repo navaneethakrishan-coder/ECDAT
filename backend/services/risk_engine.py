@@ -28,6 +28,18 @@ def calculate_base_risk(asset):
         "reduced-security-margin": 50,
         "quantum-aware": 25,
         "contextual": 40,
+        # A family classified as "quantum-resistant" (e.g. AES-256) is
+        # explicitly mapped here rather than left to fall through to
+        # the same 0 default as "unknown". Both currently resolve to
+        # the same number, but for different reasons -- "unknown"
+        # means no evidence-based classification was possible;
+        # "quantum-resistant" means classification succeeded and
+        # concluded the algorithm is not meaningfully weakened by a
+        # quantum attack. Leaving them numerically identical by
+        # coincidence (a shared dict default) rather than by explicit
+        # mapping would make a future change to that default silently
+        # change "quantum-resistant" scoring too.
+        "quantum-resistant": 0,
         "unknown": 0
     }
 

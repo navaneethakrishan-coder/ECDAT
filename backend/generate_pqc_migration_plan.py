@@ -32,10 +32,13 @@ def load_json(path):
 
 
 def asset_key(record):
+    identity = record.get("identity", {})
+    if not isinstance(identity, dict):
+        identity = {}
     return (
-        record.get("name")
-        or record.get("asset")
-        or record.get("id")
+        record.get("bom_ref")
+        or record.get("asset_ref")
+        or identity.get("bom_ref")
     )
 
 
@@ -500,6 +503,7 @@ def build_asset_plan(
             "Unknown",
         ),
     )
+    bom_ref = asset_key(pqc_record)
 
     pqc = get_pqc_analysis(
         pqc_record
@@ -543,6 +547,7 @@ def build_asset_plan(
     return {
 
         "asset": name,
+        "bom_ref": bom_ref,
 
         # ----------------------------------------------------
         # IDENTITY
@@ -552,6 +557,8 @@ def build_asset_plan(
             "id": pqc_record.get(
                 "id"
             ),
+
+            "bom_ref": bom_ref,
 
             "asset_type": pqc_record.get(
                 "asset_type"
@@ -830,27 +837,22 @@ def generate_plan():
 
     for pqc_record in pqc_assets:
 
-        name = pqc_record.get(
-            "name",
-            pqc_record.get(
-                "asset"
-            ),
-        )
+        bom_ref = asset_key(pqc_record)
 
         risk_record = risk_map.get(
-            name
+            bom_ref
         )
 
         blast_record = blast_map.get(
-            name
+            bom_ref
         )
 
         complexity_record = complexity_map.get(
-            name
+            bom_ref
         )
 
         priority_record = priority_map.get(
-            name
+            bom_ref
         )
 
         if risk_record is None:

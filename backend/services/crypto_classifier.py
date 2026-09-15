@@ -1,282 +1,101 @@
-from knowledge.crypto_knowledge import CRYPTO_KNOWLEDGE
+"""
+Classifies a normalized ECDAT crypto asset by cryptographic role.
+
+Classification order (most specific / most reliable evidence first):
+
+  1. Asset-type-driven material classification. CBOMKit's own
+     `asset_type: "related-crypto-material"` plus a name prefix
+     (public-key@/private-key@/secret-key@/key@) is stronger, more
+     direct evidence than a name substring, so it is checked before
+     any name-based family matching -- a key-material record should
+     never be mis-routed into an algorithm family just because CBOMKit
+     happened to embed an algorithm-like token in its generated name.
+  2. Family/alias/pattern-based classification, delegated to
+     knowledge/crypto_knowledge.py's algorithm-family registry. See
+     that module's docstring for why classification is organized by
+     family (with aliases and patterns) instead of one if/elif branch
+     per exact algorithm name -- that is what makes this
+     repository-agnostic and extensible to algorithms not seen in any
+     one analyzed project.
+  3. Unknown. If neither of the above can classify the asset from the
+     evidence actually present in the CBOM, it is recorded as unknown
+     rather than guessed -- ECDAT's risk/PQC pipeline already treats
+     "unknown" as "quantum_status: unknown" -> zero quantum-risk
+     contribution, which is the honest outcome when there truly is no
+     matching evidence, not when a rule was merely missing.
+"""
+
+from knowledge.crypto_knowledge import resolve_family_classification
+
+
+_MATERIAL_NAME_PREFIXES = (
+    ("public-key@", "public-key"),
+    ("private-key@", "private-key"),
+    ("secret-key@", "secret-key"),
+    ("key@", "key"),
+)
+
+
+def _classify_related_crypto_material(name, asset_type):
+    """
+    Classify CBOM key/certificate material by asset_type + name
+    prefix, independent of algorithm-name matching. Returns None if
+    this asset is not CBOMKit-flagged crypto material at all.
+    """
+
+    if asset_type != "related-crypto-material":
+        return None
+
+    material_type = "cryptographic-material"
+
+    for prefix, label in _MATERIAL_NAME_PREFIXES:
+        if name.startswith(prefix):
+            material_type = label
+            break
+
+    return {
+        "category": "crypto-material",
+        "purpose": [material_type],
+        "quantum_status": "contextual",
+        "risk_reason": (
+            "The cryptographic material must be associated with its "
+            "governing algorithm before quantum risk can be determined."
+        ),
+    }
+
+
+def _unknown_classification():
+    return {
+        "category": "unknown",
+        "purpose": [],
+        "quantum_status": "unknown",
+        "risk_reason": (
+            "No classification rule currently matches this asset from "
+            "the evidence available in the CBOM."
+        ),
+    }
 
 
 def classify_asset(asset):
     """
     Classify a normalized ECDAT crypto asset.
 
-    Classification order:
-    1. Exact knowledge-base match
-    2. Pattern-based algorithm matching
-    3. Crypto-material classification
-    4. Unknown fallback
+    Never fabricates a classification: an asset that doesn't match any
+    known material pattern or algorithm family is recorded as
+    category="unknown" rather than assigned a guessed role.
     """
 
-    name = asset.get("name", "")
+    name = str(asset.get("name") or "")
     asset_type = asset.get("asset_type")
 
-    # --------------------------------------------------
-    # 1. Exact knowledge-base match
-    # --------------------------------------------------
+    material_classification = _classify_related_crypto_material(name, asset_type)
 
-    if name in CRYPTO_KNOWLEDGE:
+    if material_classification is not None:
+        return {**asset, "classification": material_classification}
 
-        return {
-            **asset,
-            "classification": CRYPTO_KNOWLEDGE[name]
-        }
+    family_classification = resolve_family_classification(name)
 
-    # Case-insensitive exact match
-    for algorithm, knowledge in CRYPTO_KNOWLEDGE.items():
+    if family_classification is not None:
+        return {**asset, "classification": family_classification}
 
-        if name.lower() == algorithm.lower():
-
-            return {
-                **asset,
-                "classification": knowledge
-            }
-
-    # --------------------------------------------------
-    # 2. RSA-based algorithms
-    # --------------------------------------------------
-
-    if "RSA" in name.upper():
-
-        return {
-            **asset,
-            "classification": {
-                "category": "asymmetric",
-                "purpose": ["digital-signature"],
-                "quantum_status": "vulnerable",
-                "risk_reason": (
-                    "The asset uses RSA-based cryptography, "
-                    "which is vulnerable to sufficiently capable "
-                    "quantum attacks."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 3. DSA
-    # --------------------------------------------------
-
-    if "DSA" in name.upper():
-
-        return {
-            **asset,
-            "classification": {
-                "category": "asymmetric",
-                "purpose": ["digital-signature"],
-                "quantum_status": "vulnerable",
-                "risk_reason": (
-                    "The asset uses DSA-based public-key cryptography, "
-                    "which is vulnerable to quantum attacks."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 4. Elliptic Curve
-    # --------------------------------------------------
-
-    if name.upper() == "EC":
-
-        return {
-            **asset,
-            "classification": {
-                "category": "asymmetric",
-                "purpose": ["public-key-cryptography"],
-                "quantum_status": "vulnerable",
-                "risk_reason": (
-                    "Elliptic-curve cryptography is vulnerable "
-                    "to sufficiently capable quantum attacks."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 5. AES family
-    # --------------------------------------------------
-
-    if name.upper().startswith("AES"):
-
-        return {
-            **asset,
-            "classification": {
-                "category": "symmetric",
-                "purpose": ["encryption"],
-                "quantum_status": "reduced-security-margin",
-                "risk_reason": (
-                    "Symmetric cryptography is affected by quantum "
-                    "search attacks, resulting in a reduced security margin."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 6. Hash algorithms
-    # --------------------------------------------------
-
-    if name.upper() in ["MD5", "SHA1"]:
-
-        return {
-            **asset,
-            "classification": {
-                "category": "hash",
-                "purpose": ["hash"],
-                "quantum_status": "weak",
-                "risk_reason": (
-                    f"{name} is considered cryptographically weak "
-                    "for modern security applications."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 7. HMAC
-    # --------------------------------------------------
-
-    if "HMAC" in name.upper():
-
-        return {
-            **asset,
-            "classification": {
-                "category": "mac",
-                "purpose": ["message-authentication"],
-                "quantum_status": "quantum-aware",
-                "risk_reason": (
-                    "HMAC security depends on its underlying hash "
-                    "function, key size and usage context."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 8. MGF1
-    # --------------------------------------------------
-
-    if name.upper() == "MGF1":
-
-        return {
-            **asset,
-            "classification": {
-                "category": "cryptographic-component",
-                "purpose": ["mask-generation"],
-                "quantum_status": "contextual",
-                "risk_reason": (
-                    "MGF1 is a cryptographic construction component "
-                    "and should be assessed together with the construction "
-                    "in which it is used."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 9. KDF
-    # --------------------------------------------------
-
-    if "KDF" in name.upper():
-
-        return {
-            **asset,
-            "classification": {
-                "category": "key-derivation",
-                "purpose": ["key-derivation"],
-                "quantum_status": "contextual",
-                "risk_reason": (
-                    "Key derivation security depends on the underlying "
-                    "primitive, parameters and application context."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 10. TLS
-    # --------------------------------------------------
-
-    if name.upper() == "TLS":
-
-        return {
-            **asset,
-            "classification": {
-                "category": "protocol",
-                "purpose": ["secure-communication"],
-                "quantum_status": "contextual",
-                "risk_reason": (
-                    "TLS quantum safety depends on the cryptographic "
-                    "algorithms and key exchange mechanisms used by the protocol."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 11. RAW
-    # --------------------------------------------------
-
-    if name.upper() == "RAW":
-
-        return {
-            **asset,
-            "classification": {
-                "category": "cryptographic-format",
-                "purpose": ["raw-cryptographic-representation"],
-                "quantum_status": "contextual",
-                "risk_reason": (
-                    "RAW describes a cryptographic representation or "
-                    "format rather than identifying a specific primitive. "
-                    "Quantum risk must be determined from the underlying "
-                    "cryptographic operation."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 12. Related cryptographic material
-    # --------------------------------------------------
-
-    if asset_type == "related-crypto-material":
-
-        if name.startswith("public-key@"):
-            material_type = "public-key"
-
-        elif name.startswith("private-key@"):
-            material_type = "private-key"
-
-        elif name.startswith("secret-key@"):
-            material_type = "secret-key"
-
-        elif name.startswith("key@"):
-            material_type = "key"
-
-        else:
-            material_type = "cryptographic-material"
-
-        return {
-            **asset,
-            "classification": {
-                "category": "crypto-material",
-                "purpose": [material_type],
-                "quantum_status": "contextual",
-                "risk_reason": (
-                    "The cryptographic material must be associated "
-                    "with its governing algorithm before quantum risk "
-                    "can be determined."
-                )
-            }
-        }
-
-    # --------------------------------------------------
-    # 13. Unknown
-    # --------------------------------------------------
-
-    return {
-        **asset,
-        "classification": {
-            "category": "unknown",
-            "purpose": [],
-            "quantum_status": "unknown",
-            "risk_reason": (
-                "No classification rule currently matches this asset."
-            )
-        }
-    }
+    return {**asset, "classification": _unknown_classification()}

@@ -51,7 +51,7 @@ OUTPUT_PATH = (
 def load_quantum_risk_by_asset():
     """
     Load the authoritative quantum-risk ("base risk") view, keyed by
-    asset name, from the same dataset every other pipeline stage
+    CBOM bom-ref, from the same dataset every other pipeline stage
     (blast radius, complexity, priority, PQC mapping, migration
     report) treats as the single source of truth for risk.
     """
@@ -69,11 +69,11 @@ def load_quantum_risk_by_asset():
     ) as file:
         data = json.load(file)
 
-    by_name = {}
+    by_ref = {}
 
     for asset in data.get("assets", []):
 
-        name = asset.get("name")
+        bom_ref = asset.get("bom_ref")
 
         base_risk = asset.get(
             "risk_assessment",
@@ -83,10 +83,10 @@ def load_quantum_risk_by_asset():
             {}
         )
 
-        if name and base_risk:
-            by_name[name] = base_risk
+        if bom_ref and base_risk:
+            by_ref[bom_ref] = base_risk
 
-    return by_name
+    return by_ref
 
 
 def main():
@@ -109,15 +109,16 @@ def main():
         []
     )
 
-    quantum_risk_by_name = load_quantum_risk_by_asset()
+    quantum_risk_by_ref = load_quantum_risk_by_asset()
 
     risk_assessed_assets = []
 
     for asset in assets:
 
         name = asset.get("name")
+        bom_ref = asset.get("bom_ref")
 
-        risk = quantum_risk_by_name.get(name)
+        risk = quantum_risk_by_ref.get(bom_ref)
 
         if risk is None:
             # Same input file feeds both this stage and
@@ -128,7 +129,7 @@ def main():
             # rewritten to prevent.
             raise ValueError(
                 f"No authoritative quantum-risk entry found for "
-                f"asset '{name}' in {RISK_SOURCE_PATH.name}. Was "
+                f"finding '{bom_ref or name}' in {RISK_SOURCE_PATH.name}. Was "
                 f"explain_cbom.py run on the same CBOM?"
             )
 

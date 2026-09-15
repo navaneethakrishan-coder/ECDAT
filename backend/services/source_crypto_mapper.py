@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+from services.purpose_resolver import classify_context
+
 
 def _normalize_asset_name(name: str) -> str:
     return str(name or "").strip().lower()
@@ -33,10 +35,19 @@ def _infer_usage(
     asset: Dict[str, Any],
     evidence: Dict[str, Any],
 ) -> str:
+    """
+    Infer this ONE occurrence's usage label.
 
-    context = str(
-        evidence.get("context", "")
-    ).lower()
+    Delegates the actual API-context classification to
+    services/purpose_resolver.classify_context() -- the same function
+    the earlier, finding-level purpose-resolution stage
+    (classify_cbom.py) uses -- so this per-occurrence label and the
+    finding-level resolved purpose can never independently drift apart
+    by keeping two separate keyword lists. This function only adds the
+    fallback chain appropriate for a single occurrence: the context
+    for *this* occurrence, then the finding's already-resolved
+    purpose, then its CBOM primitive, then a generic label.
+    """
 
     name = _normalize_asset_name(
         asset.get("name", "")
@@ -67,17 +78,10 @@ def _infer_usage(
         for item in purpose
     ]
 
-    if "keyagreement" in context:
-        return "key-agreement"
+    context_label = classify_context(evidence.get("context"))
 
-    if "signature" in context:
-        return "digital-signature"
-
-    if "cipher" in context:
-        return "encryption"
-
-    if "hash" in context:
-        return "hash"
+    if context_label:
+        return context_label
 
     if "key-agreement" in purpose:
         return "key-agreement"
@@ -87,6 +91,9 @@ def _infer_usage(
 
     if "encryption" in purpose:
         return "encryption"
+
+    if "message-authentication" in purpose:
+        return "message-authentication"
 
     if "hash" in purpose:
         return "hash"
@@ -107,7 +114,7 @@ def map_asset_source_usage(
     asset: Dict[str, Any],
 ) -> Dict[str, Any]:
 
-    asset_id = asset.get("id")
+    asset_id = asset.get("bom_ref") or asset.get("id")
 
     name = asset.get(
         "name",
@@ -204,6 +211,7 @@ def map_asset_source_usage(
     return {
         "asset": name,
         "asset_id": asset_id,
+        "bom_ref": asset_id,
         "asset_type": asset_type,
         "classification": {
             "category": category,

@@ -24,6 +24,77 @@ def _candidate(
     }
 
 
+def _kem_candidates() -> List[Dict[str, Any]]:
+    return [
+        _candidate(
+            "ML-KEM-512",
+            "KEM",
+            "HIGH",
+            "ML-KEM is a standardized post-quantum key-encapsulation "
+            "mechanism suitable for key establishment.",
+            ["Lower security parameter than ML-KEM-768/1024."],
+        ),
+        _candidate(
+            "ML-KEM-768",
+            "KEM",
+            "HIGH",
+            "ML-KEM-768 provides a standardized post-quantum "
+            "key-establishment mechanism and is a strong general "
+            "candidate for migration planning.",
+            ["Requires compatibility and performance validation."],
+        ),
+        _candidate(
+            "ML-KEM-1024",
+            "KEM",
+            "HIGH",
+            "ML-KEM-1024 is a standardized post-quantum KEM with "
+            "a higher parameter set.",
+            ["Higher computational and communication overhead "
+             "than lower parameter sets."],
+        ),
+    ]
+
+
+def _signature_candidates() -> List[Dict[str, Any]]:
+    return [
+        _candidate(
+            "ML-DSA-44",
+            "digital-signature",
+            "HIGH",
+            "ML-DSA is a standardized post-quantum digital-signature "
+            "family and can be evaluated as a signature migration "
+            "candidate.",
+            ["Lower ML-DSA parameter set."],
+        ),
+        _candidate(
+            "ML-DSA-65",
+            "digital-signature",
+            "HIGH",
+            "ML-DSA-65 is a standardized post-quantum digital-signature "
+            "candidate.",
+            ["Requires application and interoperability testing."],
+        ),
+        _candidate(
+            "ML-DSA-87",
+            "digital-signature",
+            "HIGH",
+            "ML-DSA-87 is a standardized post-quantum digital-signature "
+            "candidate with a higher parameter set.",
+            ["Higher computational and signature-size overhead."],
+        ),
+        _candidate(
+            "SLH-DSA",
+            "digital-signature",
+            "MEDIUM",
+            "SLH-DSA provides a standardized post-quantum "
+            "digital-signature alternative based on a different "
+            "cryptographic construction.",
+            ["Different performance and signature-size characteristics "
+             "require application-specific evaluation."],
+        ),
+    ]
+
+
 def map_asset_to_pqc(asset: Dict[str, Any]) -> Dict[str, Any]:
     """
     Map a classified cryptographic asset to plausible PQC migration
@@ -39,6 +110,7 @@ def map_asset_to_pqc(asset: Dict[str, Any]) -> Dict[str, Any]:
     category = classification.get("category")
     purposes = classification.get("purpose", [])
     quantum_status = classification.get("quantum_status")
+    purpose_confidence = classification.get("purpose_confidence")
 
     if isinstance(purposes, str):
         purposes = [purposes]
@@ -47,6 +119,7 @@ def map_asset_to_pqc(asset: Dict[str, Any]) -> Dict[str, Any]:
 
     result = {
         "asset": name,
+        "bom_ref": asset.get("bom_ref"),
         "category": category,
         "purpose": purposes,
         "quantum_status": quantum_status,
@@ -57,47 +130,62 @@ def map_asset_to_pqc(asset: Dict[str, Any]) -> Dict[str, Any]:
         "confidence": "HIGH",
     }
 
+    wants_kem = category == "asymmetric" and (
+        "key-agreement" in purposes
+        or "key-establishment" in purposes
+        or "encryption" in purposes
+    )
+    wants_signature = category == "asymmetric" and "digital-signature" in purposes
+
+    # ---------------------------------------------------------
+    # Ambiguous / multi-purpose asymmetric findings
+    #
+    # The purpose resolver (services/purpose_resolver.py) can
+    # legitimately report more than one purpose for the same finding
+    # when its evidence doesn't disambiguate -- e.g. a family-fallback
+    # resolution for a generic RSA key with no decisive CBOM primitive
+    # or source context. Picking just one PQC family in that case
+    # would silently drop the other plausible role instead of
+    # reflecting the same ambiguity the resolver already flagged (at
+    # LOW/MEDIUM confidence), so both families are offered together
+    # and the overall confidence is capped at the resolver's own
+    # purpose confidence rather than claimed as HIGH.
+    # ---------------------------------------------------------
+
+    if wants_kem and wants_signature:
+        result["migration_type"] = PQC_CANDIDATE
+        result["pqc_applicable"] = True
+        result["candidates"] = _kem_candidates() + _signature_candidates()
+        result["confidence"] = (
+            purpose_confidence
+            if purpose_confidence in ("LOW", "MEDIUM", "HIGH")
+            else "MEDIUM"
+        )
+        result["reason"] = (
+            "The resolved purpose for this finding is ambiguous "
+            f"({purposes}), so both post-quantum key-encapsulation and "
+            "signature families are offered rather than assuming one "
+            "role -- the exact usage should be confirmed from source "
+            "evidence before committing to a single migration path."
+        )
+        return result
+
     # ---------------------------------------------------------
     # Key agreement / key establishment
     # ---------------------------------------------------------
 
-    if category == "asymmetric" and (
-        "key-agreement" in purposes
-        or "key-establishment" in purposes
-    ):
+    if wants_kem:
         result["migration_type"] = PQC_CANDIDATE
         result["pqc_applicable"] = True
-        result["candidates"] = [
-            _candidate(
-                "ML-KEM-512",
-                "KEM",
-                "HIGH",
-                "ML-KEM is a standardized post-quantum key-encapsulation "
-                "mechanism suitable for key establishment.",
-                ["Lower security parameter than ML-KEM-768/1024."],
-            ),
-            _candidate(
-                "ML-KEM-768",
-                "KEM",
-                "HIGH",
-                "ML-KEM-768 provides a standardized post-quantum "
-                "key-establishment mechanism and is a strong general "
-                "candidate for migration planning.",
-                ["Requires compatibility and performance validation."],
-            ),
-            _candidate(
-                "ML-KEM-1024",
-                "KEM",
-                "HIGH",
-                "ML-KEM-1024 is a standardized post-quantum KEM with "
-                "a higher parameter set.",
-                ["Higher computational and communication overhead "
-                 "than lower parameter sets."],
-            ),
-        ]
+        result["candidates"] = _kem_candidates()
         result["reason"] = (
             "The asset performs key agreement or key establishment, "
             "so a post-quantum KEM is a plausible migration family."
+        ) if "encryption" not in purposes else (
+            "The asset's resolved purpose is public-key encryption/key "
+            "transport (not digital signing), so a post-quantum KEM -- "
+            "the standard replacement for that role -- is recommended "
+            "rather than a signature family."
         )
         return result
 
@@ -105,48 +193,10 @@ def map_asset_to_pqc(asset: Dict[str, Any]) -> Dict[str, Any]:
     # Digital signatures
     # ---------------------------------------------------------
 
-    if category == "asymmetric" and "digital-signature" in purposes:
+    if wants_signature:
         result["migration_type"] = PQC_CANDIDATE
         result["pqc_applicable"] = True
-
-        result["candidates"] = [
-            _candidate(
-                "ML-DSA-44",
-                "digital-signature",
-                "HIGH",
-                "ML-DSA is a standardized post-quantum digital-signature "
-                "family and can be evaluated as a signature migration "
-                "candidate.",
-                ["Lower ML-DSA parameter set."],
-            ),
-            _candidate(
-                "ML-DSA-65",
-                "digital-signature",
-                "HIGH",
-                "ML-DSA-65 is a standardized post-quantum digital-signature "
-                "candidate.",
-                ["Requires application and interoperability testing."],
-            ),
-            _candidate(
-                "ML-DSA-87",
-                "digital-signature",
-                "HIGH",
-                "ML-DSA-87 is a standardized post-quantum digital-signature "
-                "candidate with a higher parameter set.",
-                ["Higher computational and signature-size overhead."],
-            ),
-            _candidate(
-                "SLH-DSA",
-                "digital-signature",
-                "MEDIUM",
-                "SLH-DSA provides a standardized post-quantum "
-                "digital-signature alternative based on a different "
-                "cryptographic construction.",
-                ["Different performance and signature-size characteristics "
-                 "require application-specific evaluation."],
-            ),
-        ]
-
+        result["candidates"] = _signature_candidates()
         result["reason"] = (
             "The asset performs digital signatures, so standardized "
             "post-quantum signature algorithms are plausible migration "

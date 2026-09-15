@@ -2840,6 +2840,26 @@ button {
   border-radius: var(--radius-md) var(--radius-md) 0 0;
 }
 
+.workspace-disclosure summary .badge {
+  margin-left: var(--space-2);
+}
+
+.purpose-evidence-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.purpose-evidence-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .workspace-disclosure > div {
   padding: var(--space-3);
 

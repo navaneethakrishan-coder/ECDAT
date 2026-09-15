@@ -30,11 +30,18 @@ def get_asset_name(record):
     )
 
 
+def get_finding_id(record):
+    identity = record.get("identity", {})
+    if not isinstance(identity, dict):
+        identity = {}
+    return record.get("bom_ref") or record.get("asset_ref") or identity.get("bom_ref")
+
+
 def build_map(records):
     result = {}
 
     for record in records:
-        name = get_asset_name(record)
+        name = get_finding_id(record)
 
         if name:
             result[name] = record
@@ -254,24 +261,25 @@ def process_asset(
     name = get_asset_name(
         pqc_record
     )
+    bom_ref = get_finding_id(pqc_record)
 
     risk_record = risk_map.get(
-        name,
+        bom_ref,
         {},
     )
 
     blast_record = blast_map.get(
-        name,
+        bom_ref,
         {},
     )
 
     complexity_record = complexity_map.get(
-        name,
+        bom_ref,
         {},
     )
 
     priority_record = priority_map.get(
-        name,
+        bom_ref,
         {},
     )
 
@@ -301,11 +309,13 @@ def process_asset(
 
     return {
         "asset": name,
+        "bom_ref": bom_ref,
 
         "identity": {
             "id": pqc_record.get(
                 "id"
             ),
+            "bom_ref": bom_ref,
             "asset_type": pqc_record.get(
                 "asset_type"
             ),
@@ -483,20 +493,18 @@ def generate():
 
     for record in pqc_assets:
 
-        name = get_asset_name(
-            record
-        )
+        finding_id = get_finding_id(record)
 
-        if name in risk_map:
+        if finding_id in risk_map:
             risk_mapped += 1
 
-        if name in blast_map:
+        if finding_id in blast_map:
             blast_mapped += 1
 
-        if name in complexity_map:
+        if finding_id in complexity_map:
             complexity_mapped += 1
 
-        if name in priority_map:
+        if finding_id in priority_map:
             priority_mapped += 1
 
     print()

@@ -35,7 +35,7 @@ export function CriticalFindingsPanel({ assets, onSelectAsset }) {
                 className={`critical-finding-row critical-finding-${String(
                   asset.riskSeverity || "unknown"
                 ).toLowerCase()}`}
-                onClick={() => onSelectAsset(asset.name)}
+                onClick={() => onSelectAsset(asset.bomRef)}
               >
                 <span className="critical-finding-rank">{index + 1}</span>
                 <span className="critical-finding-body">

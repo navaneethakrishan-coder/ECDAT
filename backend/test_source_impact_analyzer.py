@@ -102,7 +102,7 @@ def test_all_assets():
         mappings
     )
 
-    assert len(analyses) == 59
+    assert len(analyses) == len(assets)
 
     for analysis in analyses:
 
@@ -147,7 +147,7 @@ def test_summary():
 
     assert (
         summary["total_assets"]
-        == 59
+        == len(assets)
     )
 
     assert (

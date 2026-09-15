@@ -211,13 +211,13 @@ def test_global_consistency():
     )
 
     # All pipeline stages must represent
-    # the same 59 cryptographic assets.
-    assert summary["total_assets"] == 59
-    assert status["total_assets"] == 59
-    assert assets["total_assets"] == 59
-    assert len(actions["assets"]) == 59
-    assert len(pqc["assets"]) == 59
-    assert source_impact["total_assets"] == 59
+    # the same 30 canonical CBOM findings.
+    assert summary["total_assets"] == 30
+    assert status["total_assets"] == 30
+    assert assets["total_assets"] == 30
+    assert len(actions["assets"]) == 30
+    assert len(pqc["assets"]) == 30
+    assert source_impact["total_assets"] == 30
 
     # Migration action count must remain consistent.
     assert (

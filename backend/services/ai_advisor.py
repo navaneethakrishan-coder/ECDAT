@@ -37,8 +37,8 @@ def find_report_asset(report, asset_name):
     the rest of the UI for the same asset. See docs/ARCHITECTURE.md §5
     and docs/CHANGELOG.md (2026-09-14 AI data-consistency fix).
 
-    Matching is case-insensitive, consistent with every other
-    asset-lookup endpoint in backend/main.py.
+    Matching uses the canonical CBOM bom-ref, so duplicate algorithm
+    names cannot return advice for the wrong source finding.
     """
 
     if not isinstance(report, dict):
@@ -49,16 +49,14 @@ def find_report_asset(report, asset_name):
     if not isinstance(assets, list):
         return None
 
-    target = str(asset_name).strip().lower()
+    target = str(asset_name).strip()
 
     for record in assets:
 
         if not isinstance(record, dict):
             continue
 
-        name = record.get("asset")
-
-        if name and str(name).strip().lower() == target:
+        if record.get("bom_ref") and str(record["bom_ref"]).strip() == target:
             return record
 
     return None
@@ -77,6 +75,9 @@ def build_context(asset_name):
     if record is None:
         return context
 
+    context["asset"] = record.get("asset", asset_name)
+    context["bom_ref"] = record.get("bom_ref")
+
     # ---------------------------------------------------------
     # Risk (identical source/values to the dashboard's "current risk")
     # ---------------------------------------------------------
@@ -89,6 +90,19 @@ def build_context(asset_name):
         "severity": current_risk.get("severity"),
         "quantum_status": classification.get("quantum_status"),
         "category": classification.get("category"),
+    }
+
+    # Repository-specific purpose (see services/purpose_resolver.py):
+    # what this finding is actually used for, resolved from this
+    # asset's own CBOM/source evidence rather than assumed from its
+    # algorithm name -- and how confident that resolution is, so the
+    # model doesn't state a low-confidence guess as settled fact.
+    context["purpose"] = {
+        "resolved": classification.get("purpose"),
+        "usage": classification.get("usage"),
+        "confidence": classification.get("purpose_confidence"),
+        "evidence_source": classification.get("purpose_evidence_source"),
+        "needs_review": classification.get("purpose_needs_review", False),
     }
 
     # ---------------------------------------------------------
@@ -188,6 +202,11 @@ information.
 
 Do not invent scores, assets, dependencies,
 PQC algorithms, or migration decisions.
+
+The supplied "purpose" field shows how this finding's cryptographic
+purpose was resolved and how confident that resolution is. If its
+confidence is LOW or needs_review is true, say so plainly rather than
+stating the purpose as settled fact.
 
 Asset:
 {asset_name}

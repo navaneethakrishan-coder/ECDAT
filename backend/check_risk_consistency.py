@@ -50,12 +50,13 @@ def index_by_name(records, name_keys=("name", "asset")):
         if not isinstance(record, dict):
             continue
 
-        name = None
+        name = record.get("bom_ref") or record.get("asset_ref")
 
-        for key in name_keys:
-            name = record.get(key)
-            if name:
-                break
+        if not name:
+            for key in name_keys:
+                name = record.get(key)
+                if name:
+                    break
 
         if name:
             indexed[name] = record
@@ -86,7 +87,7 @@ def main():
 
         for asset in risk_assessed.get("assets", []):
 
-            name = asset.get("name")
+            name = asset.get("bom_ref") or asset.get("asset_ref")
             authoritative = explainable_by_name.get(name)
 
             if authoritative is None:
@@ -123,7 +124,7 @@ def main():
 
         for asset in migration_report.get("assets", []):
 
-            name = asset.get("asset")
+            name = asset.get("bom_ref") or asset.get("asset_ref")
             authoritative = explainable_by_name.get(name)
 
             if authoritative is None:

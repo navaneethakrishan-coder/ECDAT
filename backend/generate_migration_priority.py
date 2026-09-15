@@ -112,63 +112,54 @@ def main():
 
     for item in risk_assets:
 
-        name = item.get(
-            "name"
-        )
+        bom_ref = item.get("bom_ref")
 
-        if name:
-
-            risk_map[name] = item
+        if bom_ref:
+            risk_map[bom_ref] = item
 
 
     blast_map = {}
 
     for item in blast_assets:
 
-        name = item.get(
-            "asset"
-        )
+        bom_ref = item.get("bom_ref") or item.get("asset_ref")
 
-        if name:
-
-            blast_map[name] = item
+        if bom_ref:
+            blast_map[bom_ref] = item
 
 
     complexity_map = {}
 
     for item in complexity_assets:
 
-        name = item.get(
-            "asset"
-        )
+        bom_ref = item.get("bom_ref")
 
-        if name:
-
-            complexity_map[name] = item
+        if bom_ref:
+            complexity_map[bom_ref] = item
 
 
     # ========================================================
     # FIND ALL ASSETS
     # ========================================================
 
-    asset_names = set()
+    finding_ids = set()
 
-    asset_names.update(
+    finding_ids.update(
         risk_map.keys()
     )
 
-    asset_names.update(
+    finding_ids.update(
         blast_map.keys()
     )
 
-    asset_names.update(
+    finding_ids.update(
         complexity_map.keys()
     )
 
     print()
     print(
-        f"Unique assets found: "
-        f"{len(asset_names)}"
+        f"Unique CBOM findings found: "
+        f"{len(finding_ids)}"
     )
 
 
@@ -183,7 +174,7 @@ def main():
     missing_complexity = []
 
     for name in sorted(
-        asset_names
+        finding_ids
     ):
 
         if name not in risk_map:
@@ -212,20 +203,20 @@ def main():
 
     print(
         f"  Risk mapped: "
-        f"{len(asset_names) - len(missing_risk)}"
-        f"/{len(asset_names)}"
+        f"{len(finding_ids) - len(missing_risk)}"
+        f"/{len(finding_ids)}"
     )
 
     print(
         f"  Blast mapped: "
-        f"{len(asset_names) - len(missing_blast)}"
-        f"/{len(asset_names)}"
+        f"{len(finding_ids) - len(missing_blast)}"
+        f"/{len(finding_ids)}"
     )
 
     print(
         f"  Complexity mapped: "
-        f"{len(asset_names) - len(missing_complexity)}"
-        f"/{len(asset_names)}"
+        f"{len(finding_ids) - len(missing_complexity)}"
+        f"/{len(finding_ids)}"
     )
 
 
@@ -235,21 +226,21 @@ def main():
 
     results = []
 
-    for name in asset_names:
+    for bom_ref in finding_ids:
 
         risk_record = risk_map.get(
-            name,
+            bom_ref,
             {}
         )
 
         blast_record = blast_map.get(
-            name,
+            bom_ref,
             {}
         )
 
         complexity_record = (
             complexity_map.get(
-                name,
+                bom_ref,
                 {}
             )
         )
@@ -302,7 +293,8 @@ def main():
 
         result = {
 
-            "asset": name,
+            "asset": risk_record.get("name") or complexity_record.get("asset") or blast_record.get("asset") or "Unknown",
+            "bom_ref": bom_ref,
 
             "quantum_risk": {
                 "score": risk_score,

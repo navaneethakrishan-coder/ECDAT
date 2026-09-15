@@ -145,6 +145,7 @@ def calculate_blast_radius(
         ),
 
         "asset_ref": asset_ref,
+        "bom_ref": asset_ref,
 
         "blast_radius_score": score,
 

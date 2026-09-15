@@ -1,4 +1,5 @@
 import { Activity, Database, FileSearch, FileWarning } from "lucide-react";
+import { SeverityBadge, TagBadge } from "../Badge";
 
 function EvidenceList({ title, icon: Icon, items }) {
   return (
@@ -34,6 +35,9 @@ export function EvidencePanel({ assetDetail }) {
 
   const hasEvidence = fileCount + classCount + functionCount > 0;
 
+  const classification = assetDetail?.classification || {};
+  const purposeReason = classification.purpose_evidence_reason;
+
   return (
     <section className="workspace-panel panel-evidence" aria-labelledby="evidence-heading">
       <h3 id="evidence-heading">
@@ -55,6 +59,28 @@ export function EvidencePanel({ assetDetail }) {
           <span>Functions</span>
         </div>
       </div>
+
+      {purposeReason && (
+        <details className="workspace-disclosure" id="asset-purpose-evidence-section">
+          <summary>
+            Why this classification?
+            {classification.purpose_needs_review && (
+              <span className="badge badge-critical">Needs review</span>
+            )}
+          </summary>
+          <div className="purpose-evidence-body">
+            <div className="purpose-evidence-row">
+              <span>Confidence</span>
+              <SeverityBadge value={classification.purpose_confidence} />
+            </div>
+            <div className="purpose-evidence-row">
+              <span>Evidence source</span>
+              <TagBadge>{classification.purpose_evidence_source || "unknown"}</TagBadge>
+            </div>
+            <p className="workspace-empty-note">{purposeReason}</p>
+          </div>
+        </details>
+      )}
 
       {hasEvidence ? (
         <details className="workspace-disclosure" id="asset-source-impact-section">

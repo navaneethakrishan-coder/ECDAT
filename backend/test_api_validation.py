@@ -58,8 +58,8 @@ def test_inventory_endpoints():
         "/api/assets"
     )
 
-    assert assets["total_assets"] == 59
-    assert len(assets["assets"]) == 59
+    assert assets["total_assets"] == 30
+    assert len(assets["assets"]) == 30
 
     ecdh = test_endpoint(
         "/api/assets/ECDH"
@@ -77,7 +77,7 @@ def test_risk_endpoints():
         "/api/risk"
     )
 
-    assert len(risk["assets"]) == 59
+    assert len(risk["assets"]) == 30
 
     ecdh = test_endpoint(
         "/api/risk/ECDH"
@@ -96,7 +96,7 @@ def test_priority_endpoints():
         "/api/priority"
     )
 
-    assert priority["asset_count"] == 59
+    assert priority["asset_count"] == 30
 
     ecdh = test_endpoint(
         "/api/priority/ECDH"
@@ -118,7 +118,7 @@ def test_complexity_endpoints():
         "/api/complexity"
     )
 
-    assert complexity["asset_count"] == 59
+    assert complexity["asset_count"] == 30
 
     ecdh = test_endpoint(
         "/api/complexity/ECDH"
@@ -138,7 +138,7 @@ def test_blast_radius_endpoints():
         "/api/blast-radius"
     )
 
-    assert blast["asset_count"] == 59
+    assert blast["asset_count"] == 30
 
     ecdh = test_endpoint(
         "/api/blast-radius/ECDH"
@@ -157,7 +157,7 @@ def test_pqc_endpoints():
         "/api/pqc"
     )
 
-    assert len(pqc["assets"]) == 59
+    assert len(pqc["assets"]) == 30
     assert pqc["summary"]["pqc_candidates"] == 13
 
     ecdh = test_endpoint(
@@ -182,7 +182,7 @@ def test_pqc_ranking():
         "/api/pqc-ranking"
     )
 
-    assert len(ranking["assets"]) == 59
+    assert len(ranking["assets"]) == 30
 
     ecdh = test_endpoint(
         "/api/pqc-ranking/ECDH"
@@ -212,7 +212,7 @@ def test_source_impact():
         "/api/source-impact"
     )
 
-    assert impact["total_assets"] == 59
+    assert impact["total_assets"] == 30
 
     ecdh = test_endpoint(
         "/api/source-impact/ECDH"
@@ -234,7 +234,7 @@ def test_migration_actions():
         "/api/actions"
     )
 
-    assert len(actions["assets"]) == 59
+    assert len(actions["assets"]) == 30
     assert (
         actions["summary"]["total_migration_actions"]
         == 575
@@ -260,7 +260,7 @@ def test_migration_report():
         "/api/migration-report/assets"
     )
 
-    assert report["total_assets"] == 59
+    assert report["total_assets"] == 30
 
     ecdh = test_endpoint(
         "/api/migration-report/assets/ECDH"

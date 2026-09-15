@@ -368,20 +368,27 @@ function App() {
     { name: "LOW", value: sourceImpactDistribution.LOW || 0 },
   ];
 
-  // Two already-existing bulk endpoints (migration-report/assets +
-  // priority), joined by asset name, so the explorer can show every
-  // scored dimension per row without any new backend call.
-  const priorityByName = {};
+  // Two already-existing bulk endpoints, joined by CBOM bom-ref -- the
+  // canonical per-finding identity the backend uses throughout (two
+  // distinct findings can legitimately share the same displayed
+  // algorithm name -- e.g. two separate "RSA-2048" occurrences in this
+  // dataset -- so name alone is never used as a selection key). Both
+  // GET /api/priority and GET /api/migration-report/assets now return
+  // a real bom_ref per finding, so this is a direct bom_ref join, not
+  // a name-based approximation.
+  const priorityByBomRef = {};
   priorityAssets.forEach((item) => {
-    if (item.asset) priorityByName[item.asset] = item;
+    if (item.bom_ref) priorityByBomRef[item.bom_ref] = item;
   });
 
   const enrichedAssets = riskAssets.map((item) => {
+    const bomRef = item.bom_ref;
     const name = item.asset || item.name || "Unknown";
-    const priorityInfo = priorityByName[name] || {};
+    const priorityInfo = priorityByBomRef[bomRef] || {};
 
     return {
-      key: name,
+      key: bomRef,
+      bomRef,
       name,
       type: item.asset_type || "Unknown",
       primitive: item.primitive || "Unknown",
@@ -554,7 +561,11 @@ function App() {
 
           {selectedAsset && (
             <AssetDetailPanel
-              assetName={selectedAsset}
+              assetName={
+                assetDetail?.asset ||
+                enrichedAssets.find((asset) => asset.bomRef === selectedAsset)?.name ||
+                selectedAsset
+              }
               assetDetail={assetDetail}
               loading={assetDetailLoading}
               error={assetDetailError}

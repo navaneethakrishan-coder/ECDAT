@@ -3,26 +3,26 @@
     "project": "ECDAT",
     "stage": "9.4",
     "component": "migration-action-generation",
-    "source_asset_count": 57,
-    "migration_record_count": 57
+    "source_asset_count": 30,
+    "migration_record_count": 30
   },
   "summary": {
-    "total_assets": 57,
-    "total_migration_actions": 574,
-    "assets_with_pqc_candidates": 8,
+    "total_assets": 30,
+    "total_migration_actions": 294,
+    "assets_with_pqc_candidates": 10,
     "migration_type_distribution": {
-      "pqc-candidate": 8,
-      "architectural-migration": 29,
-      "not-applicable": 12,
-      "no-direct-pqc-replacement": 8
+      "pqc-candidate": 10,
+      "architectural-migration": 15,
+      "no-direct-pqc-replacement": 5
     }
   },
   "assets": [
     {
       "asset": "RSA-OAEP",
+      "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1",
       "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
       "affected_files": [
         "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
       ],
@@ -39,55 +39,52 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Identify the encryption/decryption workflow."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Identify key-management and key-establishment dependencies."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "Determine whether the asset requires direct replacement or architectural migration."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "Evaluate ML-KEM-768 where it is applicable to the identified key-establishment function."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
+          "action": "Validate encryption compatibility and data-format requirements."
         },
         {
           "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
+          "action": "Validate backward compatibility during migration."
         },
         {
           "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 8,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 9,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA-OAEP.",
+        "summary": "ECDAT generated 9 migration action(s) for RSA-OAEP.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "The asset performs encryption and requires usage-specific migration analysis."
         ]
       }
     },
     {
       "asset": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
+      "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -156,17 +153,22 @@
     },
     {
       "asset": "RSA-2048",
+      "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
       "migration_type": "pqc-candidate",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
+        "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
+      "affected_classes": [
+        "VerifyRSAOAEPSHA2"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
       "impact_level": "HIGH",
       "actions": [
         {
@@ -220,6 +222,7 @@
     },
     {
       "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
+      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -284,7 +287,8 @@
     },
     {
       "asset": "SHAKE256",
-      "migration_type": "not-applicable",
+      "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8",
+      "migration_type": "no-direct-pqc-replacement",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -295,66 +299,59 @@
       "affected_class_count": 0,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "MEDIUM",
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Validate the current cryptographic purpose."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Do not apply a PQC algorithm as a blind direct replacement."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Review dependent protocols and cryptographic constructions."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Perform security and interoperability testing."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 8,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 9,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 9,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for SHAKE256.",
+        "summary": "ECDAT generated 9 migration action(s) for SHAKE256.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "No direct PQC replacement is currently available for the identified asset."
         ]
       }
     },
     {
       "asset": "DH",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
       "affected_files": [
         "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
       ],
@@ -363,63 +360,60 @@
       "affected_class_count": 0,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Identify the current key-establishment protocol and handshake flow."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Identify all inputs and outputs of the existing key-agreement operation."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Update protocol negotiation and key-establishment handling where required."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Validate key encapsulation and decapsulation integration."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
+          "action": "Validate interoperability with all communicating endpoints."
         },
         {
           "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 10,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for DH.",
+        "summary": "ECDAT generated 10 migration action(s) for DH.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "The asset performs key agreement and can be evaluated against a PQC KEM."
         ]
       }
     },
     {
       "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
+      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -484,6 +478,7 @@
     },
     {
       "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
+      "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -548,6 +543,7 @@
     },
     {
       "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
+      "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -612,6 +608,7 @@
     },
     {
       "asset": "HMAC-SHA256",
+      "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f",
       "migration_type": "no-direct-pqc-replacement",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -623,7 +620,7 @@
       "affected_class_count": 0,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "MEDIUM",
       "actions": [
         {
           "step": 1,
@@ -672,6 +669,7 @@
     },
     {
       "asset": "HKDF-SHA256",
+      "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3",
       "migration_type": "no-direct-pqc-replacement",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -732,6 +730,7 @@
     },
     {
       "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
+      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -796,6 +795,7 @@
     },
     {
       "asset": "RSA-2048",
+      "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
       "migration_type": "pqc-candidate",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
@@ -860,6 +860,7 @@
     },
     {
       "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
+      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -924,6 +925,7 @@
     },
     {
       "asset": "DSA",
+      "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea",
       "migration_type": "pqc-candidate",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
@@ -988,9 +990,10 @@
     },
     {
       "asset": "Ed25519",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -999,63 +1002,60 @@
       "affected_class_count": 0,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Identify all digital-signature generation and verification paths."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Identify certificate, key, and signature-format dependencies."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Update signature generation and verification interfaces where required."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Review certificate and trust-chain compatibility."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
+          "action": "Validate signature encoding and interoperability."
         },
         {
           "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 10,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for Ed25519.",
+        "summary": "ECDAT generated 10 migration action(s) for Ed25519.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
         ]
       }
     },
     {
       "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
+      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1120,9 +1120,10 @@
     },
     {
       "asset": "x25519",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1135,59 +1136,56 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Identify the current key-establishment protocol and handshake flow."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Identify all inputs and outputs of the existing key-agreement operation."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Update protocol negotiation and key-establishment handling where required."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Validate key encapsulation and decapsulation integration."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
+          "action": "Validate interoperability with all communicating endpoints."
         },
         {
           "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 10,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for x25519.",
+        "summary": "ECDAT generated 10 migration action(s) for x25519.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "The asset performs key agreement and can be evaluated against a PQC KEM."
         ]
       }
     },
     {
       "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
+      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1252,6 +1250,7 @@
     },
     {
       "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
+      "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1316,6 +1315,7 @@
     },
     {
       "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
+      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1380,6 +1380,7 @@
     },
     {
       "asset": "RSA",
+      "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69",
       "migration_type": "pqc-candidate",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
@@ -1445,6 +1446,7 @@
     },
     {
       "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
+      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1509,6 +1511,7 @@
     },
     {
       "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
+      "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1573,9 +1576,10 @@
     },
     {
       "asset": "Ed448",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1584,63 +1588,60 @@
       "affected_class_count": 0,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Identify all digital-signature generation and verification paths."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Identify certificate, key, and signature-format dependencies."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Update signature generation and verification interfaces where required."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Review certificate and trust-chain compatibility."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
+          "action": "Validate signature encoding and interoperability."
         },
         {
           "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 10,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for Ed448.",
+        "summary": "ECDAT generated 10 migration action(s) for Ed448.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
         ]
       }
     },
     {
       "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
+      "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1705,6 +1706,7 @@
     },
     {
       "asset": "SHA256",
+      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
       "migration_type": "no-direct-pqc-replacement",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1766,9 +1768,10 @@
     },
     {
       "asset": "x448",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b",
+      "migration_type": "pqc-candidate",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1781,59 +1784,56 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the cryptographic usage."
+          "action": "Identify the current key-establishment protocol and handshake flow."
         },
         {
           "step": 2,
-          "action": "Review all identified source locations."
+          "action": "Identify all inputs and outputs of the existing key-agreement operation."
         },
         {
           "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
+          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
         },
         {
           "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
+          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
         },
         {
           "step": 5,
-          "action": "Perform interoperability testing."
+          "action": "Update protocol negotiation and key-establishment handling where required."
         },
         {
           "step": 6,
-          "action": "Perform security testing."
+          "action": "Validate key encapsulation and decapsulation integration."
         },
         {
           "step": 7,
-          "action": "Perform performance testing."
+          "action": "Validate interoperability with all communicating endpoints."
         },
         {
           "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 10,
+          "step": 9,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 11,
+          "step": 10,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 11,
+      "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for x448.",
+        "summary": "ECDAT generated 10 migration action(s) for x448.",
         "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
+          "The asset performs key agreement and can be evaluated against a PQC KEM."
         ]
       }
     },
     {
       "asset": "SHA512",
+      "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c",
       "migration_type": "no-direct-pqc-replacement",
       "pqc_candidate": null,
       "pqc_family": null,
@@ -1894,1744 +1894,7 @@
     },
     {
       "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "SHAKE256",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for SHAKE256.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "DH",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for DH.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "HMAC-SHA256",
-      "migration_type": "no-direct-pqc-replacement",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/fernet.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the current cryptographic purpose."
-        },
-        {
-          "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
-        },
-        {
-          "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
-        },
-        {
-          "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 8,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 9,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 9,
-      "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for HMAC-SHA256.",
-        "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
-        ]
-      }
-    },
-    {
-      "asset": "HKDF-SHA256",
-      "migration_type": "no-direct-pqc-replacement",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/hkdf/generate_hkdf.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the current cryptographic purpose."
-        },
-        {
-          "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
-        },
-        {
-          "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
-        },
-        {
-          "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 8,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 9,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 9,
-      "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for HKDF-SHA256.",
-        "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@a4b99b30-778e-4a90-8b34-2d3e54023087.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "RSA-2048",
-      "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
-        },
-        {
-          "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
-        },
-        {
-          "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
-        },
-        {
-          "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
-        },
-        {
-          "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA-2048.",
-        "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
-        ]
-      }
-    },
-    {
-      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "DSA",
-      "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
-        },
-        {
-          "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
-        },
-        {
-          "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
-        },
-        {
-          "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
-        },
-        {
-          "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for DSA.",
-        "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
-        ]
-      }
-    },
-    {
-      "asset": "Ed25519",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for Ed25519.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@e3ed8834-1629-4468-9cc1-69b4304de212.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "x25519",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for x25519.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@4ef12e90-f0bf-414b-a351-9995eab31aba.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "RSA",
-      "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 2,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
-        },
-        {
-          "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
-        },
-        {
-          "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
-        },
-        {
-          "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
-        },
-        {
-          "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA.",
-        "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
-        ]
-      }
-    },
-    {
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@a39a081d-ad88-420e-903e-9e8abd7746dd.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@1da1d50f-f071-451b-bcc2-4de220801c61.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "Ed448",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for Ed448.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
-      "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
-        },
-        {
-          "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
-        },
-        {
-          "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 9,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 10,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 10,
-      "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@4749a82c-f248-457e-a05a-c923811d5a0e.",
-        "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
-        ]
-      }
-    },
-    {
-      "asset": "SHA256",
-      "migration_type": "no-direct-pqc-replacement",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/hkdf/generate_hkdf.py",
-        "src/cryptography/fernet.py"
-      ],
-      "affected_file_count": 2,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "MEDIUM",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the current cryptographic purpose."
-        },
-        {
-          "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
-        },
-        {
-          "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
-        },
-        {
-          "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 8,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 9,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 9,
-      "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for SHA256.",
-        "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
-        ]
-      }
-    },
-    {
-      "asset": "x448",
-      "migration_type": "not-applicable",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the cryptographic usage."
-        },
-        {
-          "step": 2,
-          "action": "Review all identified source locations."
-        },
-        {
-          "step": 3,
-          "action": "Identify dependent interfaces and protocol assumptions."
-        },
-        {
-          "step": 4,
-          "action": "Validate implementation support for the selected migration approach."
-        },
-        {
-          "step": 5,
-          "action": "Perform interoperability testing."
-        },
-        {
-          "step": 6,
-          "action": "Perform security testing."
-        },
-        {
-          "step": 7,
-          "action": "Perform performance testing."
-        },
-        {
-          "step": 8,
-          "action": "Validate the migration in a controlled environment."
-        },
-        {
-          "step": 9,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 10,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 11,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 11,
-      "explanation": {
-        "summary": "ECDAT generated 11 migration action(s) for x448.",
-        "reasons": [
-          "Migration classification is unavailable, so conservative validation actions are recommended."
-        ]
-      }
-    },
-    {
-      "asset": "SHA512",
-      "migration_type": "no-direct-pqc-replacement",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "MEDIUM",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Validate the current cryptographic purpose."
-        },
-        {
-          "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
-        },
-        {
-          "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
-        },
-        {
-          "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 8,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 9,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 9,
-      "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for SHA512.",
-        "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
+      "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "migration_type": "architectural-migration",
       "pqc_candidate": null,
       "pqc_family": null,

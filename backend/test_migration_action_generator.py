@@ -247,7 +247,7 @@ def test_all_assets():
 
     assert (
         len(results)
-        == 59
+        == 30
     )
 
     for result in results:
@@ -296,7 +296,7 @@ def test_summary():
 
     assert (
         summary["total_assets"]
-        == 59
+        == 30
     )
 
     assert (

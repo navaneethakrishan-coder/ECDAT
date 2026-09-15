@@ -283,6 +283,7 @@ def analyze_source_usage(
 
     return {
         "asset": asset,
+        "bom_ref": mapping.get("bom_ref") or mapping.get("asset_id"),
         "affected_file_count": len(
             affected_files
         ),

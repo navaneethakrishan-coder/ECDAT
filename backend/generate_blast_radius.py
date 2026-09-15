@@ -52,38 +52,29 @@ def load_json(path):
 
 def build_risk_map(risk_assets):
     """
-    Build a lookup table using the asset name.
-
-    The explainable-risk file currently does not preserve
-    bom_ref, while ecdat-assets.json does.
-
-    Therefore, asset name is used to connect the two datasets.
+    Build a lookup table using the CBOM bom-ref.
     """
 
     risk_map = {}
 
-    duplicate_names = []
+    duplicate_refs = []
 
     for item in risk_assets:
 
-        name = item.get(
-            "name"
-        )
+        bom_ref = item.get("bom_ref")
 
-        if not name:
+        if not bom_ref:
             continue
 
-        if name in risk_map:
-            duplicate_names.append(
-                name
-            )
+        if bom_ref in risk_map:
+            duplicate_refs.append(bom_ref)
 
-        risk_map[name] = item.get(
+        risk_map[bom_ref] = item.get(
             "risk_assessment",
             {}
         )
 
-    return risk_map, duplicate_names
+    return risk_map, duplicate_refs
 
 
 # ============================================================
@@ -104,21 +95,15 @@ def validate_risk_mapping(
 
     for asset in assets:
 
-        name = asset.get(
-            "name"
-        )
+        bom_ref = asset.get("bom_ref")
 
-        if name in risk_map:
+        if bom_ref in risk_map:
 
-            mapped.append(
-                name
-            )
+            mapped.append(bom_ref)
 
         else:
 
-            missing.append(
-                name
-            )
+            missing.append(bom_ref)
 
     return mapped, missing
 
@@ -153,12 +138,8 @@ def generate_blast_radius(
 
     for asset in assets:
 
-        name = asset.get(
-            "name"
-        )
-
         risk_assessment = risk_map.get(
-            name,
+            asset.get("bom_ref"),
             {}
         )
 
@@ -501,7 +482,7 @@ def main():
     # Build risk lookup
     # --------------------------------------------------------
 
-    risk_map, duplicate_names = build_risk_map(
+    risk_map, duplicate_refs = build_risk_map(
         risk_assets
     )
 
@@ -535,18 +516,18 @@ def main():
         f"{len(missing)}"
     )
 
-    if duplicate_names:
+    if duplicate_refs:
 
         print()
 
         print(
-            "WARNING: Duplicate asset names detected:"
+            "WARNING: Duplicate CBOM bom-ref values detected:"
         )
 
-        for name in duplicate_names:
+        for bom_ref in duplicate_refs:
 
             print(
-                f"  - {name}"
+                f"  - {bom_ref}"
             )
 
     if missing:

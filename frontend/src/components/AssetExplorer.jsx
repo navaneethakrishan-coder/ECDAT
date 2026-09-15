@@ -23,8 +23,8 @@ const MIGRATION_TYPE_LABELS = {
  * a tinted background so they visually stand out while scanning the
  * list, without any animation or neon treatment.
  *
- * Data comes from two already-existing bulk endpoints joined by asset
- * name -- GET /api/migration-report/assets (risk/PQC/source-impact)
+ * Data comes from two already-existing bulk endpoints joined by CBOM
+ * bom-ref -- GET /api/migration-report/assets (risk/PQC/source-impact)
  * and GET /api/priority (priority/complexity/blast-radius) -- both
  * already fetched once on load, nothing new added for this view. A
  * per-asset source file/line is intentionally NOT shown here: the
@@ -44,7 +44,7 @@ export function AssetExplorer({ assets, totalCount, selectedAsset, onSelectAsset
         />
       ) : (
         assets.map((asset, index) => {
-          const isSelected = selectedAsset === asset.name;
+          const isSelected = selectedAsset === asset.bomRef;
           const severity = String(asset.riskSeverity || "unknown").toLowerCase();
           const migrationPath = MIGRATION_TYPE_LABELS[asset.migrationType] || "Not yet classified";
 
@@ -54,7 +54,7 @@ export function AssetExplorer({ assets, totalCount, selectedAsset, onSelectAsset
               role="listitem"
               key={`${asset.key}-${index}`}
               className={`asset-card risk-accent-${severity}${isSelected ? " asset-card-selected" : ""}`}
-              onClick={() => onSelectAsset(asset.name)}
+              onClick={() => onSelectAsset(asset.bomRef)}
               aria-current={isSelected ? "true" : undefined}
             >
               <div className={`asset-card-severity-rail severity-rail-${severity}`} aria-hidden="true" />

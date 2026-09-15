@@ -84,7 +84,7 @@ def test_all_assets():
         assets
     )
 
-    assert len(mappings) == 59
+    assert len(mappings) == len(assets)
 
     for mapping in mappings:
         assert "asset" in mapping
@@ -105,7 +105,7 @@ def test_summary():
         mappings
     )
 
-    assert summary["total_assets"] == 59
+    assert summary["total_assets"] == len(assets)
 
     assert (
         summary["assets_with_source_evidence"]

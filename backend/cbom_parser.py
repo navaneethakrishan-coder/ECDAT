@@ -128,7 +128,46 @@ def extract_assets(cbom):
 
         assets.append(asset)
 
-    return assets
+    # CycloneDX bom-ref is the canonical finding identity. Some scanner
+    # outputs repeat the same component record, so merge only exact
+    # bom-ref duplicates while retaining every evidence location. Never
+    # merge merely because two records share an algorithm name.
+    assets_by_ref = {}
+    assets_without_ref = []
+
+    for asset in assets:
+        bom_ref = asset.get("bom_ref")
+
+        if not bom_ref:
+            assets_without_ref.append(asset)
+            continue
+
+        existing = assets_by_ref.get(bom_ref)
+        if existing is None:
+            assets_by_ref[bom_ref] = asset
+            continue
+
+        seen_locations = {
+            (
+                occurrence.get("location"),
+                occurrence.get("line"),
+                occurrence.get("offset"),
+                occurrence.get("context"),
+            )
+            for occurrence in existing.get("occurrences", [])
+        }
+        for occurrence in asset.get("occurrences", []):
+            key = (
+                occurrence.get("location"),
+                occurrence.get("line"),
+                occurrence.get("offset"),
+                occurrence.get("context"),
+            )
+            if key not in seen_locations:
+                existing["occurrences"].append(occurrence)
+                seen_locations.add(key)
+
+    return list(assets_by_ref.values()) + assets_without_ref
 
 
 # ============================================================

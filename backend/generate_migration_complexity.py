@@ -110,25 +110,19 @@ def main():
 
     for item in risk_assets:
 
-        name = item.get(
-            "name"
-        )
+        bom_ref = item.get("bom_ref")
 
-        if name:
-
-            risk_map[name] = item
+        if bom_ref:
+            risk_map[bom_ref] = item
 
     blast_map = {}
 
     for item in blast_assets:
 
-        name = item.get(
-            "asset"
-        )
+        bom_ref = item.get("bom_ref") or item.get("asset_ref")
 
-        if name:
-
-            blast_map[name] = item
+        if bom_ref:
+            blast_map[bom_ref] = item
 
     # --------------------------------------------------------
     # Validate mappings
@@ -142,11 +136,10 @@ def main():
 
     for asset in assets:
 
-        name = asset.get(
-            "name"
-        )
+        name = asset.get("name")
+        bom_ref = asset.get("bom_ref")
 
-        if name in risk_map:
+        if bom_ref in risk_map:
 
             risk_mapped += 1
 
@@ -156,7 +149,7 @@ def main():
                 name
             )
 
-        if name in blast_map:
+        if bom_ref in blast_map:
 
             blast_mapped += 1
 
@@ -194,12 +187,12 @@ def main():
         )
 
         risk_record = risk_map.get(
-            name,
+            bom_ref,
             {}
         )
 
         blast_record = blast_map.get(
-            name,
+            bom_ref,
             {}
         )
 

@@ -114,10 +114,17 @@ def calculate_migration_complexity(
 
     # Key agreement / signatures generally involve
     # broader migration considerations.
+    #
+    # (Incidental fix: this previously checked the literal string
+    # "signature", which no classification stage has ever emitted --
+    # every signature-purpose finding uses "digital-signature" -- so
+    # this bonus never actually applied. Found while wiring in
+    # repository-specific purpose resolution, fixed here since it's
+    # the same "purpose" value this round is about getting right.)
 
     if (
         "key-agreement" in purpose
-        or "signature" in purpose
+        or "digital-signature" in purpose
     ):
         crypto_score += 5
 

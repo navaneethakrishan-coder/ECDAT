@@ -93,7 +93,11 @@ def run_repository_analysis(repository: str, branch: str):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    # No request in this app carries cookies/auth headers, and
+    # "allow_origins=*" combined with allow_credentials=True is an
+    # invalid CORS combination per spec (browsers reject it) --
+    # credentials support was never actually used.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -446,17 +450,7 @@ def get_crypto_asset(asset_name: str):
 
     for asset in assets:
 
-        name = (
-            asset.get("asset")
-            or asset.get("name")
-            or asset.get("algorithm")
-        )
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
+        if asset.get("bom_ref") and str(asset["bom_ref"]) == asset_name:
             return asset
 
     raise HTTPException(
@@ -479,16 +473,11 @@ def get_asset_list(data):
 
 def find_asset(records, asset_name):
     for record in records:
-        name = (
-            record.get("asset")
-            or record.get("name")
-        )
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
+        identity = record.get("identity", {})
+        if not isinstance(identity, dict):
+            identity = {}
+        finding_id = record.get("bom_ref") or record.get("asset_ref") or identity.get("bom_ref")
+        if finding_id and str(finding_id) == asset_name:
             return record
 
     return None
@@ -728,19 +717,9 @@ def get_asset_pqc_migration(asset_name: str):
         else data
     )
 
-    for asset in assets:
-
-        name = (
-            asset.get("name")
-            or asset.get("asset")
-        )
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
-            return asset
+    asset = find_asset(assets, asset_name)
+    if asset:
+        return asset
 
     raise HTTPException(
         status_code=404,
@@ -799,16 +778,9 @@ def get_asset_pqc_ranking(asset_name: str):
         else []
     )
 
-    for asset in assets:
-
-        name = asset.get("asset")
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
-            return asset
+    asset = find_asset(assets, asset_name)
+    if asset:
+        return asset
 
     raise HTTPException(
         status_code=404,
@@ -905,16 +877,7 @@ def get_asset_source_impact(
     )
 
     for asset in assets:
-
-        name = asset.get(
-            "asset"
-        )
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
+        if asset.get("bom_ref") and str(asset["bom_ref"]) == asset_name:
 
             source_impact = asset.get(
                 "source_impact",
@@ -922,7 +885,8 @@ def get_asset_source_impact(
             )
 
             return {
-                "asset": name,
+                "asset": asset.get("asset"),
+                "bom_ref": asset.get("bom_ref"),
 
                 "affected_files": source_impact.get(
                     "affected_files",
@@ -1021,16 +985,9 @@ def get_asset_migration_actions(
         else data
     )
 
-    for asset in assets:
-
-        name = asset.get("asset")
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
-            return asset
+    asset = find_asset(assets, asset_name)
+    if asset:
+        return asset
 
     raise HTTPException(
         status_code=404,
@@ -1072,6 +1029,7 @@ def get_report_assets():
         "assets": [
             {
                 "asset": asset.get("asset"),
+                "bom_ref": asset.get("bom_ref"),
                 "asset_type": asset.get(
                     "identity",
                     {}
@@ -1108,6 +1066,14 @@ def get_report_assets():
                     "source_impact",
                     {}
                 ).get("impact_level"),
+                "purpose_confidence": asset.get(
+                    "classification",
+                    {}
+                ).get("purpose_confidence"),
+                "purpose_needs_review": asset.get(
+                    "classification",
+                    {}
+                ).get("purpose_needs_review", False),
                 "action_count": asset.get(
                     "action_count",
                     len(
@@ -1145,15 +1111,7 @@ def get_report_asset(asset_name: str):
 
     for asset in assets:
 
-        name = asset.get(
-            "asset"
-        )
-
-        if (
-            name
-            and str(name).lower()
-            == asset_name.lower()
-        ):
+        if asset.get("bom_ref") and str(asset["bom_ref"]) == asset_name:
             return asset
 
     raise HTTPException(
@@ -1313,57 +1271,50 @@ def get_asset(asset_name: str):
     # Find records
     # --------------------------------------------------------
 
-    def find_by_name(records):
+    def find_by_id(records):
         for record in records:
-
-            name = (
-                record.get("asset")
-                or record.get("name")
-                or record.get("algorithm")
-            )
-
-            if (
-                name
-                and str(name).lower()
-                == asset_name.lower()
-            ):
+            identity = record.get("identity", {})
+            if not isinstance(identity, dict):
+                identity = {}
+            finding_id = record.get("bom_ref") or record.get("asset_ref") or identity.get("bom_ref")
+            if finding_id and str(finding_id) == asset_name:
                 return record
 
         return None
 
-    inventory = find_by_name(
+    inventory = find_by_id(
         inventory_assets
     )
 
-    risk = find_by_name(
+    risk = find_by_id(
         risk_assets
     )
 
-    priority = find_by_name(
+    priority = find_by_id(
         priority_assets
     )
 
-    complexity = find_by_name(
+    complexity = find_by_id(
         complexity_assets
     )
 
-    blast_radius = find_by_name(
+    blast_radius = find_by_id(
         blast_assets
     )
 
-    pqc = find_by_name(
+    pqc = find_by_id(
         pqc_assets
     )
 
-    ranking = find_by_name(
+    ranking = find_by_id(
         ranking_assets
     )
 
-    actions = find_by_name(
+    actions = find_by_id(
         action_assets
     )
 
-    report = find_by_name(
+    report = find_by_id(
         report_assets
     )
 
@@ -1385,7 +1336,8 @@ def get_asset(asset_name: str):
     # --------------------------------------------------------
 
     return {
-        "asset": asset_name,
+        "asset": (report or inventory or {}).get("asset") or (report or inventory or {}).get("name") or "Unknown",
+        "bom_ref": asset_name,
 
         "inventory": inventory,
 

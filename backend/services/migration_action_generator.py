@@ -316,6 +316,7 @@ def generate_migration_actions(
 
     return {
         "asset": asset,
+        "bom_ref": mapping.get("bom_ref") or mapping.get("asset_id"),
         "migration_type": (
             migration.get("migration_type")
             or migration.get("pqc_analysis", {}).get("migration_type")
@@ -354,13 +355,13 @@ def generate_all_migration_actions(
 ) -> List[Dict[str, Any]]:
 
     impact_map = {
-        item.get("asset"): item
+        item.get("bom_ref"): item
         for item in impacts
         if isinstance(item, dict)
     }
 
     migration_map = {
-        item.get("asset"): item
+        item.get("bom_ref"): item
         for item in migrations
         if isinstance(item, dict)
     }
@@ -370,11 +371,13 @@ def generate_all_migration_actions(
     for mapping in mappings:
 
         asset = mapping.get("asset")
+        bom_ref = mapping.get("bom_ref") or mapping.get("asset_id")
 
         impact = impact_map.get(
-            asset,
+            bom_ref,
             {
                 "asset": asset,
+                "bom_ref": bom_ref,
                 "affected_files": [],
                 "affected_classes": [],
                 "affected_functions": [],
@@ -383,9 +386,10 @@ def generate_all_migration_actions(
         )
 
         migration = migration_map.get(
-            asset,
+            bom_ref,
             {
                 "asset": asset,
+                "bom_ref": bom_ref,
                 "migration_type": None,
                 "ranked_candidates": [],
             },

@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_FILE = BASE_DIR.parent / "data" / "ecdat-migration-actions.json"
 
 
-EXPECTED_ASSETS = 59
+EXPECTED_ASSETS = 30
 EXPECTED_PQC_CANDIDATES = 14
 
 VALID_MIGRATION_TYPES = {
