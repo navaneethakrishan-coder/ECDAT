@@ -7,6 +7,9 @@ This document reflects the architecture as actually implemented, traced through 
 > **Update (2026-09-14, risk-scoring unification):** the three-parallel-pipelines problem described in §5 has been resolved at the data-generation level (not just at the AI advisor's consumption level, as the first update above did). See the rewritten §5 and §10.
 > **Update (2026-09-14, RiskContext contextualization):** `RiskContext` is no longer one hardcoded object shared by every asset in every repository — it is now derived per asset from real CBOM evidence. See §11. Risk scores for assets whose only evidence is in test/demo/doc paths, or that involve network-facing protocols, changed as a direct and intended consequence.
 > **Update (2026-09-14, frontend UI/UX overhaul):** the frontend was substantially restructured and componentized (hero overview, pipeline visualization, card-based asset explorer, a fixed asset-detail section order, a live backend-health indicator) — see §8 (revised) and the new §12. No backend or API changes were made or needed for this round.
+> **Update (2026-09-14, composition & visual-hierarchy redesign):** the asset-detail view was restructured again, from a flat 6-section stack into a 2×2 "investigation workspace" grid; §8/§12 below have been corrected to describe this current structure rather than the superseded one. See §13.
+> **Update (2026-09-14, premium visual-identity redesign):** color system, hero section, sidebar nav, and data-visualization style were reworked (still no backend/API changes) — see the new §14.
+> **Update (2026-09-15, console-grade visual system + workspace re-composition):** a fourth frontend-only round — layered atmosphere/glass/glow design tokens, a command topbar, a 7-stage pipeline, a vertical migration decision flow, a 2-column asset-detail workspace with the AI Advisor full-width below, and truthfulness fixes to two dashboard figures. §13's grid description is superseded — see the new §15.
 > Sections have been updated in place to describe the current state; see `CHANGELOG.md` for exactly what changed and why.
 
 ## 1. High-level component diagram
@@ -251,26 +254,134 @@ Previously `App.jsx` (~2,308 lines) both held all state and rendered every secti
 | `HeroOverview.jsx` | Headline, description, an SVG readiness ring (derived from existing `/api/summary` fields — see below), and the 4 top-level stat cards. |
 | `PipelineStepper.jsx` | Visualizes the repository-analysis pipeline as 6 conceptual stages. Only ever shows coarse "active/done/failed" states per the backend's actual `/api/analyze/status` granularity — see the caveat in §2/§12's Known limitations. |
 | `RepositoryAnalysisPanel.jsx` | Composes the pipeline stepper with the pre-existing repository-URL/branch form (now a real `<form onSubmit>`) and its status banner. |
-| `AnalyticsPanel.jsx` | Generic chart-panel component, replacing three near-duplicated inline Recharts blocks. |
-| `Sidebar.jsx` | Nav + the new live health indicator. |
+| `Sidebar.jsx` | Nav + the live health indicator. |
 | `AssetFilters.jsx` | Search input + 4 filter selects (unchanged behavior, extracted). |
 | `AssetExplorer.jsx` | Card-based asset list (replaces the old `<table>`), each card showing risk/priority/complexity/blast-radius/source-impact severities and a PQC recommendation. |
-| `AssetDetailPanel.jsx` | Orchestrates the asset-detail overlay's fixed section order (below). |
-| `detail/AssetIdentityHeader.jsx`, `RiskPriorityStrip.jsx`, `ImpactAnalysis.jsx`, `PQCRecommendation.jsx`, `MigrationActions.jsx` | The asset-detail sections themselves. |
+| `AssetDetailPanel.jsx` | Orchestrates the asset-detail workspace's fixed layout (below). |
 
-`AIAdvisorPanel.jsx` was modified in place (not replaced): per-section icons were added to its parsed-response headings, and its descriptive copy was updated. Its props, its 4-state machine (`idle/loading/success/error`), and the `POST /api/ai/advice` contract it calls are all unchanged from §8's description.
+**Superseded by §13/§14 and no longer present:** `AnalyticsPanel.jsx` (replaced by `DonutPanel.jsx`, §14) and the original flat `detail/AssetIdentityHeader.jsx`/`RiskPriorityStrip.jsx`/`ImpactAnalysis.jsx`/`PQCRecommendation.jsx`/`MigrationActions.jsx` (replaced by the 2×2 workspace components listed in §13). This row is kept only so a reader following an old commit doesn't go looking for files that no longer exist.
 
-### Asset-detail section order (fixed, by design)
+`AIAdvisorPanel.jsx` was modified in place (not replaced) across all three frontend rounds: per-section icons on its parsed-response headings (this round), a compact single-line context strip replacing an 8-item snapshot grid (§13), and an availability-indicator dot/label (§14). Its props, its 4-state machine (`idle/loading/success/error`), and the `POST /api/ai/advice` contract it calls are unchanged from §8's original description throughout.
 
-`AssetDetailPanel.jsx` renders, in this exact order: **Identity → Risk/Priority strip → Impact Analysis → PQC Recommendation → Migration Actions → AI Advisor**. This was a specific task requirement (context before risk, risk before priority, priority before impact, impact before the PQC recommendation it motivates, the recommendation before concrete actions, and the AI Advisor last since it explains everything shown above it). Verified live: `document.querySelector('.asset-detail-panel').children`'s className list matches this order exactly (see `CHANGELOG.md`'s test log for this round).
+### Asset-detail layout (superseded by §13 — see there for the current structure)
+
+The section order described in the original version of this round — a flat **Identity → Risk/Priority strip → Impact Analysis → PQC Recommendation → Migration Actions → AI Advisor** stack — was replaced later the same day by the 2×2 workspace grid described in §13. It is recorded here only for history; `AssetDetailPanel.jsx` no longer renders a flat stack.
 
 ### "Reuse existing data" in practice
 
 Two numbers on the new hero section are explicitly derived, not newly computed by the backend:
 
-- **Migration readiness %** — `100 - (high_or_critical_count / total_assets) * 100`, computed client-side from `/api/summary`'s existing `risk_severity_distribution` and `total_assets` fields. Documented in-code as a transparent percentage of existing data, not a new backend metric.
+- **Migration readiness %** — `100 - (high_or_critical_priority_assets / total_assets) * 100`, computed client-side from `/api/summary`'s existing `high_or_critical_priority_assets` and `total_assets` fields — i.e. it is *priority*-based, not risk-severity-based. (Corrected 2026-09-15: this bullet previously named `risk_severity_distribution`, which the code never used.) Documented in-code as a transparent percentage of existing data, not a new backend metric.
 - **Asset Explorer's per-card Priority/Complexity/Blast Radius** — from the `getPriority()` join described above, not invented.
 
 ### Known limitation: pipeline-stage precision
 
 `PipelineStepper` displays 6 named stages purely for narrative/comprehension purposes. The backend's actual `POST /api/analyze` / `GET /api/analyze/status` only ever reports one of `idle/starting/running/completed/failed` (§2) — there is no per-stage progress signal anywhere in the backend. The component does not pretend otherwise: while status is `"running"`, all stages after the first are shown as generically "active" together, not individually sequenced. A future backend change emitting structured per-stage progress would let this become precise; out of scope for this frontend-only round.
+
+## 13. Composition & visual-hierarchy redesign (2026-09-14)
+
+A second frontend-only round, done because the componentized result from §12 still read as a long vertical stack of equal-weight cards rather than a grouped investigation workspace.
+
+> **Superseded layout (2026-09-15):** the 2×2 grid described below is no longer current. An uncommitted, undocumented intermediate 3-column variant (Evidence | Risk | Migration, AI Advisor full-width) replaced it first; the 2026-09-15 round then replaced that with Evidence + Risk Intelligence stacked beside a vertical Migration Path, AI Advisor full-width below — see §15. The three bug write-ups at the end of this section remain accurate history.
+
+**Asset-detail view restructured into a 2×2 grid.** `AssetDetailPanel.jsx` now renders a full-width header band (`detail/AssetHeaderBand.jsx` — identity on the left, a large risk-severity readout on the right, since risk is ECDAT's core signal and previously sat in a same-size card among four others) followed by `.asset-workspace-grid`, a 2-column grid whose 4 children land in this exact order/position:
+
+```
+[ Risk & Impact ]      [ Migration Path ]
+[ Source & Evidence ]  [ AI Advisor ]
+```
+
+- `detail/RiskImpactPanel.jsx` — complexity/blast-radius/source-impact as a secondary metric tier, plus the "why this priority" explanation text.
+- `detail/MigrationFlow.jsx` — the migration recommendation as an arrow-connected sequence (`Current Cryptography → Quantum Risk → PQC Candidate → Migration Action`), with ranked alternatives and the full action list behind `<details>` progressive disclosure instead of always-expanded lists.
+- `detail/EvidencePanel.jsx` — three quiet file/class/function counters, with the actual affected-file/class/function lists behind a disclosure toggle.
+- `AIAdvisorPanel.jsx` — unchanged contract, but its old 8-item snapshot grid was replaced with a single-line context strip so the panel is sized to match its grid neighbor instead of spanning full width as a mega-card.
+
+The five components this replaced (`detail/AssetIdentityHeader.jsx`, `RiskPriorityStrip.jsx`, `ImpactAnalysis.jsx`, `PQCRecommendation.jsx`, `MigrationActions.jsx`) were deleted; their logic was folded into the four components above.
+
+**Dashboard given an asymmetric first-viewport row.** A new `CriticalFindingsPanel.jsx` (top 5 HIGH/CRITICAL assets, ranked client-side by the same severity ordinal every badge uses) sits beside `RepositoryAnalysisPanel` in a `1.6fr / 1fr` grid row (`.dashboard-row-primary`), instead of both stacking full-width. A shared `.section-heading` (eyebrow + title) pattern was introduced for consistent hierarchy across this row, the analytics section, and the Asset Explorer.
+
+**Asset Explorer cards redesigned for severity dominance.** A wide colored left rail plus prominent Risk/Priority badges are now the dominant visual signal per row; Complexity/Blast Radius/Source Impact were demoted to one quiet meta line. HIGH/CRITICAL rows get a restrained background tint.
+
+**Layered background depth** (two restrained radial-gradient glows + a faint masked grid texture) was added to `.app-shell` — refined further in §14.
+
+**Three real bugs were found only by rendering the app in a browser**, none visible from reading the CSS/JSX in isolation:
+1. A **modal stacking-context bug** — giving `.main-content` its own `z-index` (for the background layering above) trapped the asset-detail workspace's `position: fixed; z-index: 1000` overlay inside `.main-content`'s local stacking context, so it compared against the sidebar as a whole and rendered *underneath* it. The entire asset identity block was invisible on every asset-detail view until this was found. Fixed by removing the z-index from `.main-content` (only `.sidebar` needs it).
+2. A **grid min-width overflow bug** — `.dashboard-row-primary`'s `1.6fr 1fr` columns silently overflowed the viewport (the Critical Findings panel clipped off-screen), because grid items default to `min-width: auto`, which prevents a track from shrinking below its content's intrinsic width. Fixed with an explicit `min-width: 0` on the row's direct children (same fix applied to `.asset-workspace-grid`).
+3. A **flex-axis bug** — `.workspace-identity`'s `flex: 1 1 320px` sized it correctly as a width basis in the header's row layout, but once a ≤900px responsive rule switched the header to `flex-direction: column`, that same basis applied to height instead, rendering a 320px-tall, mostly-empty box on mobile widths. Fixed by resetting the flex-basis inside that breakpoint.
+
+## 14. Premium visual-identity redesign (2026-09-14)
+
+A third frontend-only round, targeted specifically at visual identity (color, typography, hero treatment, chart style) rather than structure — the structure from §12/§13 was already correct going in, and nothing in this round touches the DOM structure §13 describes above.
+
+- **Color system made intentional**: `--accent-cyan`/`--accent-cyan-strong` added, reserved specifically for PQC/technology meaning; `--accent-violet` reserved specifically for AI meaning; every existing violet-colored element that actually named a PQC candidate (asset-card PQC text, the migration-flow's PQC node, ranked-candidate badges, the AI Advisor's inline "PQC → ‹candidate›" callout) was retargeted to cyan, while elements representing the AI Advisor itself stayed violet.
+- **Hero rewritten**: new headline/copy, a real primary CTA that scrolls to and focuses the repository form, a dependency-free inline-SVG decorative visual, and an asymmetric readiness-card-plus-2×2-tiles layout replacing 4 equal stat cards.
+- **Charts converted from bar to donut/ring** (`DonutPanel.jsx` replaces the deleted `AnalyticsPanel.jsx`), colored by the same meaning-based rule as everything else (severity hex values for the two severity-shaped charts; cyan/blue/gray for the non-severity migration-strategy chart).
+- **Sidebar nav expanded** from 6 to 9 items (added AI Advisor, Reports) with a restyled, restrained active-state accent bar.
+- **AI Advisor gained an availability indicator** (Ready/Analyzing/Unavailable), derived entirely from the existing `idle/loading/success/error` state machine — no new API call, since there is still no Ollama health-check endpoint wired up.
+
+No bugs were found this round — see `CHANGELOG.md`'s test log for the full live-browser verification (responsive sweep at 1440/1280/1024/900/768/400px, zero overflow, zero console errors, multiple assets opened, full AI Advisor round-trip). *(2026-09-15 note: that overflow check compared only page scroll width, so it could not see content clipped inside the fixed sidebar — the collapsed-rail logo was in fact clipped at ≤900px; see §15.)*
+
+## 15. Console-grade visual system & workspace re-composition (2026-09-15)
+
+A fourth frontend-only round, built from a detailed written brief (no reference image was attached to the request). No `backend/` file, API contract, `frontend/src/api.js` function, or npm dependency changed.
+
+### Design tokens (`App.css` `:root`)
+
+| Token group | Use |
+|---|---|
+| `--font-display` (Space Grotesk) | Headline and dominant numerics only — hero h1, readiness %, stat values, the asset risk score, donut centers, evidence counters. All other text is Inter. Both load via a Google Fonts `@import` (needs network — `TODO.md` #27). |
+| `--glass-bg`, `--glass-bg-strong`, `--glass-border`, `--glass-blur` | Translucent blurred surfaces, reserved for the topbar, sidebar, readiness card and the asset-detail header band. |
+| `--glow-cyan` / `-blue` / `-violet` / `-critical` / `-high` / `-low` / `-magenta` | Box-shadow glows for signature moments (active nav, primary CTA, severity surfaces on hover, AI identity) — never applied broadly. |
+| `--accent-magenta`, `--accent-magenta-strong` | Decorative only (atmosphere, gradient end-stops, one orbital node); never labels a data category. |
+| `--shadow-elevated`, `--radius-xl`, eased `--transition-*` | Elevation and motion refinements. |
+
+The §14 color meanings still hold and are enforced more strictly: cyan appears only where a real PQC candidate exists. `.asset-card-pqc-none`, `.critical-finding-pqc-none`, `.flow-node-pqc-none`, `.risk-hero-pqc-none` and `.ai-context-none` render "No direct replacement" / "Not Applicable" in neutral text.
+
+### Background layering
+
+`.app-shell::before` (four radial glows) and `::after` (grid plus two faint diagonal line patterns) are fixed layers at `z-index: -1`, and `body` / `.app-shell` are transparent so the canvas color comes from `html`. At their previous `z-index: 0` the `::after` layer — the shell's last child — painted over every positioned panel. A negative layer only stays visible if no in-flow ancestor paints an opaque background, which is why `body` and `.app-shell` must stay transparent.
+
+### Motion invariants
+
+- Entrance keyframes (`ecdat-rise-in`, `ecdat-scale-in`) animate the individual `translate` / `scale` properties, not `transform`. A filled animation outranks normal declarations, so animating `transform` pinned it and disabled every `:hover` lift.
+- `.panel.asset-explorer` has `animation: none`. `AssetDetailPanel`'s fixed, full-viewport overlay renders inside that section, and any transform-type property on it would make the explorer the overlay's containing block and clip it.
+- Stagger delays use two-class selectors; a later single-class `animation` shorthand would reset them to 0. A global `prefers-reduced-motion` rule collapses all animation and transition durations.
+
+### Component changes
+
+| Component | Change |
+|---|---|
+| `Topbar.jsx` (new) | Command bar bound to `App.jsx`'s existing `search` state (same variable as `AssetFilters`). `Ctrl/⌘+K` and `/` focus it; `/` is ignored while another input has focus. Live backend chip; the AI chip is a static model description, not a status claim. |
+| `HeroOverview.jsx` | Gradient on the closing words only; orbital SVG (radial core glow, two counter-rotating orbit groups with key nodes); workflow chain relabeled to the brief's stage names; the priority stat card relabeled (see below). |
+| `PipelineStepper.jsx` | 7 stages (added "Migration Plan"; kept "AI Ready" because the pipeline never runs the model). Connector spans removed — connectors, lit states and numbered badges are pure CSS (`::before` lines, CSS counters); per-stage identity colors via `pipeline-stage-{key}`. |
+| `CriticalFindingsPanel.jsx` | Two-line rows: name / score / risk badge, then "PQC → candidate · Priority X" (replacing two adjacent unlabeled badges). |
+| `AssetExplorer.jsx`, `AssetFilters.jsx` | Identity and PQC path share one subline; `not-applicable` label and filter option added. |
+| `AssetDetailPanel.jsx` | Wraps Evidence + Risk Intelligence in `.workspace-column`; AI Advisor stays full-width below the grid. |
+| `detail/AssetHeaderBand.jsx` | Large severity-colored risk score (only when numeric), severity, migration priority, and PQC recommendation as header facts. |
+| `detail/MigrationFlow.jsx` | Vertical decision pathway (`ArrowDown` connectors) — the horizontal flow scrolled and hid its fourth node at 1440px. |
+| `detail/EvidencePanel.jsx`, `detail/RiskImpactPanel.jsx` | Heading icons. |
+| `AIAdvisorPanel.jsx` | Icon in the CTA and a neutral no-candidate class. State machine, props and API call unchanged. |
+| `App.jsx` | Renders `Topbar`; Migration donut gains a "Not Applicable" slice, color and click-to-filter mapping. |
+
+### Asset-detail workspace (current)
+
+```
+[ Header band: identity | risk score + severity | priority | PQC recommendation ]
+[ Source & Evidence ]  [ Migration Path                                  ]
+[ Risk Intelligence ]  [ Current -> Quantum Risk -> PQC -> Action (vertical) ]
+[                            AI Advisor                                  ]
+```
+
+`.asset-workspace-grid` is `minmax(0, 1fr) minmax(0, 1.1fr)` with `align-items: start` — stretching either column to the other's height is what had left the evidence/risk panels as mostly empty boxes. It becomes a single column at ≤1200px.
+
+### Truthfulness fixes to existing figures
+
+- The stat card titled "High / Critical Risk" always displayed `high_or_critical_priority_assets` (2) while `risk_severity_distribution` has 4 HIGH assets — beside a risk donut reading "4 at risk". It is now titled "High / Critical Priority", with the real risk count as its subtitle. The readiness copy now says "high-priority assets".
+- The Migration donut omitted `migration_type_distribution["not-applicable"]` (6), so its ring summed to 23 of 29 assets and those cards read "Not yet classified".
+
+### Responsive behavior
+
+- ≤1300px: the repository / Critical Findings row stacks.
+- ≤1200px: metrics go single-column, the hero stays a row with a 170px visual, the workspace goes single-column.
+- ≤900px: 76px icon rail (brand text is `display: none` — `font-size: 0` left it ~150px wide and pushed the logo off-screen); each donut panel becomes a full-width row (ring left, legend right).
+- ≤650px: hero visual hidden, 30px headline, pipeline becomes a vertical list with vertical connectors, header facts wrap, card subline stacks, and the topbar hides its AI chip and shortcut hint.

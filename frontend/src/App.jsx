@@ -13,20 +13,32 @@ import {
   getSummary,
   startAnalysis,
 } from "./api";
-import { AnalyticsPanel } from "./components/AnalyticsPanel";
 import { AssetDetailPanel } from "./components/AssetDetailPanel";
 import { AssetExplorer } from "./components/AssetExplorer";
 import { AssetFilters } from "./components/AssetFilters";
 import { CriticalFindingsPanel } from "./components/CriticalFindingsPanel";
+import { DonutPanel } from "./components/DonutPanel";
 import { HeroOverview } from "./components/HeroOverview";
 import { RepositoryAnalysisPanel } from "./components/RepositoryAnalysisPanel";
 import { Sidebar } from "./components/Sidebar";
+import { Topbar } from "./components/Topbar";
 import "./App.css";
 
 // Ordinal used only to sort the dashboard's "Critical Findings" list --
 // not a new score, just a ranking of the severity strings the backend
 // already returns.
 const SEVERITY_RANK = { CRITICAL: 3, HIGH: 2, MEDIUM: 1, LOW: 0 };
+
+// Chart colors follow the same "color means one specific thing"
+// language used everywhere else: severity distributions (risk,
+// source impact) use the same CRITICAL/HIGH/MEDIUM/LOW hues as every
+// severity badge; the migration-strategy donut isn't a severity, so
+// it uses the PQC/technology cyan for "PQC Candidate" and neutral
+// blue/grays for the remaining strategies instead of borrowing a
+// severity color that would imply a risk level it doesn't have.
+const RISK_DONUT_COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"]; // CRITICAL, HIGH, MEDIUM, LOW
+const IMPACT_DONUT_COLORS = ["#f97316", "#eab308", "#22c55e"]; // HIGH, MEDIUM, LOW
+const MIGRATION_DONUT_COLORS = ["#22d3ee", "#5b9cf6", "#64748b", "#334155"]; // PQC Candidate, Architectural, No Direct Replacement, Not Applicable
 
 function App() {
   // ==========================================================
@@ -337,10 +349,17 @@ function App() {
     { name: "LOW", value: riskDistribution.LOW || 0 },
   ];
 
+  // The risk donut highlights its own HIGH+CRITICAL count at center
+  // instead of a generic total -- risk stays the dominant signal
+  // even inside the chart, not just around it. Still a real sum of
+  // the same riskChartData shown in the ring/legend, not a new value.
+  const atRiskCount = (riskDistribution.CRITICAL || 0) + (riskDistribution.HIGH || 0);
+
   const migrationChartData = [
     { name: "PQC Candidate", value: migrationDistribution["pqc-candidate"] || 0 },
     { name: "Architectural", value: migrationDistribution["architectural-migration"] || 0 },
     { name: "No Direct Replacement", value: migrationDistribution["no-direct-pqc-replacement"] || 0 },
+    { name: "Not Applicable", value: migrationDistribution["not-applicable"] || 0 },
   ];
 
   const sourceImpactChartData = [
@@ -366,6 +385,7 @@ function App() {
       name,
       type: item.asset_type || "Unknown",
       primitive: item.primitive || "Unknown",
+      riskScore: item.risk_score,
       riskSeverity: item.risk_severity || "UNKNOWN",
       migrationType: item.migration_type || "",
       pqcApplicable: Boolean(item.pqc_applicable),
@@ -414,6 +434,8 @@ function App() {
       <Sidebar backendConnected={backendConnected} />
 
       <main className="main-content">
+        <Topbar search={search} onSearchChange={setSearch} backendConnected={backendConnected} />
+
         <HeroOverview summary={summary} totalAssetsScanned={assets.length} />
 
         {/* ================================================
@@ -450,42 +472,45 @@ function App() {
           </div>
 
           <div className="analytics-grid">
-            <AnalyticsPanel
+            <DonutPanel
               id="risk-analysis-section"
               icon={ShieldAlert}
               title="Risk Distribution"
               description="Current migration risk severity"
               data={riskChartData}
-              color="#f87171"
-              onBarClick={(name) => name && setRiskFilter(String(name).toUpperCase())}
+              colors={RISK_DONUT_COLORS}
+              centerValue={atRiskCount}
+              centerLabel="at risk"
+              onSliceClick={(name) => name && setRiskFilter(String(name).toUpperCase())}
             />
 
-            <AnalyticsPanel
+            <DonutPanel
               id="pqc-migration-section"
               icon={Zap}
               title="Migration Distribution"
               description="Recommended migration strategy"
               data={migrationChartData}
-              color="#8b5cf6"
-              onBarClick={(name) => {
+              colors={MIGRATION_DONUT_COLORS}
+              onSliceClick={(name) => {
                 const migrationMap = {
                   "PQC Candidate": "pqc-candidate",
                   Architectural: "architectural-migration",
                   "No Direct Replacement": "no-direct-pqc-replacement",
+                  "Not Applicable": "not-applicable",
                 };
                 const value = migrationMap[name];
                 if (value) setMigrationFilter(value);
               }}
             />
 
-            <AnalyticsPanel
+            <DonutPanel
               id="global-source-impact-section"
               icon={FileWarning}
               title="Source Impact"
               description="Estimated source-code migration impact"
               data={sourceImpactChartData}
-              color="#3b82f6"
-              onBarClick={(name) => name && setSourceImpactFilter(String(name).toUpperCase())}
+              colors={IMPACT_DONUT_COLORS}
+              onSliceClick={(name) => name && setSourceImpactFilter(String(name).toUpperCase())}
             />
           </div>
         </section>

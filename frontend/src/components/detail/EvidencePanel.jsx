@@ -1,4 +1,4 @@
-import { Activity, Database, FileWarning } from "lucide-react";
+import { Activity, Database, FileSearch, FileWarning } from "lucide-react";
 
 function EvidenceList({ title, icon: Icon, items }) {
   return (
@@ -36,7 +36,10 @@ export function EvidencePanel({ assetDetail }) {
 
   return (
     <section className="workspace-panel panel-evidence" aria-labelledby="evidence-heading">
-      <h3 id="evidence-heading">Source &amp; Evidence</h3>
+      <h3 id="evidence-heading">
+        <FileSearch size={15} aria-hidden="true" />
+        Source &amp; Evidence
+      </h3>
 
       <div className="evidence-stats">
         <div className="evidence-stat">

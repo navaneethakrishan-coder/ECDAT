@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Binary, GitCompareArrows, ShieldAlert, ShieldCheck } from "lucide-react";
 
 const SEVERITY_TONE = new Set(["low", "medium", "high", "critical"]);
 
@@ -8,14 +8,12 @@ function toneFor(value) {
 }
 
 /**
- * Right column, row 1. The migration recommendation, told as a
- * sequence rather than buried in a paragraph: what exists today, the
- * risk that creates, the PQC candidate ECDAT ranked highest, and the
- * first concrete developer step -- four nodes, one arrow-connected
- * story, understandable in seconds. Ranked alternatives and the
- * remaining action list are still available, just tucked behind
- * progressive disclosure instead of taking up permanent vertical
- * space.
+ * The migration recommendation as a vertical decision pathway: what
+ * exists today, the quantum risk that creates, the PQC candidate ECDAT
+ * ranked highest, and the first concrete developer step -- four
+ * connected nodes read top to bottom in seconds. Ranked alternatives
+ * and the full action list stay behind progressive disclosure instead
+ * of taking up permanent space.
  */
 export function MigrationFlow({ assetDetail }) {
   const primitive = assetDetail?.inventory?.primitive || assetDetail?.primitive || "Current algorithm";
@@ -32,31 +30,38 @@ export function MigrationFlow({ assetDetail }) {
 
   return (
     <section className="workspace-panel panel-migration" aria-labelledby="migration-flow-heading">
-      <h3 id="migration-flow-heading">Migration Path</h3>
+      <h3 id="migration-flow-heading">
+        <GitCompareArrows size={15} aria-hidden="true" />
+        Migration Path
+      </h3>
 
       <div className="migration-flow">
         <div className="flow-node flow-node-current">
+          <Binary size={16} className="flow-node-icon" aria-hidden="true" />
           <span>Current Cryptography</span>
           <strong>{primitive}</strong>
         </div>
 
-        <ArrowRight className="flow-arrow" size={16} aria-hidden="true" />
+        <ArrowDown className="flow-arrow" size={16} aria-hidden="true" />
 
         <div className={`flow-node flow-node-risk flow-node-${riskTone}`}>
+          <ShieldAlert size={16} className="flow-node-icon" aria-hidden="true" />
           <span>Quantum Risk</span>
           <strong>{severity}</strong>
         </div>
 
-        <ArrowRight className="flow-arrow" size={16} aria-hidden="true" />
+        <ArrowDown className="flow-arrow" size={16} aria-hidden="true" />
 
-        <div className="flow-node flow-node-pqc">
+        <div className={`flow-node flow-node-pqc${recommendation.candidate ? "" : " flow-node-pqc-none"}`}>
+          <ShieldCheck size={16} className="flow-node-icon" aria-hidden="true" />
           <span>PQC Candidate</span>
           <strong>{recommendation.candidate || "No direct replacement"}</strong>
         </div>
 
-        <ArrowRight className="flow-arrow" size={16} aria-hidden="true" />
+        <ArrowDown className="flow-arrow" size={16} aria-hidden="true" />
 
         <div className="flow-node flow-node-action">
+          <ArrowUpRight size={16} className="flow-node-icon" aria-hidden="true" />
           <span>Migration Action</span>
           <strong>{firstAction || "No action generated"}</strong>
         </div>

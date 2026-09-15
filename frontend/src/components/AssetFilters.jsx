@@ -61,6 +61,7 @@ export function AssetFilters({
           <option value="pqc-candidate">PQC Candidate</option>
           <option value="architectural-migration">Architectural Migration</option>
           <option value="no-direct-pqc-replacement">No Direct PQC Replacement</option>
+          <option value="not-applicable">Not Applicable</option>
         </select>
 
         <select

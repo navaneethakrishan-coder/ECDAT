@@ -1,3 +1,5 @@
+import { Gauge } from "lucide-react";
+
 import { SeverityBadge } from "../Badge";
 
 /**
@@ -23,7 +25,10 @@ export function RiskImpactPanel({ assetDetail }) {
 
   return (
     <section className="workspace-panel panel-risk-impact" aria-labelledby="risk-impact-heading">
-      <h3 id="risk-impact-heading">Risk &amp; Impact</h3>
+      <h3 id="risk-impact-heading">
+        <Gauge size={15} aria-hidden="true" />
+        Risk Intelligence
+      </h3>
 
       <div className="metric-tier">
         <div className="metric-tile">

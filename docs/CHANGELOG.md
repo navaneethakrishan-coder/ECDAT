@@ -4,6 +4,187 @@ Dated log of meaningful changes to the codebase and to this documentation set. N
 
 ---
 
+## 2026-09-15 — Console-grade visual system & workspace re-composition (fourth frontend round)
+
+**Date:** 2026-09-15
+
+### Starting point
+
+- The working tree already held uncommitted round-3 work (`DonutPanel.jsx` etc.) plus an **undocumented intermediate layout**: a 3-column asset-detail grid with the AI Advisor full-width, reworked asset cards, and migration-flow node icons. This round built on that state; the 3-column grid is now superseded.
+- **No reference image was attached to the request** — implemented from the detailed written brief.
+- The pre-change UI was assessed from source code and round 3's written documentation — not from a live render before editing, which the request asked for. The first live render of this round came after the first batch of CSS changes.
+
+### What changed
+
+**Visual system (`App.css`, `index.html`)**
+- Inter + Space Grotesk via Google Fonts `@import`; `--font-display` is reserved for the headline and dominant numerics.
+- New tokens: glass surfaces, glow shadows, a decorative-only magenta accent, `--shadow-elevated`, `--radius-xl`, eased transitions.
+- Richer atmosphere (4 radial glows, grid, two faint diagonal line patterns), moved **behind** content — see Bugs.
+- Motion primitives (`ecdat-rise-in`, `ecdat-scale-in`, `ecdat-fade-in`, `ecdat-orbit-spin`) with staggered entrances and a `prefers-reduced-motion` override.
+- Gradient primary buttons; the page title changed from `frontend` to `ECDAT — PQC Migration Intelligence`.
+
+**Dashboard**
+- New `Topbar.jsx`: search bound to the existing `search` state (typing in the topbar or the Asset Explorer box filters the same list), `Ctrl/⌘+K` and `/` shortcuts, a live backend chip, and a static AI model chip (not a status claim).
+- Hero: gradient only on "Quantum-Ready Future.", a larger orbital SVG (core glow, two counter-rotating orbits carrying key nodes), workflow chain renamed to the brief's stage names, CTA glow.
+- Quantum Readiness: glass card with a halo, a 116px ring with a severity-colored glow and a slow dashed outer orbit.
+- Stat cards: tone-colored top accent bars, display-face values, hover glow and lift. The priority card carries a permanent orange glow.
+- Pipeline: 7 stages (added "Migration Plan"; kept "AI Ready" rather than the brief's "AI Guidance", since the pipeline never runs the model). Numbered icon-over-label nodes, CSS connector lines lit green (done) / cyan (active) / red (failed), per-stage meaning colors while idle.
+- Analytics: per-panel accent bars matching each chart's meaning, hover glow and lift.
+- Critical Findings: two-line rows (name / score / risk badge, then "PQC → candidate · Priority X") with severity-tinted rank badges and hover glows.
+- Asset cards: identity and PQC path merged onto one subline, severity-rail glow for HIGH/CRITICAL, severity hover glow, cyan selected state.
+- Sidebar: glass rail, glowing brand mark, glowing active-item indicator, glowing connection dot.
+
+**Asset detail workspace**
+- Header band: glass surface; a large severity-colored risk score with glow; migration priority and **PQC recommendation** added as header facts.
+- Layout: Evidence + Risk Intelligence stacked beside a **vertical** Migration Path decision flow, AI Advisor full-width below (`ARCHITECTURE.md` §15). Panels get meaning-colored accent bars and heading icons.
+- AI Advisor: violet→magenta CTA sized to its label, with an icon; glowing identity icon. The `idle/loading/success/error` state machine, props and `POST /api/ai/advice` call are unchanged.
+
+### Truthfulness fixes to existing figures
+
+- **"High / Critical Risk" card showed a priority count.** It read `high_or_critical_priority_assets` (2) while `risk_severity_distribution` has 4 HIGH assets — beside a risk donut reading "4 at risk" and 4 Critical Findings rows. Now titled "High / Critical Priority", with subtitle "4 at high/critical quantum risk"; the readiness copy says "2 high-priority assets…". Value and 93% readiness formula unchanged.
+- **Migration donut silently dropped 6 of 29 assets.** `migration_type_distribution["not-applicable"]` was never plotted (ring total 23), and those 6 cards read "Not yet classified". Added the slice, a 4th neutral color, the click-to-filter mapping, a "Not Applicable" filter option, and the card label.
+- **Cyan used for non-candidates.** "No direct replacement" / "Not Applicable" rendered in PQC cyan in cards, Critical Findings, the migration flow, header and AI context strip; now neutral.
+- `ARCHITECTURE.md` §12 wrongly said readiness came from `risk_severity_distribution` — corrected.
+
+### Files created
+
+- `frontend/src/components/Topbar.jsx`
+
+### Files modified
+
+- `frontend/index.html` (title), `frontend/src/App.css`, `frontend/src/App.jsx` (renders `Topbar`; Not Applicable slice/color/mapping)
+- `frontend/src/components/`: `HeroOverview.jsx`, `PipelineStepper.jsx`, `CriticalFindingsPanel.jsx`, `AssetExplorer.jsx`, `AssetFilters.jsx`, `AssetDetailPanel.jsx`, `AIAdvisorPanel.jsx`
+- `frontend/src/components/detail/`: `AssetHeaderBand.jsx`, `MigrationFlow.jsx`, `EvidencePanel.jsx`, `RiskImpactPanel.jsx`
+- `docs/CHANGELOG.md`, `docs/TODO.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT_CONTEXT.md`
+- No changes to `frontend/src/api.js`, `frontend/package.json`, any `backend/` file, any API schema, or `data/`.
+
+### Bugs found and fixed
+
+1. **Fixed overlay would have been clipped (caught in CSS review, before first render).** The new `.panel` entrance animation used `fill-mode: both`, leaving a transform on `.panel.asset-explorer` — the ancestor `AssetDetailPanel`'s `position: fixed` overlay renders inside. That would make the explorer the overlay's containing block and clip it with its `overflow: hidden`. Fixed with `animation: none` on the explorer. Verified: overlay rect 1440×900 = viewport, and a point over the sidebar resolves inside the overlay.
+2. **Background grid painted over every panel.** `.app-shell::after` (`position: fixed; z-index: 0`) is the shell's last child, so it painted above positioned content. Fixed with both layers at `z-index: -1`, and `body` / `.app-shell` transparent so a negative layer isn't covered. The browser test caught that my first fix moved only `::before`; final computed z-index is -1 for both.
+3. **Pipeline stepper and migration flow scrolled horizontally at 1440px** (measured `scrollWidth > clientWidth`); the flow's 4th node, "Migration Action", was out of view. Now a 7-column node grid and a vertical flow.
+4. **Collapsed-sidebar logo clipped off-screen at ≤900px (pre-existing).** `.brand-mark` sat at `left: -25px`. The collapse rule hid brand text with `font-size: 0`, but `.brand-name` / `.brand-subtitle` set explicit sizes, so the text kept ~150px width. Fixed with `display: none`. Round 3's page-scroll-width check could not see clipping inside the fixed sidebar; this round's checker tests every element's bounding box.
+5. **Hover lifts silently disabled by entrance animations.** Filled `transform` keyframes outrank `:hover` declarations: stat cards, donut panels and Critical Findings rows measured `transform` offset 0 while hovered (this also broke round 3's Critical Findings lift). Fixed by animating `translate` / `scale` instead. Re-verified: −2px / −2px / −1px.
+6. **Animation delays reset to 0** by the later `.workspace-panel` shorthand at equal specificity — found in CSS review, fixed with two-class selectors. Not separately measured.
+7. **Donut rings misaligned at 768–900px** (three-up headers wrapped to different heights) — each panel becomes a full-width row (ring left, legend right). Verified row direction and 160px rings, and reviewed a screenshot.
+8. **Hero visual orphaned at 1024px** when the hero stacked, pushing readiness below the fold — the hero now stays a row (170px visual). Readiness card top measured at 570px in a 1024×900 viewport.
+
+### Tests performed
+
+- `npm run build`: CSS 60.17 kB / JS 560.71 kB (gzip 10.62 / 168.22 kB). The >500 kB chunk advisory is pre-existing (`TODO.md` #12).
+- **Live CDP-driven browser testing** against the real FastAPI backend, a Vite dev server, headless Chrome 152 and real local Ollama `qwen3:14b`. Dataset: 29 assets — 4 HIGH, 19 MEDIUM, 6 LOW, 0 CRITICAL.
+  - Dashboard inventory: both web fonts loaded (`document.fonts.check`), readiness 93%, stat values 29 / 2 / 4 / 292, 9 nav items, 3 donuts (centers "4 at risk", "29 total", "29 total"), 4 Critical Findings rows, 29 asset cards, 7 pipeline stages.
+  - Search and shortcuts:
+    - "rsa" in the topbar gives exactly RSA, RSA-2048, RSA-OAEP, mirrored into the explorer box; clearing the explorer box also clears the topbar.
+    - `Ctrl+K` and `/` focus the topbar search; `/` typed inside the repository URL input is not intercepted.
+  - Filters: risk HIGH → 4 (all HIGH); `pqc-candidate` → 4; `not-applicable` → 6 (DH, Ed25519, Ed448, SHAKE256, x25519, x448); risk-donut "MEDIUM" legend click → filter MEDIUM, 19 cards; migration-donut "Not Applicable" legend click → filter `not-applicable`, 6 cards. All reset to 29.
+  - Color rule: across all 29 cards, the only cyan PQC text is "ML-DSA-65".
+  - Asset detail:
+    - Assets tested: **DSA** (HIGH) 65.75 / priority HIGH / ML-DSA-65 — disclosures opened to 4 ranked alternatives and 10 actions. **HKDF-SHA256** (MEDIUM) 41 / LOW / "No direct replacement" in neutral class. **DH** (LOW) 25 / LOW. **private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667** (MEDIUM, long-name stress case) 41.8.
+    - Checked on each: severity-matched score glow (computed `text-shadow`), Evidence and Risk Intelligence side-by-side with Migration Path, 4 left-aligned vertical flow nodes, AI Advisor below the grid.
+    - Close button and Escape both close the workspace.
+  - AI Advisor (DSA): "Ready" → click → "Analyzing", button disabled showing "Generating...", loading block → success after 40.1s with all 6 sections and "Powered by qwen3:14b"; its RISK paragraph cites 65.75, matching the dashboard; Regenerate present; label back to "Ready".
+  - Hover (synthetic CDP mouse moves, computed styles): HIGH asset card orange glow + 1px lift; High/Critical Priority card red glow + 2px; Critical Findings row orange glow + 1px; migration donut panel cyan glow + 2px; Asset Explorer section stays untransformed.
+  - Responsive:
+    - Dashboard and asset detail (long-name asset) at **1440 / 1280 / 1024 / 900 / 768 / 400px**: zero elements extending past the viewport outside intentional `overflow-x: auto` containers, zero page or overlay horizontal scroll.
+    - Hero visual beside the copy at 1024px and `display: none` at 400px; donut rows at 900 and 768px.
+  - **Zero console errors, zero console warnings, zero uncaught exceptions** across every pass.
+- Screenshots captured and reviewed at each stage: hero, repository/findings, analytics, explorer, search, HIGH/MEDIUM/LOW detail, open disclosures, long-name detail at 1024/768/400, AI idle/loading/result, hover state, and the responsive dashboard views.
+
+### Not verified / known remaining limitations
+
+- Motion was verified through computed styles and static screenshots only, not observed as animation.
+- Repository analysis was not exercised (CBOMKit not running), so the pipeline stepper's starting/running/completed/failed visuals were not rendered — only idle.
+- No CRITICAL asset exists in the dataset, so CRITICAL styling was not seen with real data.
+- Web fonts need network access; offline fallback untested (`TODO.md` #27).
+- Still open: static sidebar active item (#28), two differently-worded backend indicators (#29), topbar search scope (#30), bundle-size advisory (#12), no automated frontend tests (#8).
+- The throwaway CDP driver (kept outside the repo) exits with a Windows libuv assertion after printing its results — test tooling only; no effect on results.
+
+---
+
+## 2026-09-14 — Premium visual-identity redesign (third frontend round)
+
+**Date:** 2026-09-14
+
+### What changed
+
+A third frontend pass, this time targeted specifically at *visual identity* rather than structure or composition (both already addressed in the two rounds below). The brief: the componentized, well-composed result from the prior round still read as "a generic dark developer dashboard" rather than a premium cybersecurity intelligence product. No reference image was provided in this round — the direction was a detailed written brief (deep navy + cyan/electric-blue/purple accent system used *meaningfully*, a stronger hero, donut-style data visualization, a fuller sidebar, and consistent color language) — implemented directly from that brief.
+
+**Color system, made intentional (not just "more colors"):**
+- Introduced two new accent tokens, `--accent-cyan`/`--accent-cyan-strong`, reserved specifically for **PQC/technology** meaning, alongside the existing `--accent-violet` reserved for **AI** meaning and `--accent`/`--accent-strong` for general interactive chrome. Severity colors (`--sev-low/medium/high/critical`) were already distinct and are unchanged.
+- Retargeted every element that names a *PQC candidate* from violet to cyan: the asset card's PQC-recommendation text, the migration-flow's PQC node, the ranked-candidate badges, and the AI Advisor's inline "PQC → ‹candidate›" callout — while everything that represents the *AI Advisor itself* (its icon, model badge, and the AI-generated response's section headings) stayed violet. This is the "one color, one meaning" rule from the brief applied literally, not just decoratively.
+- Deepened the navy background tokens slightly and refreshed the app-shell's layered radial-gradient glows to use cyan + violet + blue instead of blue + violet + green, plus added a very faint diagonal hairline pattern (in addition to the existing dot-grid) for a touch more "technical texture" — still masked, still restrained, no new motion.
+
+**Hero section rewritten:**
+- New headline ("**From Code to a Quantum-Ready Future.**", with a cyan→violet gradient-text treatment on part of it) and new supporting copy explicitly naming every stage of the workflow (discover → risk → PQC path → prioritize → AI explanation).
+- Added a real primary CTA (`Analyze a Repository`, `.btn-lg`) that scrolls to and focuses the repository-URL input — previously there was no hero-level call to action, only the form itself further down the page.
+- Added a lightweight, dependency-free inline SVG visual (concentric rings, tick marks, a simple lock glyph) to the right of the hero copy — built from plain SVG shapes, no image asset, no new library, `aria-hidden` since it's purely decorative.
+- Restructured the stat row from 4 equal-weight cards into an explicitly asymmetric layout: one large "Quantum Readiness" panel (the readiness ring, now bigger, plus a one-line "why" sentence) beside a tighter 2×2 grid of the 4 supporting counts — risk readiness is ECDAT's core differentiator, so it now visibly outweighs the other four numbers instead of sitting in a same-size card among them.
+
+**Data visualization — bar charts replaced with donut/ring charts:**
+- New `DonutPanel.jsx` (replaces the deleted `AnalyticsPanel.jsx`): a Recharts `PieChart`/`Cell` donut with a center total label and a compact clickable legend, same data shape and same click-to-filter behavior as before (prop renamed `onBarClick` → `onSliceClick`).
+- Colors are assigned by meaning, not by panel: Risk Distribution and Source Impact (both severity-shaped) reuse the exact severity hex values every badge uses; Migration Distribution (not a severity) uses cyan for "PQC Candidate," blue for "Architectural," neutral gray for "No Direct Replacement" — so a viewer never has to learn a new color meaning per chart.
+- `analytics-grid` widened from 2 to 3 columns to fit all three donuts in one row on desktop.
+
+**Sidebar navigation expanded and restyled:**
+- Nav list expanded from 6 items to the requested 9: Overview, Repository Analysis, Cryptographic Assets, Risk Analysis, PQC Migration, Migration Actions, Source Impact, **AI Advisor** (new), **Reports** (new).
+- "AI Advisor" scrolls to the AI panel if an asset is currently selected (it only exists in the DOM inside the asset-detail workspace), or falls back to the Asset Explorer otherwise — never a silent no-op.
+- "Reports" scrolls to the dashboard footer, which already shows a real live summary line (asset/action counts) — reusing existing content rather than inventing a Reports page.
+- Active-item treatment restyled with a small cyan→blue gradient left accent bar instead of a flat tinted background, for a more restrained "premium" feel per the brief's explicit "not a gaming interface" instruction.
+
+**AI Advisor — availability indicator added:**
+- The header now shows a small status dot + label ("Ready" / "Analyzing" / "Unavailable") derived entirely from the existing `idle/loading/success/error` state machine — no new API call, since Ollama itself exposes no health-check endpoint ECDAT currently calls. This satisfies the "communicate an online/available state" requirement truthfully, without fabricating a capability that doesn't exist.
+
+### Files created
+
+- `frontend/src/components/DonutPanel.jsx`
+
+### Files removed
+
+- `frontend/src/components/AnalyticsPanel.jsx` (superseded by `DonutPanel.jsx`)
+
+### Files modified
+
+- `frontend/src/App.css` — new/retuned design tokens, background layers, hero/readiness/stat-tile layout, sidebar nav active-state, donut-panel styling, PQC-vs-AI color retargeting, availability-indicator styling, `analytics-grid` column count, and the corresponding responsive breakpoint updates for every renamed/restructured class.
+- `frontend/src/App.jsx` — swapped `AnalyticsPanel` usage for `DonutPanel` with three meaning-based color arrays; added `risk_score` (already returned by `/api/migration-report/assets`, simply not read before) into `enrichedAssets` so Critical Findings can show a real numeric score.
+- `frontend/src/components/HeroOverview.jsx` — rewritten: new headline/copy/CTA, inline SVG visual, asymmetric readiness+stat-tile layout.
+- `frontend/src/components/Sidebar.jsx` — nav list expanded to 9 items with new scroll targets.
+- `frontend/src/components/AIAdvisorPanel.jsx` — added the availability-indicator markup (no state/prop changes).
+- `frontend/src/components/CriticalFindingsPanel.jsx` — now also displays each finding's numeric risk score.
+- No changes to `frontend/src/api.js`, any `backend/` file, or any API response schema.
+
+### Bugs found during testing
+
+None this round — no structural changes were made (only styling, copy, and a chart-library swap within the already-correct component structure from the prior round), and the full CDP test suite (below) came back clean on the first complete run.
+
+### Tests performed
+
+- `npm run build` — succeeds after every meaningful edit; final: 42.12 kB CSS / 553.39 kB JS (JS bundle is actually ~39 kB *smaller* than before this round, since Recharts' `BarChart`/`CartesianGrid`/`XAxis`/`YAxis` code was replaced by its `PieChart`/`Cell` code rather than added alongside it; the pre-existing >500 kB chunk-size advisory remains, unaddressed, same as every prior round).
+- **Live CDP-driven browser testing** (fresh headless Chrome, fresh Vite dev server, real backend, real local Ollama `qwen3:14b`), covering every item the task asked for:
+  - Dashboard: hero headline text, readiness percentage, 9 sidebar nav items, 3 donut charts, 4 critical-findings rows — all verified via direct DOM queries, not just visually.
+  - Hero CTA click correctly scrolled to and focused the repository URL input (`document.activeElement.id === 'repo-url-input'` verified).
+  - Search/filter: "rsa" correctly narrowed 29 asset cards to 3.
+  - Opened **multiple** assets in sequence (a LOW-severity asset, `DH`, then a HIGH-severity asset, `DSA`) and confirmed the workspace grid's panel order (`panel-risk-impact, panel-migration, panel-evidence, panel-ai`) is correct for both.
+  - AI Advisor: idle state shows "Ready"; clicking "Get AI Recommendation" flips the availability label to "Analyzing"; a real Ollama call completed and returned a correctly-sectioned answer, after which the label returned to "Ready".
+  - **Responsive sweep at exactly the six widths requested — 1440 / 1280 / 1024 / 900 / 768 / 400px — with an asset-detail workspace open, and again on the plain dashboard: zero horizontal overflow (`scrollWidth - clientWidth === 0`) at every single width, both states.**
+  - **Zero console errors, zero console warnings, zero uncaught page exceptions** across the entire run.
+- Screenshots captured at each step and visually reviewed (hero, donuts, asset explorer, a LOW and a HIGH asset's detail workspace, AI idle/loading/success, dashboard and asset-detail at 400px) — confirmed the intended premium dark cybersecurity aesthetic with correct color-language usage throughout, no clipped or misaligned elements.
+- Cleanup: the dev server (port 5212), headless Chrome (port 9446) and its temporary profile directory, and the throwaway CDP driver script were all stopped/deleted after testing; `git status` confirmed only the frontend files listed above changed — no backend files, no scratch artifacts.
+
+### Design decisions worth recording
+
+- **No new dependencies.** The donut charts reuse Recharts (already a dependency); the hero visual is hand-written inline SVG, not an image or icon-pack asset. Bundle size went down, not up.
+- **Color is assigned by meaning, checked in both directions.** Before finishing, every remaining violet-colored element in `App.css` was greped and individually classified as "this represents the AI Advisor" (kept violet) or "this represents a PQC candidate" (moved to cyan) — nothing was left ambiguous.
+- **The AI "availability" indicator is derived from real state, not invented.** Ollama has no health-check endpoint this app calls, so rather than fabricate one, the indicator reflects the advisor's own actual request lifecycle (idle/loading/success → "Ready"/"Analyzing", error → "Unavailable").
+- **No reference image was actually attached to the request that specified this round** (despite being described as provided) — implemented directly from the detailed written design brief instead of guessing at an image's contents.
+
+### Known remaining limitations
+
+- Sidebar's `active` nav-item state is still a static "first item" flag, not real scroll-spy — unchanged from every prior round, still a known simplification (`TODO.md`).
+- Same pre-existing items as both prior rounds remain open: the >500 kB JS chunk-size advisory, no automated frontend test suite, no live Ollama health check.
+
+---
+
 ## 2026-09-14 — Frontend composition & visual-hierarchy redesign (second overhaul round)
 
 **Date:** 2026-09-14

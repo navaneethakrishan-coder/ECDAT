@@ -4,6 +4,7 @@ import {
   CheckCircle2,
   Gauge,
   GitBranch,
+  ListChecks,
   ScanLine,
   ShieldAlert,
   XCircle,
@@ -13,10 +14,8 @@ import {
 // docs/ARCHITECTURE.md), but /api/analyze/status only ever reports
 // one of idle/starting/running/completed/failed with a free-text
 // message -- there is no per-stage telemetry to display honestly.
-// This illustrates the conceptual pipeline shape (what the task
-// brief itself describes: Repository -> CBOMKit -> Discovery ->
-// Classification -> Risk -> PQC -> AI-ready) rather than claiming to
-// track real-time progress through it. While the analysis is
+// This illustrates the conceptual pipeline shape rather than claiming
+// to track real-time progress through it. While the analysis is
 // running, every stage after "Repository" is shown as in-progress
 // together -- never a specific one -- so nothing here overstates
 // what the backend actually knows.
@@ -26,6 +25,8 @@ const STAGES = [
   { key: "discovery", label: "Crypto Discovery", icon: Binary },
   { key: "risk", label: "Risk Assessment", icon: ShieldAlert },
   { key: "pqc", label: "PQC Mapping", icon: Gauge },
+  { key: "plan", label: "Migration Plan", icon: ListChecks },
+  // "AI Ready", not "AI Guidance": the pipeline only prepares data for the on-demand advisor; it never runs the model.
   { key: "ai", label: "AI Ready", icon: Brain },
 ];
 
@@ -52,12 +53,11 @@ export function PipelineStepper({ status }) {
           state === "done" ? CheckCircle2 : state === "failed" ? XCircle : stage.icon;
 
         return (
-          <div className={`pipeline-step pipeline-step-${state}`} key={stage.key} role="listitem">
+          <div className={`pipeline-step pipeline-step-${state} pipeline-stage-${stage.key}`} key={stage.key} role="listitem">
             <div className="pipeline-step-icon">
-              <Icon size={16} />
+              <Icon size={15} />
             </div>
             <span className="pipeline-step-label">{stage.label}</span>
-            {index < STAGES.length - 1 && <span className="pipeline-step-connector" aria-hidden="true" />}
           </div>
         );
       })}

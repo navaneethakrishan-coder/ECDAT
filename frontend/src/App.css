@@ -2,6 +2,8 @@
    ECDAT DASHBOARD — design tokens
    ============================================================ */
 
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap");
+
 :root {
   font-family:
     Inter,
@@ -12,6 +14,13 @@
     "Segoe UI",
     sans-serif;
 
+  /* Display face reserved for headline typography and dominant
+     numerics (hero headline, risk-hero severity, readiness %,
+     donut center values, stat-card values) -- everything else stays
+     on Inter so the product doesn't read as "every heading is a
+     different font," just the handful of moments meant to dominate. */
+  --font-display: "Space Grotesk", Inter, ui-sans-serif, system-ui, sans-serif;
+
   color: #e5e7eb;
   background: #05070c;
 
@@ -19,27 +28,65 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 
-  /* ---- surfaces ---- */
-  --bg-canvas: #05070c;
-  --bg-surface: #0b0f18;
-  --bg-surface-raised: #0e1420;
-  --bg-inset: #0a0e17;
-  --bg-inset-alt: #0d1320;
+  /* ---- surfaces: deep near-black navy, not pure black, so panels
+     have somewhere to sit above the canvas ---- */
+  --bg-canvas: #05070f;
+  --bg-surface: #0b0f1c;
+  --bg-surface-raised: #0f1526;
+  --bg-inset: #090d18;
+  --bg-inset-alt: #0d1322;
+
+  /* ---- glass surfaces: used sparingly, for the handful of "signature"
+     elements (workspace header band, quantum-readiness card, topbar)
+     that should read as an elevated console pane rather than a flat
+     card ---- */
+  --glass-bg: rgba(13, 18, 34, 0.66);
+  --glass-bg-strong: rgba(10, 14, 27, 0.82);
+  --glass-border: rgba(148, 178, 220, 0.14);
+  --glass-blur: 20px;
 
   /* ---- borders ---- */
-  --border-subtle: #1b2536;
-  --border-strong: #2c3e5a;
+  --border-subtle: #1c2740;
+  --border-strong: #2e4066;
 
   /* ---- text ---- */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-tertiary: #5b6b85;
-  --text-muted: #46536b;
+  --text-primary: #f4f7fb;
+  --text-secondary: #99a7c2;
+  --text-tertiary: #5e6f92;
+  --text-muted: #47547a;
 
-  /* ---- brand / accent ---- */
+  /* ---- brand / accent system ----
+     Electric blue is the primary brand accent (buttons, focus,
+     interactive chrome, "actions"). Cyan is reserved specifically for
+     PQC/"technology" meaning (post-quantum candidates, the
+     migration-path's PQC node). Violet is reserved specifically for
+     AI meaning (the AI Advisor). Magenta is a fourth, deliberately
+     rare accent -- decorative glow/gradient moments only (background
+     atmosphere, the hero gradient's final stop, the readiness card's
+     halo) -- it never labels a data category, so it can't be confused
+     with a fourth meaning. Keeping each hue to a single job is what
+     "use color intentionally" means in practice -- not decorating
+     every card with a different accent. ---- */
   --accent: #3b82f6;
-  --accent-strong: #60a5fa;
+  --accent-strong: #5b9cf6;
+  --accent-cyan: #22d3ee;
+  --accent-cyan-strong: #67e8f9;
   --accent-violet: #8b5cf6;
+  --accent-violet-strong: #a78bfa;
+  --accent-magenta: #d946ef;
+  --accent-magenta-strong: #f0abfc;
+
+  /* ---- glow shadows: reserved for a small set of signature moments
+     (primary CTA, active nav, readiness ring, severity-critical
+     surfaces, AI identity) -- never applied broadly, or "luminous"
+     becomes "glowing wallpaper." ---- */
+  --glow-cyan: 0 0 1px rgba(34, 211, 238, 0.6), 0 0 28px rgba(34, 211, 238, 0.28);
+  --glow-blue: 0 0 1px rgba(91, 156, 246, 0.6), 0 0 28px rgba(59, 130, 246, 0.3);
+  --glow-violet: 0 0 1px rgba(167, 139, 250, 0.6), 0 0 28px rgba(139, 92, 246, 0.3);
+  --glow-magenta: 0 0 28px rgba(217, 70, 239, 0.25);
+  --glow-critical: 0 0 1px rgba(239, 68, 68, 0.5), 0 0 26px rgba(239, 68, 68, 0.32);
+  --glow-high: 0 0 1px rgba(249, 115, 22, 0.5), 0 0 24px rgba(249, 115, 22, 0.26);
+  --glow-low: 0 0 22px rgba(34, 197, 94, 0.24);
 
   /* ---- severity scale: LOW -> green, MEDIUM -> amber,
      HIGH -> orange, CRITICAL -> red. Deliberately four distinct
@@ -77,11 +124,74 @@
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 10px;
+  --radius-xl: 16px;
 
   /* ---- elevation / motion ---- */
   --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.22);
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.2s ease;
+  --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   MOTION PRIMITIVES — a small, reused set of entrance/emphasis
+   animations. Short (<=500ms), non-bouncy, applied selectively (not
+   to every list item) so motion reads as "the product feels alive,"
+   not as a slideshow.
+   ============================================================ */
+
+/* Entrance keyframes animate the individual translate/scale properties,
+   never `transform`: a filled animation outranks normal declarations,
+   so animating `transform` here pinned it at translateY(0) and silently
+   disabled every :hover lift (which uses `transform`). */
+@keyframes ecdat-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes ecdat-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ecdat-scale-in {
+  from {
+    opacity: 0;
+    scale: 0.985;
+    translate: 0 6px;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes ecdat-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* ============================================================
@@ -96,7 +206,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--bg-canvas);
+  background: transparent;
 }
 
 button,
@@ -155,14 +265,24 @@ button {
 }
 
 .btn-primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--accent-cyan) -10%, var(--accent) 55%, var(--accent-violet) 130%);
+  border-color: transparent;
   color: #f8fafc;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 6px 18px rgba(59, 130, 246, 0.22);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-base),
+    filter var(--transition-base);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
-  border-color: #2563eb;
+  filter: brightness(1.08);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 8px 26px rgba(59, 130, 246, 0.32);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .btn-outline {
@@ -179,6 +299,20 @@ button {
 .btn-sm {
   padding: 6px 12px;
   font-size: 12px;
+}
+
+.btn-lg {
+  padding: 14px 24px;
+  font-size: 14.5px;
+  border-radius: var(--radius-lg);
+}
+
+.btn-lg.btn-primary {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 10px 32px rgba(34, 211, 238, 0.22), 0 10px 32px rgba(139, 92, 246, 0.18);
+}
+
+.btn-lg.btn-primary:hover:not(:disabled) {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 12px 40px rgba(34, 211, 238, 0.3), 0 12px 40px rgba(139, 92, 246, 0.24);
 }
 
 /* ============================================================
@@ -298,43 +432,71 @@ button {
    APP SHELL
    ============================================================ */
 
+/* The canvas color comes from the root element (html), and neither
+   body nor .app-shell paints an opaque background: the two fixed
+   atmosphere layers below sit at z-index -1 so they paint *behind*
+   all content, and a negative layer is covered by any in-flow
+   ancestor background. At z-index 0 they would instead paint over
+   every positioned panel (the ::after grid is the shell's last child,
+   so it wins tree order), tinting the data with grid lines. */
 .app-shell {
   position: relative;
   min-height: 100vh;
   display: flex;
-  background: var(--bg-canvas);
+  background: transparent;
   overflow-x: hidden;
 }
 
-/* Layered, restrained atmosphere: two soft radial glows anchored to
-   opposite corners plus a very faint technical grid, masked so it
-   fades out toward the bottom of the viewport instead of tiling
-   uniformly forever. Fixed so it reads as one continuous environment
-   behind the content rather than scrolling with it. Deliberately
-   subtle -- this is depth, not decoration. */
+/* Layered, restrained atmosphere: cyan / violet / magenta / blue
+   radial glows anchored around the viewport, fixed so they read as
+   one continuous environment behind the content rather than
+   scrolling with it. */
 .app-shell::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   background:
-    radial-gradient(1100px 620px at 10% -10%, rgba(59, 130, 246, 0.1), transparent 60%),
-    radial-gradient(900px 560px at 100% 0%, rgba(139, 92, 246, 0.08), transparent 55%),
-    radial-gradient(760px 520px at 60% 115%, rgba(34, 197, 94, 0.04), transparent 60%);
+    radial-gradient(1200px 680px at 8% -12%, rgba(34, 211, 238, 0.16), transparent 58%),
+    radial-gradient(1000px 640px at 102% 2%, rgba(139, 92, 246, 0.15), transparent 55%),
+    radial-gradient(820px 620px at 88% 78%, rgba(217, 70, 239, 0.08), transparent 60%),
+    radial-gradient(900px 640px at 42% 122%, rgba(59, 130, 246, 0.1), transparent 62%);
   pointer-events: none;
 }
 
+/* Very faint technical grid + a barely-visible diagonal "circuit"
+   hint (two thin diagonal hairlines) -- reads as engineered/technical
+   texture at a glance, invisible unless looked for. Both masked so
+   they fade out toward the bottom of the viewport instead of tiling
+   uniformly forever. Fixed so it reads as one continuous environment
+   behind the content rather than scrolling with it. Deliberately
+   restrained: depth for the console, never loud enough to compete
+   with real data. */
 .app-shell::after {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: -1;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 44px 44px;
-  -webkit-mask-image: radial-gradient(1100px 780px at 28% 0%, black, transparent 72%);
-  mask-image: radial-gradient(1100px 780px at 28% 0%, black, transparent 72%);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    repeating-linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.028) 0,
+      rgba(34, 211, 238, 0.028) 1px,
+      transparent 1px,
+      transparent 120px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(139, 92, 246, 0.02) 0,
+      rgba(139, 92, 246, 0.02) 1px,
+      transparent 1px,
+      transparent 160px
+    );
+  background-size: 44px 44px, 44px 44px, 170px 170px, 220px 220px;
+  -webkit-mask-image: radial-gradient(1200px 900px at 30% 0%, black, transparent 76%);
+  mask-image: radial-gradient(1200px 900px at 30% 0%, black, transparent 76%);
   pointer-events: none;
 }
 
@@ -366,8 +528,13 @@ button {
 
   padding: var(--space-6) var(--space-4);
 
-  background: var(--bg-surface);
+  background:
+    linear-gradient(180deg, rgba(34, 211, 238, 0.05), transparent 22%),
+    var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border-right: 1px solid var(--border-subtle);
+  box-shadow: 1px 0 0 rgba(34, 211, 238, 0.03);
 
   z-index: 20;
 }
@@ -394,16 +561,19 @@ button {
   justify-content: center;
 
   border-radius: var(--radius-md);
+  border: 1px solid rgba(34, 211, 238, 0.35);
 
-  background: linear-gradient(135deg, var(--accent), var(--accent-violet));
+  background: linear-gradient(135deg, var(--accent-cyan) -10%, var(--accent) 55%, var(--accent-violet) 130%);
   color: white;
+  box-shadow: var(--glow-cyan);
 }
 
 .brand-name {
   color: var(--text-primary);
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
 .brand-subtitle {
@@ -443,13 +613,14 @@ button {
 }
 
 .nav-item {
-  min-height: 40px;
+  position: relative;
+  min-height: 38px;
 
   display: flex;
   align-items: center;
   gap: var(--space-3);
 
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-3) 0 calc(var(--space-3) + 3px);
 
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -470,6 +641,24 @@ button {
     border-color var(--transition-base);
 }
 
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background var(--transition-base);
+}
+
+.nav-item svg {
+  flex: 0 0 auto;
+  color: var(--text-tertiary);
+  transition: color var(--transition-base);
+}
+
 .nav-item:hover {
   color: var(--text-primary);
   background: var(--bg-surface-raised);
@@ -477,12 +666,19 @@ button {
 
 .nav-item.active {
   color: var(--text-primary);
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.22);
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.14), rgba(59, 130, 246, 0.07) 70%, transparent);
+  border-color: rgba(34, 211, 238, 0.16);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.05) inset, 0 4px 16px rgba(34, 211, 238, 0.08);
+}
+
+.nav-item.active::before {
+  background: linear-gradient(180deg, var(--accent-cyan), var(--accent-strong));
+  box-shadow: var(--glow-cyan);
 }
 
 .nav-item.active svg {
-  color: var(--accent-strong);
+  color: var(--accent-cyan-strong);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.5));
 }
 
 /* ============================================================
@@ -510,11 +706,13 @@ button {
   flex: 0 0 auto;
   border-radius: 50%;
   background: var(--sev-low);
-  transition: background var(--transition-base);
+  box-shadow: var(--glow-low);
+  transition: background var(--transition-base), box-shadow var(--transition-base);
 }
 
 .connection-dot-down {
   background: var(--sev-critical);
+  box-shadow: var(--glow-critical);
 }
 
 .connection-title {
@@ -544,6 +742,142 @@ button {
 }
 
 /* ============================================================
+   TOPBAR — a slim command-console strip above the hero. The search
+   input shares App.jsx's existing `search` state with AssetFilters
+   (same variable, same filtering logic) -- typing here narrows the
+   Asset Explorer exactly like typing there does, nothing new to keep
+   in sync. The AI chip is a static description of the configured
+   model, not a live status claim (see Topbar.jsx).
+   ============================================================ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  margin-bottom: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+
+  animation: ecdat-fade-in 0.4s ease both;
+}
+
+.topbar-search {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  flex: 1 1 320px;
+  min-width: 200px;
+  max-width: 520px;
+  height: 38px;
+  padding: 0 var(--space-3);
+
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+
+  color: var(--text-tertiary);
+
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.topbar-search:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+}
+
+.topbar-search input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+
+  border: 0;
+  outline: 0;
+  background: transparent;
+
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.topbar-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.topbar-shortcut {
+  flex: 0 0 auto;
+
+  padding: 2px 6px;
+
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+
+  background: var(--bg-surface-raised);
+  color: var(--text-tertiary);
+
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.topbar-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.topbar-status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 12px;
+
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-inset);
+
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.topbar-status-ai {
+  border-color: rgba(139, 92, 246, 0.25);
+  color: #c4b5fd;
+}
+
+.topbar-status-ai svg {
+  color: var(--accent-violet-strong);
+}
+
+.topbar-status-backend {
+  gap: 8px;
+}
+
+@media (max-width: 650px) {
+  .topbar-shortcut {
+    display: none;
+  }
+
+  .topbar-status-ai {
+    display: none;
+  }
+}
+
+/* ============================================================
    BREADCRUMB (used inside the asset-detail overlay)
    ============================================================ */
 
@@ -563,6 +897,9 @@ button {
    ============================================================ */
 
 .repository-analysis-panel {
+  position: relative;
+  overflow: hidden;
+
   margin-bottom: var(--space-6);
   padding: var(--space-5);
   height: 100%;
@@ -572,6 +909,16 @@ button {
   border-radius: var(--radius-lg);
 
   background: var(--bg-surface);
+  animation: ecdat-rise-in 0.45s ease both;
+}
+
+.repository-analysis-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cyan));
+  opacity: 0.7;
 }
 
 .repository-analysis-header {
@@ -743,11 +1090,11 @@ button {
   display: block;
   margin-bottom: 6px;
 
-  color: var(--accent-strong);
+  color: var(--accent-cyan-strong);
 
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
@@ -757,6 +1104,12 @@ button {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+.section-heading p {
+  margin: 5px 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
 }
 
 /* ============================================================
@@ -799,6 +1152,10 @@ button {
   height: 100%;
 }
 
+.critical-findings-panel::before {
+  background: linear-gradient(90deg, var(--sev-critical), var(--sev-high));
+}
+
 .critical-findings-list {
   display: flex;
   flex-direction: column;
@@ -826,8 +1183,15 @@ button {
   font-family: inherit;
   color: var(--text-primary);
 
-  transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-fast);
+  transition: border-color var(--transition-base), background var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base);
+  animation: ecdat-rise-in 0.35s ease both;
 }
+
+.critical-findings-list li:nth-child(1) .critical-finding-row { animation-delay: 0.02s; }
+.critical-findings-list li:nth-child(2) .critical-finding-row { animation-delay: 0.06s; }
+.critical-findings-list li:nth-child(3) .critical-finding-row { animation-delay: 0.1s; }
+.critical-findings-list li:nth-child(4) .critical-finding-row { animation-delay: 0.14s; }
+.critical-findings-list li:nth-child(5) .critical-finding-row { animation-delay: 0.18s; }
 
 .critical-finding-row:hover {
   border-color: var(--border-strong);
@@ -835,10 +1199,18 @@ button {
   transform: translateY(-1px);
 }
 
+.critical-finding-critical:hover {
+  box-shadow: var(--glow-critical);
+}
+
+.critical-finding-high:hover {
+  box-shadow: var(--glow-high);
+}
+
 .critical-finding-rank {
   flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 
   display: flex;
   align-items: center;
@@ -846,22 +1218,84 @@ button {
 
   border-radius: 50%;
   background: var(--bg-surface-raised);
+  border: 1px solid var(--border-strong);
 
   color: var(--text-tertiary);
-  font-size: 10px;
+  font-family: var(--font-display);
+  font-size: 11px;
   font-weight: 700;
 }
 
-.critical-finding-name {
-  flex: 1 1 60px;
+.critical-finding-critical .critical-finding-rank {
+  border-color: var(--sev-critical-border);
+  color: var(--sev-critical);
+  background: var(--sev-critical-bg);
+}
+
+.critical-finding-high .critical-finding-rank {
+  border-color: var(--sev-high-border);
+  color: var(--sev-high);
+  background: var(--sev-high-bg);
+}
+
+/* Two-line finding: name / score / risk badge on top, then a quiet
+   "PQC -> candidate · Priority X" line -- priority gets a text label
+   instead of a second unlabeled badge, which read as "HIGH HIGH". */
+.critical-finding-body {
+  flex: 1 1 auto;
   min-width: 0;
 
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.critical-finding-headline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.critical-finding-name {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  font-size: 14px;
   font-weight: 650;
 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.critical-finding-score {
+  flex: 0 0 auto;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.critical-finding-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
+.critical-finding-pqc {
+  color: var(--accent-cyan-strong);
+  font-weight: 600;
+}
+
+.critical-finding-pqc-none {
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .critical-finding-critical {
@@ -878,23 +1312,48 @@ button {
    STAT CARDS
    ============================================================ */
 
-.stats-grid {
+.hero-stat-tiles {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
-  margin-bottom: var(--space-4);
 }
 
-.stat-card {
-  min-height: 130px;
+.hero-stat-tiles > *:nth-child(1) { animation-delay: 0.04s; }
+.hero-stat-tiles > *:nth-child(2) { animation-delay: 0.08s; }
+.hero-stat-tiles > *:nth-child(3) { animation-delay: 0.12s; }
+.hero-stat-tiles > *:nth-child(4) { animation-delay: 0.16s; }
 
-  padding: var(--space-5);
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 118px;
+
+  padding: var(--space-4) var(--space-5);
 
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 
   background: var(--bg-surface);
   box-shadow: var(--shadow-card);
+
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  animation: ecdat-rise-in 0.45s ease both;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+
+/* Thin top accent bar -- a quick, consistent way to give each tone
+   its own identity without repainting the whole card. */
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  opacity: 0.7;
 }
 
 .stat-card-top {
@@ -926,12 +1385,14 @@ button {
   margin-top: var(--space-4);
 
   color: var(--text-primary);
+  font-family: var(--font-display);
 
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1;
 
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-subtitle {
@@ -942,12 +1403,20 @@ button {
   font-size: 10px;
 }
 
+/* "High / Critical Risk" must be the card an evaluator's eye lands on
+   first among the four -- red-leaning glow, not just an orange icon. */
 .stat-card-critical {
-  border-color: var(--sev-high-border);
+  border-color: var(--sev-critical-border);
+  box-shadow: var(--shadow-card), var(--glow-high);
+}
+
+.stat-card-critical::before {
+  background: linear-gradient(90deg, var(--sev-high), var(--sev-critical));
+  opacity: 0.9;
 }
 
 .stat-card-critical .stat-icon {
-  background: var(--sev-high-bg);
+  background: var(--sev-critical-bg);
   color: var(--sev-high);
 }
 
@@ -955,9 +1424,29 @@ button {
   color: var(--sev-high);
 }
 
-.stat-card-accent .stat-icon {
-  background: rgba(139, 92, 246, 0.12);
-  color: var(--accent-violet);
+.stat-card-cyan::before {
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-cyan-strong));
+}
+
+.stat-card-cyan .stat-icon {
+  background: rgba(34, 211, 238, 0.12);
+  color: var(--accent-cyan);
+}
+
+.stat-card-cyan .stat-value {
+  color: var(--accent-cyan-strong);
+}
+
+.stat-card:hover.stat-card-cyan {
+  box-shadow: var(--shadow-card), var(--glow-cyan);
+}
+
+.stat-card:hover.stat-card-critical {
+  box-shadow: var(--shadow-card), var(--glow-critical);
+}
+
+.stat-card:not(.stat-card-cyan):not(.stat-card-critical):hover {
+  box-shadow: var(--shadow-card), var(--glow-blue);
 }
 
 /* ============================================================
@@ -966,16 +1455,52 @@ button {
 
 .analytics-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-4);
   margin-bottom: var(--space-4);
 }
 
+.analytics-grid > *:nth-child(1) { animation-delay: 0.02s; }
+.analytics-grid > *:nth-child(2) { animation-delay: 0.08s; }
+.analytics-grid > *:nth-child(3) { animation-delay: 0.14s; }
+
 .panel {
+  position: relative;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   overflow: hidden;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-fast);
+  animation: ecdat-rise-in 0.45s ease both;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+  opacity: 0.55;
+}
+
+/* Each donut panel's top accent matches the meaning of its own data,
+   the same "color = one specific thing" rule used everywhere else. */
+.panel#risk-analysis-section::before {
+  background: linear-gradient(90deg, var(--sev-critical), var(--sev-high));
+}
+
+.panel#pqc-migration-section::before {
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-strong));
+}
+
+.panel#global-source-impact-section::before {
+  background: linear-gradient(90deg, var(--sev-high), var(--sev-medium));
+}
+
+.panel:not(.asset-explorer):hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card), 0 0 24px rgba(34, 211, 238, 0.08);
 }
 
 .panel-header {
@@ -1005,10 +1530,107 @@ button {
   color: var(--text-tertiary);
 }
 
-.analytics-panel-chart {
+/* ---- donut/ring chart body: chart on top, compact legend below ---- */
+
+.donut-panel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.donut-chart-wrap {
+  position: relative;
   width: 100%;
-  height: 260px;
-  padding: var(--space-3) var(--space-4) var(--space-2);
+  height: 148px;
+}
+
+.donut-center-label {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+}
+
+.donut-center-label strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.donut-center-label span {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.donut-legend {
+  width: 100%;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.donut-legend button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  padding: 5px var(--space-2);
+
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+
+  font-family: inherit;
+  text-align: left;
+
+  transition: background var(--transition-fast);
+}
+
+.donut-legend button:hover {
+  background: var(--bg-inset);
+}
+
+.donut-legend-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.donut-legend-name {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  color: var(--text-secondary);
+  font-size: 12px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donut-legend-value {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* ============================================================
@@ -1068,6 +1690,16 @@ button {
 
 .asset-explorer {
   margin-bottom: var(--space-4);
+}
+
+/* Must never carry a transform (the .panel rise-in animation's
+   fill-mode would leave one applied): AssetDetailPanel's fixed,
+   full-viewport overlay renders inside this section, and any
+   transform here makes this panel its containing block -- the
+   overlay would then be positioned and overflow-clipped inside the
+   explorer instead of covering the viewport. */
+.panel.asset-explorer {
+  animation: none;
 }
 
 .asset-toolbar {
@@ -1248,11 +1880,21 @@ button {
   background: var(--bg-surface-raised);
   border-color: var(--border-strong);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.asset-card.risk-accent-critical:hover {
+  box-shadow: var(--glow-critical);
+}
+
+.asset-card.risk-accent-high:hover {
+  box-shadow: var(--glow-high);
 }
 
 .asset-card-selected {
-  border-color: var(--accent);
-  background: rgba(59, 130, 246, 0.07);
+  border-color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.06);
+  box-shadow: var(--glow-cyan);
 }
 
 /* Severity rail: a full-height color block, not a thin 3px hairline
@@ -1275,10 +1917,12 @@ button {
 
 .severity-rail-high {
   background: var(--sev-high);
+  box-shadow: 2px 0 12px rgba(249, 115, 22, 0.35);
 }
 
 .severity-rail-critical {
   background: var(--sev-critical);
+  box-shadow: 2px 0 14px rgba(239, 68, 68, 0.4);
 }
 
 .severity-rail-unknown {
@@ -1296,43 +1940,62 @@ button {
   border-color: var(--sev-critical-border);
 }
 
-.asset-card-identity {
+.asset-card-main {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 7px;
 
-  flex: 0 0 auto;
-  min-width: 180px;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.asset-card-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.asset-card-headline-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .asset-card-name {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-primary);
+  overflow-wrap: anywhere;
 }
 
-.asset-card-meta {
-  font-size: 11px;
-  color: var(--text-tertiary);
-  text-transform: capitalize;
-}
-
-.asset-card-primary-metrics {
+.asset-card-headline-right {
   display: flex;
   align-items: center;
   gap: var(--space-5);
-  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
 
-  flex: 1 1 auto;
-  justify-content: flex-end;
+/* The numeric risk score sits right beside its severity badge in the
+   headline row -- risk is the dominant signal on this card, so it
+   gets the largest, boldest number of anything here. */
+.asset-card-score {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .asset-card-metric-primary {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
-  min-width: 74px;
+  gap: 4px;
 }
 
 .asset-card-metric-primary > span {
@@ -1348,15 +2011,29 @@ button {
   padding: 5px 11px;
 }
 
-.asset-card-metric-pqc {
+/* Identity (type · primitive) and PQC path share one line so each
+   card stays quick to scan -- the list is 29 cards long. */
+.asset-card-subline {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-width: 150px;
-  text-align: right;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px var(--space-5);
 }
 
-.asset-card-metric-pqc > span {
+.asset-card-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: capitalize;
+}
+
+.asset-card-pqc-path {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.asset-card-pqc-path > span {
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1364,31 +2041,70 @@ button {
   color: var(--text-muted);
 }
 
-.asset-card-metric-pqc strong {
-  font-size: 12px;
+.asset-card-pqc-path strong {
+  font-size: 12.5px;
   font-weight: 650;
-  color: #c4b5fd;
+  color: var(--accent-cyan-strong);
+}
+
+/* Cyan means "a real PQC candidate" -- a card with no candidate keeps
+   its migration strategy text neutral. */
+.asset-card-pqc-path strong.asset-card-pqc-none {
+  color: var(--text-secondary);
+}
+
+.asset-card-pqc-path em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.asset-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+
+  padding-top: var(--space-2);
+  margin-top: 2px;
+  border-top: 1px solid rgba(36, 51, 77, 0.5);
 }
 
 /* Secondary meta: complexity / blast radius / source impact, folded
-   into one small quiet line beneath the primary row instead of three
-   more equally-sized badge tiles. */
+   into one small quiet line -- supporting detail, not competing
+   with the risk/priority headline above. */
 .asset-card-secondary-meta {
-  flex: 1 0 100%;
-
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
 
-  padding-top: var(--space-2);
-  margin-top: var(--space-2);
-  border-top: 1px solid rgba(36, 51, 77, 0.5);
-
   color: var(--text-muted);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+/* "Inspect Asset ->" affordance: quiet by default, brightens on
+   hover/focus so the whole card reads as clickable without shouting
+   at rest. */
+.asset-card-inspect {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 600;
+
+  transition: color var(--transition-base), gap var(--transition-base);
+}
+
+.asset-card:hover .asset-card-inspect,
+.asset-card:focus-visible .asset-card-inspect {
+  color: var(--accent-strong);
+  gap: 7px;
 }
 
 .asset-explorer-footnote {
@@ -1503,6 +2219,8 @@ button {
 
   background: var(--bg-canvas);
   color: #dbe7f5;
+
+  animation: ecdat-fade-in 0.22s ease both;
 }
 
 .asset-workspace::before {
@@ -1565,6 +2283,7 @@ button {
 
 .workspace-header {
   position: relative;
+  overflow: hidden;
 
   display: flex;
   align-items: flex-start;
@@ -1575,10 +2294,21 @@ button {
   padding: var(--space-5) var(--space-6);
   margin-bottom: var(--space-5);
 
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-elevated);
+  animation: ecdat-rise-in 0.35s ease both;
+}
+
+.workspace-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(34, 211, 238, 0.06), transparent 45%, rgba(139, 92, 246, 0.05));
+  pointer-events: none;
 }
 
 .workspace-identity {
@@ -1604,10 +2334,14 @@ button {
   font-weight: 800;
 }
 
-.workspace-avatar-low { background: var(--sev-low-bg); border: 1px solid var(--sev-low-border); color: var(--sev-low); }
+.workspace-avatar {
+  font-family: var(--font-display);
+}
+
+.workspace-avatar-low { background: var(--sev-low-bg); border: 1px solid var(--sev-low-border); color: var(--sev-low); box-shadow: var(--glow-low); }
 .workspace-avatar-medium { background: var(--sev-medium-bg); border: 1px solid var(--sev-medium-border); color: var(--sev-medium); }
-.workspace-avatar-high { background: var(--sev-high-bg); border: 1px solid var(--sev-high-border); color: var(--sev-high); }
-.workspace-avatar-critical { background: var(--sev-critical-bg); border: 1px solid var(--sev-critical-border); color: #fecaca; }
+.workspace-avatar-high { background: var(--sev-high-bg); border: 1px solid var(--sev-high-border); color: var(--sev-high); box-shadow: var(--glow-high); }
+.workspace-avatar-critical { background: var(--sev-critical-bg); border: 1px solid var(--sev-critical-border); color: #fecaca; box-shadow: var(--glow-critical); }
 .workspace-avatar-unknown { background: var(--sev-unknown-bg); border: 1px solid var(--sev-unknown-border); color: var(--sev-unknown); }
 
 .workspace-identity-text {
@@ -1677,38 +2411,85 @@ button {
   letter-spacing: 0.08em;
 }
 
+.risk-hero-value {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+
+/* The asset's risk score -- the single largest number in the workspace. */
+.risk-hero-number {
+  font-family: var(--font-display);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.risk-hero-value-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 2px;
+}
+
 .risk-hero-severity {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 
-.risk-hero-low .risk-hero-severity { color: var(--sev-low); }
-.risk-hero-medium .risk-hero-severity { color: var(--sev-medium); }
-.risk-hero-high .risk-hero-severity { color: var(--sev-high); }
-.risk-hero-critical .risk-hero-severity { color: var(--sev-critical); }
-.risk-hero-unknown .risk-hero-severity { color: var(--sev-unknown); }
+.risk-hero-severity-solo {
+  font-size: 34px;
+  letter-spacing: -0.01em;
+}
+
+.risk-hero-low :is(.risk-hero-number, .risk-hero-severity) { color: var(--sev-low); text-shadow: 0 0 22px rgba(34, 197, 94, 0.4); }
+.risk-hero-medium :is(.risk-hero-number, .risk-hero-severity) { color: var(--sev-medium); text-shadow: 0 0 22px rgba(234, 179, 8, 0.35); }
+.risk-hero-high :is(.risk-hero-number, .risk-hero-severity) { color: var(--sev-high); text-shadow: 0 0 24px rgba(249, 115, 22, 0.45); }
+.risk-hero-critical :is(.risk-hero-number, .risk-hero-severity) { color: var(--sev-critical); text-shadow: 0 0 26px rgba(239, 68, 68, 0.5); }
+.risk-hero-unknown :is(.risk-hero-number, .risk-hero-severity) { color: var(--sev-unknown); }
 
 .risk-hero-score {
   color: var(--text-muted);
   font-size: 11px;
 }
 
-.risk-hero-priority {
+/* Priority and PQC recommendation: secondary facts beside the score. */
+.risk-hero-fact {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
 
   padding-left: var(--space-5);
   border-left: 1px solid var(--border-subtle);
+}
 
+.risk-hero-fact > span {
   color: var(--text-tertiary);
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.risk-hero-pqc {
+  color: var(--accent-cyan-strong);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+
+.risk-hero-pqc-none {
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-shadow: none;
 }
 
 .workspace-header-reason {
@@ -1728,14 +2509,20 @@ button {
 }
 
 /* ============================================================
-   WORKSPACE GRID — the 2x2 investigation layout:
-     [ Risk & Impact ]     [ Migration Path ]
-     [ Source & Evidence ] [ AI Advisor ]
+   WORKSPACE GRID — Evidence and Risk Intelligence stacked on the
+   left, the Migration Path decision flow on the right, and the AI
+   Advisor full-width below (see .panel-ai), since it explains all of
+   them together:
+     [ Source & Evidence ]  [ Migration Path ]
+     [ Risk Intelligence ]  [ (vertical)     ]
    ============================================================ */
 
+/* align-items: start -- stretching either column to the other's
+   height is what left the evidence/risk panels as mostly-empty boxes. */
 .asset-workspace-grid {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  align-items: start;
   gap: var(--space-5);
 }
 
@@ -1743,21 +2530,72 @@ button {
   min-width: 0;
 }
 
+.workspace-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Two-class selectors on purpose: the .workspace-panel animation
+   shorthand appears later in this file and would reset a
+   single-class animation-delay back to 0. */
+.workspace-column > .workspace-panel:nth-child(2) { animation-delay: 0.08s; }
+.asset-workspace-grid > .panel-migration { animation-delay: 0.05s; }
+.asset-workspace .panel-ai { animation-delay: 0.14s; }
+
 .workspace-panel {
+  position: relative;
+  overflow: hidden;
+
   padding: var(--space-5);
 
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   box-shadow: var(--shadow-card);
+
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  animation: ecdat-rise-in 0.4s ease both;
+}
+
+.workspace-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+}
+
+.panel-evidence::before {
+  background: linear-gradient(90deg, var(--accent-strong), var(--text-tertiary));
+}
+
+.panel-risk-impact::before {
+  background: linear-gradient(90deg, var(--sev-high), var(--sev-critical));
+}
+
+.panel-migration::before {
+  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-strong));
 }
 
 .workspace-panel h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   margin: 0 0 var(--space-4);
   color: var(--text-primary);
   font-size: 14px;
   font-weight: 700;
 }
+
+.workspace-panel h3 svg {
+  flex: 0 0 auto;
+}
+
+.panel-evidence h3 svg { color: var(--accent-strong); }
+.panel-risk-impact h3 svg { color: var(--sev-high); }
+.panel-migration h3 svg { color: var(--accent-cyan-strong); }
 
 .workspace-empty-note {
   margin: var(--space-3) 0 0;
@@ -1819,43 +2657,85 @@ button {
 
 /* ---- Migration Path: visual flow ---- */
 
+/* Vertical decision pathway: nodes stack top to bottom with a down
+   arrow between each, so the full path fits its column at every
+   width -- the earlier horizontal flow needed a scrollbar even at
+   1440px and hid the final "Migration Action" node. */
 .migration-flow {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  flex-wrap: nowrap;
-  gap: var(--space-2);
-
-  overflow-x: auto;
-  padding-bottom: 2px;
+  gap: 6px;
 }
 
 .flow-node {
-  flex: 1 1 108px;
-  min-width: 108px;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--space-3);
+  row-gap: 2px;
+  align-items: center;
 
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-4);
 
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--bg-inset);
+
+  transition: transform var(--transition-fast), box-shadow var(--transition-base);
+}
+
+.flow-node:hover {
+  transform: translateX(2px);
+}
+
+.flow-node-icon {
+  grid-row: 1 / span 2;
+
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  background: var(--bg-surface);
+
+  color: var(--text-tertiary);
 }
 
 .flow-node > span {
+  align-self: end;
+
   color: var(--text-tertiary);
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .flow-node strong {
+  align-self: start;
+
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.35;
   overflow-wrap: anywhere;
+}
+
+/* No real candidate -> no cyan: the node stays neutral rather than
+   dressing "No direct replacement" in the PQC color. */
+.flow-node-pqc.flow-node-pqc-none {
+  border-color: var(--border-subtle);
+  background: var(--bg-inset);
+}
+
+.flow-node-pqc.flow-node-pqc-none strong,
+.flow-node-pqc.flow-node-pqc-none .flow-node-icon {
+  color: var(--text-secondary);
+}
+
+.flow-node-pqc.flow-node-pqc-none:hover {
+  box-shadow: none;
 }
 
 .flow-node-low strong { color: var(--sev-low); }
@@ -1863,23 +2743,47 @@ button {
 .flow-node-high strong { color: var(--sev-high); }
 .flow-node-critical strong { color: var(--sev-critical); }
 
+.flow-node-low .flow-node-icon { color: var(--sev-low); }
+.flow-node-medium .flow-node-icon { color: var(--sev-medium); }
+.flow-node-high .flow-node-icon { color: var(--sev-high); }
+.flow-node-critical .flow-node-icon { color: var(--sev-critical); }
+
+.flow-node-risk.flow-node-high:hover { box-shadow: var(--glow-high); }
+.flow-node-risk.flow-node-critical:hover { box-shadow: var(--glow-critical); }
+.flow-node-risk.flow-node-low:hover { box-shadow: var(--glow-low); }
+
 .flow-node-pqc {
-  border-color: rgba(139, 92, 246, 0.25);
+  border-color: rgba(34, 211, 238, 0.28);
+  background: rgba(34, 211, 238, 0.06);
 }
 
-.flow-node-pqc strong {
-  color: #c4b5fd;
+.flow-node-pqc strong,
+.flow-node-pqc .flow-node-icon {
+  color: var(--accent-cyan-strong);
+}
+
+.flow-node-pqc:hover {
+  box-shadow: var(--glow-cyan);
 }
 
 .flow-node-action {
   background: rgba(59, 130, 246, 0.07);
-  border-color: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.22);
+}
+
+.flow-node-action .flow-node-icon {
+  color: var(--accent-strong);
+}
+
+.flow-node-action:hover {
+  box-shadow: var(--glow-blue);
 }
 
 .flow-arrow {
   flex: 0 0 auto;
   align-self: center;
-  color: var(--text-muted);
+  color: var(--accent-cyan);
+  opacity: 0.6;
 }
 
 .migration-meta-row {
@@ -1983,10 +2887,10 @@ button {
 
   border-radius: var(--radius-md);
 
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.25);
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.25);
 
-  color: var(--accent-violet);
+  color: var(--accent-cyan-strong);
   font-size: 12px;
   font-weight: 700;
 }
@@ -2016,8 +2920,9 @@ button {
 }
 
 .candidate-score strong {
-  color: var(--accent-strong);
-  font-size: 15px;
+  color: var(--accent-cyan-strong);
+  font-family: var(--font-display);
+  font-size: 16px;
 }
 
 .candidate-score span {
@@ -2092,7 +2997,9 @@ button {
 .evidence-stat strong {
   display: block;
   color: var(--text-primary);
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -2171,10 +3078,26 @@ button {
    ============================================================ */
 
 .panel-ai {
+  margin-top: var(--space-5);
+
   background:
-    linear-gradient(180deg, rgba(139, 92, 246, 0.05), transparent 40%),
+    linear-gradient(180deg, rgba(139, 92, 246, 0.07), transparent 40%),
     var(--bg-surface);
-  border-color: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.22);
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(139, 92, 246, 0.04) inset;
+}
+
+.panel-ai::before {
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-magenta));
+}
+
+/* At full workspace width the AI content reads better constrained
+   than edge-to-edge -- the context strip and generated answer are
+   prose, not a data grid, so an unbounded line length would hurt
+   readability on a wide desktop viewport. */
+.panel-ai .ai-context-line,
+.panel-ai .ai-advice-content {
+  max-width: 900px;
 }
 
 .ai-advisor-header {
@@ -2194,8 +3117,8 @@ button {
 }
 
 .ai-advisor-icon {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   flex: 0 0 auto;
 
   display: flex;
@@ -2204,9 +3127,10 @@ button {
 
   border-radius: var(--radius-md);
 
-  background: rgba(139, 92, 246, 0.14);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.22), rgba(217, 70, 239, 0.14));
+  border: 1px solid rgba(139, 92, 246, 0.35);
   color: #c4b5fd;
+  box-shadow: var(--glow-violet);
 }
 
 .ai-advisor-header h3 {
@@ -2232,6 +3156,47 @@ button {
   letter-spacing: 0.04em;
 }
 
+/* ---- availability indicator: a small status dot + label derived
+   from the existing idle/loading/success/error state machine, so the
+   AI Advisor visibly communicates whether it's ready without any new
+   API call (Ollama itself has no health-check endpoint wired up). ---- */
+
+.ai-status-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ai-availability-dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.ai-availability-ready {
+  background: var(--sev-low);
+  box-shadow: var(--glow-low);
+}
+
+.ai-availability-loading {
+  background: var(--sev-medium);
+  animation: ecdat-pulse 1.4s ease-in-out infinite;
+}
+
+.ai-availability-error {
+  background: var(--sev-critical);
+}
+
+.ai-availability-label {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 /* ---- one-line context strip: ties this panel to the risk/priority/
    PQC data already shown in the panels beside it ---- */
 
@@ -2253,9 +3218,13 @@ button {
 }
 
 .ai-context-line em {
-  color: #c4b5fd;
+  color: var(--accent-cyan-strong);
   font-style: normal;
   font-weight: 600;
+}
+
+.ai-context-line em.ai-context-none {
+  color: var(--text-secondary);
 }
 
 .ai-context-line .badge {
@@ -2265,8 +3234,17 @@ button {
 
 /* ---- CTA / states ---- */
 
-.ai-advice-button {
-  width: 100%;
+/* The advisor's CTA wears the AI identity (violet -> magenta) instead
+   of the generic blue action gradient, and sizes to its label rather
+   than stretching into a 1300px bar on wide screens. */
+.btn-primary.ai-advice-button {
+  min-width: 240px;
+  background: linear-gradient(135deg, var(--accent-violet) 0%, #a855f7 55%, var(--accent-magenta) 120%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 8px 24px rgba(139, 92, 246, 0.3);
+}
+
+.btn-primary.ai-advice-button:hover:not(:disabled) {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 10px 32px rgba(139, 92, 246, 0.42);
 }
 
 .ai-loading,
@@ -2396,9 +3374,18 @@ button {
   margin-bottom: var(--space-6);
 }
 
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+
+  margin-bottom: var(--space-6);
+}
+
 .hero-intro {
   max-width: 780px;
-  margin-bottom: var(--space-6);
+  animation: ecdat-rise-in 0.5s ease both;
 }
 
 .hero-eyebrow {
@@ -2408,11 +3395,11 @@ button {
   margin-bottom: var(--space-3);
   padding: 4px 10px;
 
-  border: 1px solid rgba(139, 92, 246, 0.28);
+  border: 1px solid rgba(34, 211, 238, 0.28);
   border-radius: 999px;
 
-  background: rgba(139, 92, 246, 0.1);
-  color: #c4b5fd;
+  background: rgba(34, 211, 238, 0.08);
+  color: var(--accent-cyan-strong);
 
   font-size: 10px;
   font-weight: 700;
@@ -2421,35 +3408,249 @@ button {
 }
 
 .hero-intro h1 {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-4);
 
   color: var(--text-primary);
-  font-size: 30px;
-  line-height: 1.25;
-  font-weight: 750;
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 1.14;
+  font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+/* The one deliberate gradient moment in the headline -- cyan -> blue
+   -> violet, applied only to the words that carry the product's
+   promise, not the whole sentence. */
+.hero-gradient-text {
+  background: linear-gradient(100deg, var(--accent-cyan-strong) 0%, var(--accent-strong) 48%, var(--accent-violet-strong) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 22px rgba(34, 211, 238, 0.18));
 }
 
 .hero-intro p {
   margin: 0;
   color: var(--text-secondary);
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 14.5px;
+  line-height: 1.7;
 }
 
-.hero-readiness {
+/* Purely explanatory workflow chain -- static labels, not a live
+   status tracker (PipelineStepper further down owns that). Exists so
+   a first-time viewer understands ECDAT's end-to-end shape before
+   scrolling anywhere else. */
+.hero-workflow-chain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hero-workflow-chain li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.hero-workflow-chain li svg {
+  color: var(--accent-cyan);
+  flex: 0 0 auto;
+}
+
+.hero-workflow-arrow {
+  color: var(--border-strong);
+  font-weight: 400;
+}
+
+.hero-cta-row {
   display: flex;
   align-items: center;
   gap: var(--space-4);
+  flex-wrap: wrap;
 
-  margin-bottom: var(--space-5);
+  margin-top: var(--space-5);
+}
+
+.hero-cta-hint {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+/* ---- lightweight inline-SVG hero visual (no image asset) ---- */
+
+.hero-visual {
+  width: 280px;
+  height: 280px;
+  flex: 0 0 auto;
+  overflow: visible;
+  animation: ecdat-scale-in 0.6s ease both;
+}
+
+.hero-visual-ring {
+  fill: none;
+  stroke-width: 1;
+}
+
+.hero-visual-ring-outer {
+  stroke: rgba(34, 211, 238, 0.32);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.35));
+}
+
+.hero-visual-ring-mid {
+  stroke: rgba(139, 92, 246, 0.34);
+  stroke-dasharray: 3 6;
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.3));
+}
+
+/* Slow counter-rotating orbits; each ring's key nodes ride along with
+   it. transform-origin is in viewBox units (SVG transform-box). */
+.hero-visual-orbit {
+  transform-origin: 160px 160px;
+  animation: ecdat-orbit-spin 60s linear infinite;
+}
+
+.hero-visual-orbit-reverse {
+  animation-duration: 40s;
+  animation-direction: reverse;
+}
+
+.hero-visual-node-cyan {
+  fill: var(--accent-cyan-strong);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.9));
+}
+
+.hero-visual-node-violet {
+  fill: var(--accent-violet-strong);
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.9));
+}
+
+.hero-visual-node-magenta {
+  fill: var(--accent-magenta-strong);
+  filter: drop-shadow(0 0 6px rgba(217, 70, 239, 0.85));
+}
+
+.hero-visual-ring-inner {
+  stroke: rgba(91, 156, 246, 0.4);
+  filter: drop-shadow(0 0 4px rgba(91, 156, 246, 0.3));
+}
+
+.hero-visual-tick {
+  stroke: rgba(148, 163, 184, 0.25);
+  stroke-width: 1;
+}
+
+.hero-visual-tick-strong {
+  stroke: var(--accent-cyan);
+  opacity: 0.7;
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.5));
+}
+
+.hero-visual-lock-body {
+  fill: rgba(34, 211, 238, 0.12);
+  stroke: var(--accent-cyan-strong);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.45));
+}
+
+.hero-visual-lock-shackle {
+  fill: none;
+  stroke: var(--accent-violet-strong);
+  stroke-width: 4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.5));
+}
+
+.hero-visual-lock-dot {
+  fill: var(--accent-cyan-strong);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.7));
+}
+
+/* ---- asymmetric metrics row: one large readiness panel + a 2x2
+   grid of supporting counts, instead of five equal-weight cards ---- */
+
+.hero-metrics-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.hero-readiness-card {
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+
+  padding: var(--space-5);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(160deg, rgba(34, 211, 238, 0.08), transparent 55%),
+    var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-elevated);
+  animation: ecdat-scale-in 0.5s ease both;
+}
+
+/* A faint drifting halo behind the ring -- the "signature component"
+   treatment the brief asked for: this card should read as a security
+   intelligence visualization, not a plain progress card. */
+.hero-readiness-card::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20% auto -20%;
+  height: 220%;
+  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.14), transparent 70%);
+  pointer-events: none;
+}
+
+.readiness-tone-critical {
+  border-color: var(--sev-critical-border);
+}
+
+.readiness-tone-critical::before {
+  background: radial-gradient(closest-side, rgba(239, 68, 68, 0.14), transparent 70%);
+}
+
+.readiness-tone-high {
+  border-color: var(--sev-high-border);
+}
+
+.readiness-tone-high::before {
+  background: radial-gradient(closest-side, rgba(249, 115, 22, 0.14), transparent 70%);
 }
 
 .hero-readiness-meter {
   position: relative;
-  width: 76px;
-  height: 76px;
+  z-index: 1;
+  width: 116px;
+  height: 116px;
   flex: 0 0 auto;
+}
+
+/* A slow, barely-visible outer ring rotating behind the real data
+   ring -- pure decoration signaling "live intelligence system,"
+   never competing with the actual value. */
+.hero-readiness-meter::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 1px dashed rgba(34, 211, 238, 0.18);
+  animation: ecdat-orbit-spin 30s linear infinite;
 }
 
 .readiness-ring {
@@ -2468,23 +3669,27 @@ button {
   fill: none;
   stroke-width: 10;
   stroke-linecap: round;
-  transition: stroke-dasharray 0.6s ease;
+  transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .readiness-ring-low .readiness-ring-value {
   stroke: var(--sev-low);
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.55));
 }
 
 .readiness-ring-medium .readiness-ring-value {
   stroke: var(--sev-medium);
+  filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.5));
 }
 
 .readiness-ring-high .readiness-ring-value {
   stroke: var(--sev-high);
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.5));
 }
 
 .readiness-ring-critical .readiness-ring-value {
   stroke: var(--sev-critical);
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.55));
 }
 
 .hero-readiness-number {
@@ -2499,8 +3704,9 @@ button {
 
 .hero-readiness-number strong {
   color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 750;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1;
 }
 
@@ -2511,18 +3717,39 @@ button {
   letter-spacing: 0.05em;
 }
 
+.hero-readiness-copy {
+  min-width: 0;
+}
+
+.hero-readiness-eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .hero-readiness-label {
   display: flex;
   align-items: center;
   gap: 6px;
 
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
 }
 
 .hero-readiness-label svg {
   color: var(--accent-strong);
+}
+
+.hero-readiness-copy p {
+  margin: 6px 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 /* ============================================================
@@ -2530,30 +3757,54 @@ button {
    ============================================================ */
 
 .pipeline-stepper {
-  display: flex;
-  align-items: center;
+  counter-reset: pipeline-step;
+
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: start;
 
   margin: var(--space-5) 0;
-  padding: var(--space-4);
+  padding: var(--space-4) var(--space-2);
 
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--bg-inset);
-
-  overflow-x: auto;
+  background:
+    linear-gradient(180deg, rgba(34, 211, 238, 0.035), transparent),
+    var(--bg-inset);
 }
 
 .pipeline-step {
+  counter-increment: pipeline-step;
+  position: relative;
+
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
-  flex: 1 1 auto;
-  min-width: max-content;
+  gap: 8px;
+  min-width: 0;
+
+  text-align: center;
+}
+
+/* Connector line from the previous node's center to this node's
+   center, drawn behind the icons -- the stages read as one continuous
+   pipeline with no extra DOM. */
+.pipeline-step + .pipeline-step::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: -50%;
+  width: 100%;
+  height: 1px;
+  background: var(--border-strong);
+  transition: background var(--transition-base), box-shadow var(--transition-base);
 }
 
 .pipeline-step-icon {
-  width: 28px;
-  height: 28px;
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
   flex: 0 0 auto;
 
   display: flex;
@@ -2565,31 +3816,73 @@ button {
   background: var(--bg-surface);
   color: var(--text-muted);
 
-  transition: border-color var(--transition-base), color var(--transition-base), background var(--transition-base);
+  transition: border-color var(--transition-base), color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* Numbered node badge, purely from CSS counters -- no data/props
+   needed, just the stage's position in the visible list. */
+.pipeline-step-icon::after {
+  content: counter(pipeline-step);
+  position: absolute;
+  top: -4px;
+  right: -4px;
+
+  width: 14px;
+  height: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-inset-alt);
+
+  color: var(--text-tertiary);
+  font-size: 8px;
+  font-weight: 700;
 }
 
 .pipeline-step-label {
-  color: var(--text-muted);
-  font-size: 11px;
+  padding: 0 2px;
+
+  color: var(--text-secondary);
+  font-size: 10.5px;
   font-weight: 600;
-  white-space: nowrap;
+  line-height: 1.3;
 
   transition: color var(--transition-base);
 }
 
-.pipeline-step-connector {
-  width: 20px;
-  height: 1px;
-  margin: 0 4px;
-  flex: 0 1 24px;
+/* Pending stages still carry their meaning at low intensity -- risk
+   in severity orange, PQC in cyan, AI in violet, the rest in the blue
+   "pipeline/actions" hue -- so the idle pipeline reads as a designed
+   system rather than a row of gray placeholders. */
+.pipeline-step-pending .pipeline-step-icon {
+  border-color: rgba(59, 130, 246, 0.3);
+  color: var(--accent-strong);
+}
 
-  background: var(--border-strong);
+.pipeline-stage-risk.pipeline-step-pending .pipeline-step-icon {
+  border-color: var(--sev-high-border);
+  color: var(--sev-high);
+}
+
+.pipeline-stage-pqc.pipeline-step-pending .pipeline-step-icon {
+  border-color: rgba(34, 211, 238, 0.32);
+  color: var(--accent-cyan);
+}
+
+.pipeline-stage-ai.pipeline-step-pending .pipeline-step-icon {
+  border-color: rgba(139, 92, 246, 0.35);
+  color: var(--accent-violet-strong);
 }
 
 .pipeline-step-done .pipeline-step-icon {
   border-color: var(--sev-low);
   background: var(--sev-low-bg);
   color: var(--sev-low);
+  box-shadow: var(--glow-low);
 }
 
 .pipeline-step-done .pipeline-step-label {
@@ -2597,9 +3890,10 @@ button {
 }
 
 .pipeline-step-active .pipeline-step-icon {
-  border-color: var(--accent);
-  background: rgba(59, 130, 246, 0.12);
-  color: var(--accent-strong);
+  border-color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.12);
+  color: var(--accent-cyan-strong);
+  box-shadow: var(--glow-cyan);
   animation: ecdat-pulse 1.6s ease-in-out infinite;
 }
 
@@ -2611,18 +3905,34 @@ button {
   border-color: var(--sev-critical);
   background: var(--sev-critical-bg);
   color: var(--sev-critical);
+  box-shadow: var(--glow-critical);
 }
 
 .pipeline-step-failed .pipeline-step-label {
   color: #fca5a5;
 }
 
+/* A connector lights up once the stage it leads into is reached. */
+.pipeline-step + .pipeline-step-done::before {
+  background: var(--sev-low);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.45);
+}
+
+.pipeline-step + .pipeline-step-active::before {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
+}
+
+.pipeline-step + .pipeline-step-failed::before {
+  background: var(--sev-critical);
+}
+
 @keyframes ecdat-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 6px rgba(34, 211, 238, 0);
   }
 }
 
@@ -2641,8 +3951,16 @@ button {
 }
 
 @media (max-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .hero-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* The hero stays a row with a smaller visual -- stacking it under
+     the copy left the visual orphaned in empty space and pushed the
+     readiness verdict below the fold at 1024px. */
+  .hero-visual {
+    width: 170px;
+    height: 170px;
   }
 
   .main-content {
@@ -2671,7 +3989,13 @@ button {
     padding-right: 0;
   }
 
-  .brand > div:last-child,
+  /* display:none, not font-size:0 -- .brand-name/.brand-subtitle set
+     explicit font sizes, so a zero-font wrapper kept ~150px of width
+     and pushed the logo off the left edge of the 76px rail. */
+  .brand > div:last-child {
+    display: none;
+  }
+
   .nav-item {
     font-size: 0;
   }
@@ -2691,11 +4015,29 @@ button {
     margin-left: 76px;
   }
 
-  .analytics-grid,
-  .metric-tier,
-  .evidence-stats,
+  /* Three-up donut panels wrap their headers to different heights
+     here, misaligning the rings -- each panel becomes a full-width
+     row instead: ring on the left, legend on the right. */
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .donut-panel-body {
+    flex-direction: row;
+    gap: var(--space-6);
+  }
+
+  .donut-chart-wrap {
+    flex: 0 0 160px;
+    width: 160px;
+  }
+
+  .donut-legend {
+    margin-top: 0;
+  }
+
   .source-impact-lists {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .workspace-header {
@@ -2726,41 +4068,99 @@ button {
     padding: var(--space-6) var(--space-4);
   }
 
-  .hero-intro h1 {
-    font-size: 22px;
+  /* Decorative only (aria-hidden) -- on a phone it would push the
+     readiness verdict a full screen further down. */
+  .hero-visual {
+    display: none;
   }
 
-  .hero-readiness {
-    flex-wrap: wrap;
+  .hero-intro h1 {
+    font-size: 30px;
+  }
+
+  .donut-panel-body {
+    flex-direction: column;
+  }
+
+  .donut-chart-wrap {
+    flex: none;
+    width: 100%;
+  }
+
+  .donut-legend {
+    margin-top: var(--space-3);
+  }
+
+  .hero-readiness-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-cta-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .repository-analysis-header {
     flex-direction: column;
   }
 
-  .stats-grid,
-  .metric-tier,
-  .evidence-stats,
-  .source-impact-lists {
+  .hero-stat-tiles,
+  .analytics-grid,
+  .metric-tier {
     grid-template-columns: 1fr;
   }
 
-  .asset-card {
-    flex-direction: column;
+  .asset-card-headline {
     align-items: flex-start;
   }
 
-  .asset-card-primary-metrics {
-    justify-content: flex-start;
+  .asset-card-headline-right {
     gap: var(--space-4);
   }
 
-  .asset-card-metric-pqc {
+  .asset-card-subline {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .asset-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  /* Seven columns can't fit a phone -- the pipeline becomes a vertical
+     list, with the connector redrawn as a vertical line between icon
+     centers (each row: 30px icon + 5px padding top and bottom). */
+  .pipeline-stepper {
+    grid-template-columns: 1fr;
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .pipeline-step {
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: 5px 0;
     text-align: left;
   }
 
-  .pipeline-stepper {
-    justify-content: flex-start;
+  .pipeline-step + .pipeline-step::before {
+    top: -20px;
+    left: 15px;
+    width: 1px;
+    height: 40px;
+  }
+
+  .workspace-risk-hero {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .risk-hero-fact {
+    padding-left: 0;
+    border-left: none;
   }
 
   .candidate-ranking-row {

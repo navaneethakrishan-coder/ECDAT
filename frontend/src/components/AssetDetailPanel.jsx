@@ -6,13 +6,15 @@ import { MigrationFlow } from "./detail/MigrationFlow";
 import { RiskImpactPanel } from "./detail/RiskImpactPanel";
 
 /**
- * The asset-detail experience: an investigation workspace, not a
- * scroll of stacked cards. A full-width header band leads with
- * identity and a large risk readout, then a 2x2 grid groups related
- * information into visual regions the way the task brief specified:
+ * The asset-detail experience: an investigation workspace. A header
+ * band leads with identity, the risk score, priority and the PQC
+ * recommendation; then Evidence and Risk Intelligence stack on the
+ * left beside the Migration Path decision flow, and the AI Advisor
+ * spans below to explain all of it:
  *
- *   [ Risk & Impact ]      [ Migration Path ]
- *   [ Source & Evidence ]  [ AI Advisor ]
+ *   [ Source & Evidence ]  [ Migration Path    ]
+ *   [ Risk Intelligence ]  [ (vertical flow)   ]
+ *   [               AI Advisor                 ]
  *
  * All data comes from the single GET /api/asset/{name} call already
  * made by App.jsx -- no new requests, no invented fields.
@@ -48,19 +50,22 @@ export function AssetDetailPanel({
           <AssetHeaderBand assetName={assetName} assetDetail={assetDetail} />
 
           <div className="asset-workspace-grid">
-            <RiskImpactPanel assetDetail={assetDetail} />
-            <MigrationFlow assetDetail={assetDetail} />
-            <EvidencePanel assetDetail={assetDetail} />
+            <div className="workspace-column">
+              <EvidencePanel assetDetail={assetDetail} />
+              <RiskImpactPanel assetDetail={assetDetail} />
+            </div>
 
-            <AIAdvisorPanel
-              assetName={assetName}
-              assetDetail={assetDetail}
-              status={aiStatus}
-              advice={aiAdvice}
-              error={aiError}
-              onGenerate={onGenerateAdvice}
-            />
+            <MigrationFlow assetDetail={assetDetail} />
           </div>
+
+          <AIAdvisorPanel
+            assetName={assetName}
+            assetDetail={assetDetail}
+            status={aiStatus}
+            advice={aiAdvice}
+            error={aiError}
+            onGenerate={onGenerateAdvice}
+          />
         </>
       ) : (
         <div className="asset-detail-loading">

@@ -8,12 +8,12 @@ function toneFor(value) {
 }
 
 /**
- * The workspace header band: asset identity on the left, a large "risk
- * hero" readout on the right. Risk is ECDAT's core signal, so instead
- * of burying the severity inside a small badge among six other equal
- * cards, it is rendered here as the single largest, most prominent
- * piece of typography on the page -- exactly once, at the top, where
- * it sets the tone for everything below it.
+ * The workspace header band: asset identity on the left, then the
+ * three facts an evaluator needs before anything else -- the risk
+ * score (the single largest number on the page, severity-colored),
+ * migration priority, and the recommended PQC replacement. Everything
+ * in the workspace below elaborates on these; nothing repeats them at
+ * the same visual weight.
  */
 export function AssetHeaderBand({ assetName, assetDetail }) {
   const category = assetDetail?.classification?.category || "Unclassified";
@@ -22,8 +22,10 @@ export function AssetHeaderBand({ assetName, assetDetail }) {
   const riskReason = assetDetail?.classification?.risk_reason;
 
   const severity = assetDetail?.current_risk?.severity || "UNKNOWN";
-  const score = assetDetail?.current_risk?.score ?? assetDetail?.risk_assessment?.final_score;
+  const rawScore = assetDetail?.current_risk?.score ?? assetDetail?.risk_assessment?.final_score;
+  const hasScore = typeof rawScore === "number";
   const priorityLevel = assetDetail?.priority?.level || assetDetail?.migration_impact?.priority?.level;
+  const pqcCandidate = assetDetail?.recommendation?.candidate;
 
   const tone = toneFor(severity);
 
@@ -53,18 +55,28 @@ export function AssetHeaderBand({ assetName, assetDetail }) {
       <div className={`workspace-risk-hero risk-hero-${tone}`}>
         <div className="risk-hero-readout">
           <span className="risk-hero-label">Quantum Risk</span>
-          <strong className="risk-hero-severity">{severity}</strong>
-          {score !== undefined && score !== null && (
-            <span className="risk-hero-score">{score} / 100</span>
-          )}
+          <div className="risk-hero-value">
+            {hasScore && <strong className="risk-hero-number">{rawScore}</strong>}
+            <div className="risk-hero-value-meta">
+              <span className={`risk-hero-severity${hasScore ? "" : " risk-hero-severity-solo"}`}>{severity}</span>
+              {hasScore && <span className="risk-hero-score">/ 100</span>}
+            </div>
+          </div>
         </div>
 
         {priorityLevel && (
-          <div className="risk-hero-priority">
+          <div className="risk-hero-fact">
             <span>Migration Priority</span>
             <SeverityBadge value={priorityLevel} />
           </div>
         )}
+
+        <div className="risk-hero-fact">
+          <span>PQC Recommendation</span>
+          <strong className={`risk-hero-pqc${pqcCandidate ? "" : " risk-hero-pqc-none"}`}>
+            {pqcCandidate || "No direct replacement"}
+          </strong>
+        </div>
       </div>
 
       {riskReason && (

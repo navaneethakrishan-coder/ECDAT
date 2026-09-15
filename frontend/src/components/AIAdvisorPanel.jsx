@@ -59,7 +59,13 @@ export function AIAdvisorPanel({
           <h3 id="ai-advisor-heading">AI Migration Advisor</h3>
         </div>
 
-        <span className="ai-model-badge">Qwen3:14B · Ollama</span>
+        <div className="ai-status-group">
+          <span className={`ai-availability-dot ai-availability-${status === "error" ? "error" : status === "loading" ? "loading" : "ready"}`} />
+          <span className="ai-availability-label">
+            {status === "error" ? "Unavailable" : status === "loading" ? "Analyzing" : "Ready"}
+          </span>
+          <span className="ai-model-badge">Qwen3:14B · Ollama</span>
+        </div>
       </div>
 
       {/* One-line context strip: ties this panel back to the risk/
@@ -67,7 +73,8 @@ export function AIAdvisorPanel({
           repeating the full snapshot grid that used to live here. */}
       <p className="ai-context-line">
         Analyzing <strong>{assetName}</strong> ({primitive}) — <SeverityBadge value={riskSeverity} /> risk,{" "}
-        <SeverityBadge value={priorityLevel} /> priority, PQC → <em>{pqcCandidate}</em>
+        <SeverityBadge value={priorityLevel} /> priority, PQC →{" "}
+        <em className={assetDetail?.recommendation?.candidate ? undefined : "ai-context-none"}>{pqcCandidate}</em>
       </p>
 
       {/* ---- Idle / call to action ---- */}
@@ -79,6 +86,7 @@ export function AIAdvisorPanel({
           disabled={isLoading}
           aria-busy={isLoading}
         >
+          <Sparkles size={15} aria-hidden="true" />
           {isLoading ? "Generating..." : "Get AI Recommendation"}
         </button>
       )}
