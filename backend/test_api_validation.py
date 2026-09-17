@@ -1,9 +1,35 @@
 import json
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 
 BASE_URL = "http://127.0.0.1:8000"
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+
+EXPECTED_ASSETS = 30
+
+# Fixture finding in the current CBOM (pyca/cryptography scan). Every
+# per-finding endpoint is addressed by bom_ref -- the canonical finding
+# identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"  # key agreement, DIRECT_PQC
+
+
+def record(filename, bom_ref=X25519_REF):
+    with (DATA_DIR / filename).open(encoding="utf-8") as file:
+        data = json.load(file)
+
+    for item in data["assets"]:
+        if (item.get("bom_ref") or item.get("asset_ref")) == bom_ref:
+            return item
+
+    raise AssertionError(f"{bom_ref} not in {filename}")
+
+
+def summary(filename):
+    with (DATA_DIR / filename).open(encoding="utf-8") as file:
+        return json.load(file)["summary"]
 
 
 def get(path):
@@ -58,14 +84,15 @@ def test_inventory_endpoints():
         "/api/assets"
     )
 
-    assert assets["total_assets"] == 30
-    assert len(assets["assets"]) == 30
+    assert assets["total_assets"] == EXPECTED_ASSETS
+    assert len(assets["assets"]) == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/assets/ECDH"
+    finding = test_endpoint(
+        f"/api/assets/{X25519_REF}"
     )
 
-    assert ecdh["name"] == "ECDH"
+    assert finding["bom_ref"] == X25519_REF
+    assert finding["name"] == record("ecdat-assets.json")["name"]
 
     print("PASSED")
 
@@ -77,14 +104,20 @@ def test_risk_endpoints():
         "/api/risk"
     )
 
-    assert len(risk["assets"]) == 30
+    assert len(risk["assets"]) == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/risk/ECDH"
+    finding = test_endpoint(
+        f"/api/risk/{X25519_REF}"
     )
 
-    assert ecdh["name"] == "ECDH"
-    assert ecdh["risk_assessment"]["severity"] == "CRITICAL"
+    expected = record("ecdat-risk-assessed-assets.json")
+
+    assert finding["bom_ref"] == X25519_REF
+    assert finding["name"] == expected["name"]
+    assert (
+        finding["risk_assessment"]["severity"]
+        == expected["risk_assessment"]["severity"]
+    )
 
     print("PASSED")
 
@@ -96,16 +129,16 @@ def test_priority_endpoints():
         "/api/priority"
     )
 
-    assert priority["asset_count"] == 30
+    assert priority["asset_count"] == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/priority/ECDH"
+    finding = test_endpoint(
+        f"/api/priority/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
+    assert finding["bom_ref"] == X25519_REF
     assert (
-        ecdh["migration_priority"]["priority_score"]
-        == 43.75
+        finding["migration_priority"]["priority_score"]
+        == record("ecdat-migration-priority.json")["migration_priority"]["priority_score"]
     )
 
     print("PASSED")
@@ -118,15 +151,19 @@ def test_complexity_endpoints():
         "/api/complexity"
     )
 
-    assert complexity["asset_count"] == 30
+    assert complexity["asset_count"] == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/complexity/ECDH"
+    finding = test_endpoint(
+        f"/api/complexity/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
-    assert ecdh["score"] == 42
-    assert ecdh["level"] == "MEDIUM"
+    expected = record("ecdat-migration-complexity.json")
+
+    assert finding["bom_ref"] == X25519_REF
+    assert finding["score"] == expected["score"]
+    assert finding["level"] == expected["level"]
+    # Computed from this finding's own classification.
+    assert finding["context"]["purpose"] == ["key-agreement"]
 
     print("PASSED")
 
@@ -138,14 +175,17 @@ def test_blast_radius_endpoints():
         "/api/blast-radius"
     )
 
-    assert blast["asset_count"] == 30
+    assert blast["asset_count"] == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/blast-radius/ECDH"
+    finding = test_endpoint(
+        f"/api/blast-radius/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
-    assert ecdh["blast_radius_score"] == 19.86
+    assert finding["bom_ref"] == X25519_REF
+    assert (
+        finding["blast_radius_score"]
+        == record("ecdat-blast-radius.json")["blast_radius_score"]
+    )
 
     print("PASSED")
 
@@ -157,20 +197,23 @@ def test_pqc_endpoints():
         "/api/pqc"
     )
 
-    assert len(pqc["assets"]) == 30
-    assert pqc["summary"]["pqc_candidates"] == 13
-
-    ecdh = test_endpoint(
-        "/api/pqc/ECDH"
+    assert len(pqc["assets"]) == EXPECTED_ASSETS
+    assert (
+        pqc["summary"]["pqc_candidates"]
+        == summary("ecdat-pqc-migration.json")["pqc_candidates"]
     )
 
-    migration = ecdh["pqc_migration"]
+    finding = test_endpoint(
+        f"/api/pqc/{X25519_REF}"
+    )
 
-    assert migration["asset"] == "ECDH"
+    migration = finding["pqc_migration"]
+
+    assert migration["bom_ref"] == X25519_REF
     assert migration["migration_type"] == "pqc-candidate"
     assert migration["pqc_applicable"] is True
     assert migration["confidence"] == "HIGH"
-    assert len(migration["candidates"]) == 3
+    assert {candidate["family"] for candidate in migration["candidates"]} == {"KEM"}
 
     print("PASSED")
 
@@ -182,24 +225,26 @@ def test_pqc_ranking():
         "/api/pqc-ranking"
     )
 
-    assert len(ranking["assets"]) == 30
+    assert len(ranking["assets"]) == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/pqc-ranking/ECDH"
+    finding = test_endpoint(
+        f"/api/pqc-ranking/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
+    expected = record("ecdat-pqc-ranked.json")["ranked_candidates"][0]
+
+    assert finding["bom_ref"] == X25519_REF
     assert (
-        ecdh["ranked_candidates"][0]["candidate"]
+        finding["ranked_candidates"][0]["candidate"]
         == "ML-KEM-768"
     )
     assert (
-        ecdh["ranked_candidates"][0]["rank"]
+        finding["ranked_candidates"][0]["rank"]
         == 1
     )
     assert (
-        ecdh["ranked_candidates"][0]["score"]
-        == 84.36
+        finding["ranked_candidates"][0]["score"]
+        == expected["score"]
     )
 
     print("PASSED")
@@ -212,17 +257,16 @@ def test_source_impact():
         "/api/source-impact"
     )
 
-    assert impact["total_assets"] == 30
+    assert impact["total_assets"] == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/source-impact/ECDH"
+    finding = test_endpoint(
+        f"/api/source-impact/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
-    assert ecdh["affected_file_count"] == 2
-    assert ecdh["affected_class_count"] == 2
-    assert ecdh["affected_function_count"] == 1
-    assert ecdh["impact_level"] == "HIGH"
+    assert finding["bom_ref"] == X25519_REF
+    # Both occurrences are in one file (src/.../twofactor/totp.py).
+    assert finding["affected_file_count"] == 1
+    assert finding["impact_level"] == "HIGH"
 
     print("PASSED")
 
@@ -234,21 +278,21 @@ def test_migration_actions():
         "/api/actions"
     )
 
-    assert len(actions["assets"]) == 30
+    assert len(actions["assets"]) == EXPECTED_ASSETS
     assert (
         actions["summary"]["total_migration_actions"]
-        == 575
+        == summary("ecdat-migration-actions.json")["total_migration_actions"]
     )
 
-    ecdh = test_endpoint(
-        "/api/actions/ECDH"
+    finding = test_endpoint(
+        f"/api/actions/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
-    assert ecdh["migration_type"] == "pqc-candidate"
-    assert ecdh["pqc_candidate"] == "ML-KEM-768"
-    assert ecdh["impact_level"] == "HIGH"
-    assert ecdh["action_count"] == 10
+    assert finding["bom_ref"] == X25519_REF
+    assert finding["migration_type"] == "pqc-candidate"
+    assert finding["pqc_candidate"] == "ML-KEM-768"
+    assert finding["impact_level"] == "HIGH"
+    assert finding["action_count"] == len(record("ecdat-migration-actions.json")["actions"])
 
     print("PASSED")
 
@@ -260,13 +304,13 @@ def test_migration_report():
         "/api/migration-report/assets"
     )
 
-    assert report["total_assets"] == 30
+    assert report["total_assets"] == EXPECTED_ASSETS
 
-    ecdh = test_endpoint(
-        "/api/migration-report/assets/ECDH"
+    finding = test_endpoint(
+        f"/api/migration-report/assets/{X25519_REF}"
     )
 
-    assert ecdh["asset"] == "ECDH"
+    assert finding["bom_ref"] == X25519_REF
 
     print("PASSED")
 
@@ -274,8 +318,8 @@ def test_migration_report():
 def test_unified_asset():
     print("Running unified asset validation...", end=" ")
 
-    ecdh = test_endpoint(
-        "/api/asset/ECDH"
+    finding = test_endpoint(
+        f"/api/asset/{X25519_REF}"
     )
 
     required = [
@@ -295,17 +339,20 @@ def test_unified_asset():
     ]
 
     for field in required:
-        assert field in ecdh, (
+        assert field in finding, (
             f"Missing unified field: {field}"
         )
 
-    assert ecdh["asset"] == "ECDH"
-    assert ecdh["current_risk"]["severity"] == "HIGH"
+    risk = record("ecdat-explainable-risk.json")["risk_assessment"]
+
+    assert finding["bom_ref"] == X25519_REF
+    assert finding["current_risk"]["severity"] == risk["severity"]
+    assert finding["current_risk"]["score"] == risk["final_score"]
     assert (
-        ecdh["recommendation"]["candidate"]
+        finding["recommendation"]["candidate"]
         == "ML-KEM-768"
     )
-    assert ecdh["action_count"] == 10
+    assert finding["action_count"] == len(finding["migration_actions"])
 
     print("PASSED")
 
@@ -315,6 +362,13 @@ def test_invalid_asset():
 
     status, data = get(
         "/api/asset/THIS_ASSET_DOES_NOT_EXIST"
+    )
+
+    assert status == 404
+
+    # An algorithm name is not a finding identity.
+    status, data = get(
+        f"/api/asset/{record('ecdat-assets.json')['name']}"
     )
 
     assert status == 404

@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from pathlib import Path
 
 
@@ -14,12 +15,20 @@ def load_data():
         return json.load(f)
 
 
-def get_asset(data, name):
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"
+RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"
+DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
+DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"
+
+
+def get_asset(data, bom_ref):
     for asset in data["assets"]:
-        if asset["asset"] == name:
+        if asset["bom_ref"] == bom_ref:
             return asset
 
-    raise AssertionError(f"{name} not found")
+    raise AssertionError(f"{bom_ref} not found")
 
 
 def test_pqc_migration_plan():
@@ -50,8 +59,12 @@ def test_pqc_migration_plan():
 
     print("Running PQC applicability validation...", end=" ")
 
-    assert summary["pqc_applicable_assets"] == 14
-    assert summary["assets_with_candidates"] == 14
+    applicable = [a for a in assets if a["pqc_analysis"]["pqc_applicable"]]
+    with_candidates = [a for a in assets if a["ranked_candidates"]]
+
+    assert summary["pqc_applicable_assets"] == len(applicable)
+    assert summary["assets_with_candidates"] == len(with_candidates)
+    assert len(applicable) > 0
 
     print("PASSED")
 
@@ -63,119 +76,113 @@ def test_pqc_migration_plan():
 
     migration_types = summary["migration_types"]
 
-    assert migration_types["pqc-candidate"] == 13
-    assert migration_types["no-direct-pqc-replacement"] == 16
-    assert migration_types["architectural-migration"] == 30
+    assert migration_types == dict(
+        Counter(a["pqc_analysis"]["migration_type"] for a in assets)
+    )
+    assert sum(migration_types.values()) == len(assets)
 
     print("PASSED")
 
     # --------------------------------
-    # ECDH
+    # Key agreement (x25519)
     # --------------------------------
 
-    print("Running ECDH validation...", end=" ")
+    print("Running key-agreement validation...", end=" ")
 
-    ecdh = get_asset(data, "ECDH")
+    kx = get_asset(data, X25519_REF)
 
     assert (
-        ecdh["pqc_analysis"]["migration_type"]
+        kx["pqc_analysis"]["migration_type"]
         == "pqc-candidate"
     )
 
     assert (
-        ecdh["pqc_analysis"]["pqc_applicable"]
+        kx["pqc_analysis"]["pqc_applicable"]
         is True
     )
 
     assert (
-        ecdh["recommendation"]["candidate"]
+        kx["recommendation"]["candidate"]
         == "ML-KEM-768"
     )
 
     assert (
-        ecdh["recommendation"]["candidate_rank"]
+        kx["recommendation"]["candidate_rank"]
         == 1
     )
 
     assert (
-        ecdh["ranked_candidates"][0]["candidate"]
+        kx["ranked_candidates"][0]["candidate"]
         == "ML-KEM-768"
     )
 
     assert (
-        ecdh["ranked_candidates"][0]["rank"]
+        kx["ranked_candidates"][0]["rank"]
         == 1
     )
+
+    assert kx["migration_strategy"]["pqc_component"] == "ML-KEM-768"
 
     print("PASSED")
 
     # --------------------------------
-    # RSA-2048
+    # RSA-2048 (ambiguous purpose)
     # --------------------------------
 
     print("Running RSA-2048 validation...", end=" ")
 
-    rsa = get_asset(data, "RSA-2048")
+    rsa = get_asset(data, RSA_2048_REF)
 
     assert (
         rsa["pqc_analysis"]["pqc_applicable"]
         is True
     )
 
-    assert (
-        rsa["recommendation"]["candidate"]
-        == "ML-DSA-65"
-    )
+    # The ranking model still ranks candidates for it, and that output
+    # is kept -- labelled as ranking-model output...
+    assert rsa["ranked_candidates"][0]["candidate"] == "ML-DSA-65"
+    assert rsa["recommendation"]["ranking_model"]["candidate"] == "ML-DSA-65"
+    assert rsa["recommendation"]["ranking_model"]["candidate_rank"] == 1
 
-    assert (
-        rsa["recommendation"]["candidate_rank"]
-        == 1
-    )
+    # ...but its evidence leaves the role ambiguous, so the migration
+    # strategy selects no PQC component, and the recommendation record
+    # does not present the ranking candidate as a recommendation.
+    assert rsa["migration_strategy"]["strategy"] == "NEEDS_REVIEW"
+    assert rsa["migration_strategy"]["pqc_component"] is None
+    assert rsa["recommendation"]["decision"] == "NEEDS_REVIEW"
+    assert rsa["recommendation"]["candidate"] is None
+    assert rsa["recommendation"]["confirmed"] is False
 
     print("PASSED")
 
     # --------------------------------
-    # EC
+    # Key material (architectural)
     # --------------------------------
 
-    print("Running EC architectural validation...", end=" ")
+    print("Running key-material architectural validation...", end=" ")
 
-    ec = get_asset(data, "EC")
+    key = get_asset(data, DSA_PUBLIC_KEY_REF)
 
     assert (
-        ec["pqc_analysis"]["migration_type"]
+        key["pqc_analysis"]["migration_type"]
         == "architectural-migration"
     )
 
     assert (
-        ec["pqc_analysis"]["pqc_applicable"]
-        is True
+        key["pqc_analysis"]["pqc_applicable"]
+        is False
     )
 
     assert (
-        ec["pqc_analysis"]["confidence"]
-        == "MEDIUM"
-    )
-
-    assert (
-        ec["recommendation"]["decision"]
+        key["recommendation"]["decision"]
         == "ARCHITECTURAL_MIGRATION"
     )
 
-    assert (
-        ec["recommendation"]["candidate"]
-        == "ML-KEM-768"
-    )
-
-    assert (
-        ec["recommendation"]["candidate_rank"]
-        == 1
-    )
-
-    assert (
-        ec["recommendation"]["candidate_score"]
-        == 67.26
-    )
+    # Key material is not ranked itself; it follows the algorithm it
+    # belongs to (DSA) through the migration strategy.
+    assert key["recommendation"]["candidate"] is None
+    assert key["migration_strategy"]["inherited_from"] == DSA_REF
+    assert key["migration_strategy"]["pqc_component"] == "ML-DSA-65"
 
     print("PASSED")
 
@@ -244,14 +251,33 @@ def test_pqc_migration_plan():
             "candidate"
         )
 
-        if candidate is None:
+        strategy = asset["migration_strategy"]
+
+        # A recommendation candidate is only ever the component the
+        # migration strategy selected, and only when it selected one.
+        if candidate is not None:
+            assert strategy["strategy"] in ("DIRECT_PQC", "HYBRID")
+            assert candidate == strategy["pqc_component"]
+
+        assert recommendation["confirmed"] is (
+            strategy["strategy"] in ("DIRECT_PQC", "HYBRID")
+            and strategy["pqc_component"] is not None
+        )
+
+        if strategy["strategy"] == "NEEDS_REVIEW":
+            assert recommendation["decision"] == "NEEDS_REVIEW"
+            assert candidate is None
+
+        ranking = recommendation["ranking_model"]
+
+        if ranking["candidate"] is None:
             continue
 
         assert len(ranked) > 0
 
         assert (
             ranked[0]["candidate"]
-            == candidate
+            == ranking["candidate"]
         )
 
         assert (

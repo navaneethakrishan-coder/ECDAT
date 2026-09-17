@@ -96,7 +96,16 @@ CRYPTO_FAMILIES = [
             "Shor's algorithm on a sufficiently capable quantum computer."
         ),
         "aliases": {"RSA"},
-        "patterns": [_rx(r"^RSA\b"), _rx(r"^RSA[-_]?\d")],
+        # The trailing "WITHRSA" pattern recognizes the standard Java
+        # Cryptography Architecture signature-name convention
+        # "<digest>with<algorithm>[andMGF1]" (e.g. "SHA256withRSA",
+        # "SHA256withRSAandMGF1") -- a naming convention documented by
+        # the JCA spec across the whole Java ecosystem, not a fact
+        # about any one repository or algorithm. Without it, every
+        # such name fell through to "unknown"/no quantum status,
+        # discovered when validating this registry against a second,
+        # Java-based repository (see docs/CHANGELOG.md).
+        "patterns": [_rx(r"^RSA\b"), _rx(r"^RSA[-_]?\d"), _rx(r"WITHRSA")],
     },
     {
         "family": "finite-field-dh",
@@ -142,6 +151,10 @@ CRYPTO_FAMILIES = [
             _rx(r"^ECDSA\b"),
             _rx(r"^ED(25519|448)\b"),
             _rx(r"^EDDSA([-_ ]?ED(25519|448))?\b"),
+            # JCA "<digest>with<algorithm>" naming convention -- see
+            # the RSA family's identical pattern for why this exists.
+            _rx(r"WITHECDSA"),
+            _rx(r"WITHEDDSA"),
         ],
     },
     {
@@ -155,7 +168,13 @@ CRYPTO_FAMILIES = [
             "quantum computer."
         ),
         "aliases": {"DSA"},
-        "patterns": [_rx(r"^DSA$")],
+        # JCA "<digest>with<algorithm>" naming convention -- see the
+        # RSA family's identical pattern for why this exists. Checked
+        # after elliptic-curve-signature's own WITHECDSA/WITHEDDSA
+        # patterns above, so "...withECDSA" is never miscaptured here
+        # (list order only matters for this regex-fallback pass; see
+        # this module's own header comment).
+        "patterns": [_rx(r"^DSA$"), _rx(r"WITHDSA")],
     },
     {
         "family": "generic-elliptic-curve",
@@ -328,7 +347,16 @@ CRYPTO_FAMILIES = [
 # explicit, well-tested function is the smaller, more readable design.
 # ----------------------------------------------------------------
 
-_AES_NAME_RE = _rx(r"^AES\b")
+# Was "^AES\b": a plain \b never matches between "AES" and a
+# directly-concatenated digit (both are \w characters, so there is no
+# boundary), so a name like "AES128" or "AES128-CBC-PKCS5" -- with no
+# separator before the key size -- fell all the way through to
+# category="unknown"/quantum_status="unknown" despite _AES_KEY_SIZE_RE
+# below already anticipating exactly this no-separator spelling.
+# Discovered validating this registry against a second repository
+# whose CBOM used that spelling; "AES-128-..." and bare "AES" still
+# match via the same alternation.
+_AES_NAME_RE = _rx(r"^AES([-_]?\d|\b)")
 _AES_KEY_SIZE_RE = _rx(r"AES[-_]?(\d{3})\b")
 
 

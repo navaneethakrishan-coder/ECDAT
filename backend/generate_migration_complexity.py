@@ -186,6 +186,12 @@ def main():
             "name"
         )
 
+        # This finding's own bom_ref. Without this line the join keys
+        # below silently reused the last value left over from the
+        # validation loop above, so every finding's complexity was
+        # computed from the final finding's risk and blast records.
+        bom_ref = asset.get("bom_ref")
+
         risk_record = risk_map.get(
             bom_ref,
             {}

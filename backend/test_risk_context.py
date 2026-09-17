@@ -1,12 +1,40 @@
+import json
+import tempfile
+from pathlib import Path
+
+import services.business_context as business_context
 from services.risk_context import (
     derive_risk_context,
-    DEFAULT_DATA_LIFETIME_YEARS,
     DEFAULT_QUANTUM_THREAT_HORIZON_YEARS,
 )
 
 
 def _occurrence(location, context="", line=1):
     return {"location": location, "line": line, "offset": 0, "context": context}
+
+
+def _use_config(config_dict, test_fn):
+    """
+    Point services.business_context at a throwaway config file for
+    the duration of `test_fn`, then restore the real config path --
+    same helper as test_business_context.py, duplicated locally so
+    this file stays independently runnable.
+    """
+
+    original_path = business_context.CONFIG_PATH
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        config_path = Path(tmp_dir) / "business-context.json"
+        config_path.write_text(json.dumps(config_dict), encoding="utf-8")
+
+        business_context.CONFIG_PATH = config_path
+        business_context.reload_config()
+
+        try:
+            test_fn()
+        finally:
+            business_context.CONFIG_PATH = original_path
+            business_context.reload_config()
 
 
 def test_network_exposure_detected_from_evidence():
@@ -193,12 +221,11 @@ def test_deterministic_for_identical_input():
     assert first == second
 
 
-def test_fixed_dimensions_are_not_derived_per_asset():
+def test_quantum_threat_horizon_is_not_derived_per_asset():
     """
-    data_lifetime_years and quantum_threat_horizon_years are
-    documented, fixed threat-model assumptions -- not something a
-    CBOM can reveal -- so every asset must get the same value for
-    these two dimensions regardless of its evidence.
+    quantum_threat_horizon_years is a documented, fixed threat-model
+    assumption -- not something a CBOM can reveal -- so every asset
+    must get the same value regardless of its evidence.
     """
 
     network_asset = {
@@ -214,11 +241,103 @@ def test_fixed_dimensions_are_not_derived_per_asset():
     a = derive_risk_context(network_asset)
     b = derive_risk_context(local_asset)
 
-    assert a.data_lifetime_years == b.data_lifetime_years == DEFAULT_DATA_LIFETIME_YEARS
     assert (
         a.quantum_threat_horizon_years
         == b.quantum_threat_horizon_years
         == DEFAULT_QUANTUM_THREAT_HORIZON_YEARS
+    )
+
+
+def test_data_lifetime_is_unknown_without_business_context():
+    """
+    data_lifetime_years must NOT be a fixed default like
+    quantum_threat_horizon_years above -- it is an organizational
+    fact (how long THIS finding's protected data must stay
+    confidential) that no CBOM evidence and no shared assumption can
+    supply. Without any data/business-context.json entry, it must be
+    None (UNKNOWN) for every asset -- never silently 5, 0, or any
+    other guessed number, regardless of how different their evidence
+    otherwise is.
+    """
+
+    def check():
+        network_asset = {
+            "name": "a",
+            "bom_ref": "no-config-ref-a",
+            "occurrences": [_occurrence("src/ssh.py")],
+        }
+
+        local_asset = {
+            "name": "b",
+            "bom_ref": "no-config-ref-b",
+            "occurrences": [_occurrence("src/hash.py")],
+        }
+
+        a = derive_risk_context(network_asset)
+        b = derive_risk_context(local_asset)
+
+        assert a.data_lifetime_years is None
+        assert b.data_lifetime_years is None
+
+    _use_config({}, check)
+
+
+def test_data_lifetime_uses_explicit_per_finding_configuration():
+    """
+    Tier 2 of the evidence-priority chain: an explicit
+    data/business-context.json "findings"."<bom_ref>" entry, looked
+    up by the finding's own bom_ref (never by algorithm name).
+    """
+
+    def check():
+        asset = {"name": "RSA-OAEP", "bom_ref": "configured-ref", "occurrences": []}
+
+        context = derive_risk_context(asset)
+
+        assert context.data_lifetime_years == 20.0
+
+    _use_config(
+        {"findings": {"configured-ref": {"data_lifetime_years": 20}}},
+        check,
+    )
+
+
+def test_data_lifetime_falls_back_to_repository_default():
+    """
+    Tier 3: a repository-wide "default" entry applies to any finding
+    without its own explicit override.
+    """
+
+    def check():
+        unconfigured_asset = {"name": "AES", "bom_ref": "no-specific-entry", "occurrences": []}
+
+        context = derive_risk_context(unconfigured_asset)
+
+        assert context.data_lifetime_years == 8.0
+
+    _use_config({"default": {"data_lifetime_years": 8}}, check)
+
+
+def test_duplicate_algorithm_name_findings_get_independent_data_lifetime():
+    """
+    Two findings that would display with the same algorithm name but
+    have different bom_refs must resolve independently -- lookups are
+    keyed by bom_ref, never by name (see services/business_context.py).
+    """
+
+    def check():
+        finding_a = {"name": "RSA-2048", "bom_ref": "rsa-2048-a", "occurrences": []}
+        finding_b = {"name": "RSA-2048", "bom_ref": "rsa-2048-b", "occurrences": []}
+
+        context_a = derive_risk_context(finding_a)
+        context_b = derive_risk_context(finding_b)
+
+        assert context_a.data_lifetime_years == 30.0
+        assert context_b.data_lifetime_years is None
+
+    _use_config(
+        {"findings": {"rsa-2048-a": {"data_lifetime_years": 30}}},
+        check,
     )
 
 
@@ -231,6 +350,11 @@ if __name__ == "__main__":
     test_ambiguous_asset_defaults_to_medium_criticality()
     test_migration_time_scales_with_usage_and_category()
     test_deterministic_for_identical_input()
-    test_fixed_dimensions_are_not_derived_per_asset()
+
+    test_quantum_threat_horizon_is_not_derived_per_asset()
+    test_data_lifetime_is_unknown_without_business_context()
+    test_data_lifetime_uses_explicit_per_finding_configuration()
+    test_data_lifetime_falls_back_to_repository_default()
+    test_duplicate_algorithm_name_findings_get_independent_data_lifetime()
 
     print("\nAll risk-context tests passed.")

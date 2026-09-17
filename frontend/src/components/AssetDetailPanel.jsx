@@ -1,6 +1,8 @@
 import { AIAdvisorPanel } from "./AIAdvisorPanel";
 import { ErrorState } from "./States";
 import { AssetHeaderBand } from "./detail/AssetHeaderBand";
+import { BlastRadiusPanel } from "./detail/BlastRadiusPanel";
+import { EvidenceExplorer } from "./detail/EvidenceExplorer";
 import { EvidencePanel } from "./detail/EvidencePanel";
 import { MigrationFlow } from "./detail/MigrationFlow";
 import { RiskImpactPanel } from "./detail/RiskImpactPanel";
@@ -14,10 +16,13 @@ import { RiskImpactPanel } from "./detail/RiskImpactPanel";
  *
  *   [ Source & Evidence ]  [ Migration Path    ]
  *   [ Risk Intelligence ]  [ (vertical flow)   ]
+ *   [               Blast Radius               ]
+ *   [            Evidence Explorer             ]
  *   [               AI Advisor                 ]
  *
- * All data comes from the single GET /api/asset/{name} call already
- * made by App.jsx -- no new requests, no invented fields.
+ * The panels read the GET /api/asset/{bom_ref} record App.jsx already
+ * fetched; the Evidence Explorer (and the What-If Simulator inside
+ * Migration Path) make their own bom_ref-addressed requests.
  */
 export function AssetDetailPanel({
   assetName,
@@ -57,6 +62,10 @@ export function AssetDetailPanel({
 
             <MigrationFlow assetDetail={assetDetail} />
           </div>
+
+          {assetDetail.bom_ref && <BlastRadiusPanel key={`blast-${assetDetail.bom_ref}`} bomRef={assetDetail.bom_ref} />}
+
+          {assetDetail.bom_ref && <EvidenceExplorer key={assetDetail.bom_ref} bomRef={assetDetail.bom_ref} />}
 
           <AIAdvisorPanel
             assetName={assetName}

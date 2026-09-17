@@ -6,48 +6,64 @@ docs/ARCHITECTURE.md, "RiskContext contextualization").
 
 Design constraints this module was built under:
   - Deterministic: the same asset record always derives the same
-    context. No randomness, no external calls.
+    context (aside from `data_lifetime_years`, which additionally
+    depends on the optional, explicitly-provided
+    data/business-context.json -- see services/business_context.py --
+    itself deterministic for a given bom_ref).
   - Grounded only in fields already present in
     ecdat-classified-assets.json (CBOM evidence occurrences +
-    classification) -- nothing invented, and nothing that would
-    create a dependency on a later pipeline stage (this runs inside
-    explain_cbom.py, the first and only risk-calculation stage).
-  - Two RiskContext dimensions are intentionally left as fixed,
-    documented defaults rather than forced to vary per asset:
-    `data_lifetime_years` (how long the data a given algorithm
-    protects must stay confidential) and
-    `quantum_threat_horizon_years` (when a cryptographically-relevant
-    quantum computer is expected to exist). Neither is a fact a CBOM
-    can reveal -- they are organizational/threat-model assumptions
-    about the future, not observations about the code. Fabricating a
-    per-asset value for either would be inventing an arbitrary score
-    to look more "contextual," which is exactly what this module was
-    asked not to do.
+    classification) plus that optional business-context config --
+    nothing invented, and nothing that would create a dependency on a
+    later pipeline stage (this runs inside explain_cbom.py, the first
+    and only risk-calculation stage).
+  - `quantum_threat_horizon_years` is intentionally left as a fixed,
+    documented default rather than forced to vary per asset: it is a
+    shared, organization-independent estimate of when a
+    cryptographically-relevant quantum computer is expected to exist
+    -- not a fact a CBOM can reveal, and not something specific to
+    this repository or finding either, unlike data lifetime (below).
+    Fabricating a per-asset value for it would be inventing an
+    arbitrary score to look more "contextual," which is exactly what
+    this module was asked not to do.
+  - `data_lifetime_years` (how long the data a given finding protects
+    must stay confidential) is NOT a fixed default -- see below.
 
-The three dimensions that DO vary per asset -- `business_criticality`,
-`exposure`, and `migration_time_years` -- are derived from real,
-observable CBOM evidence: the file paths and API-usage strings CBOMKit
-already recorded for every occurrence of the asset, plus how many
-occurrences there are, plus the asset's own classification category.
+The three evidence-derived dimensions -- `business_criticality`,
+`exposure`, and `migration_time_years` -- come from real, observable
+CBOM evidence: the file paths and API-usage strings CBOMKit already
+recorded for every occurrence of the asset, plus how many occurrences
+there are, plus the asset's own classification category.
+
+`data_lifetime_years` follows a DIFFERENT, explicit evidence-priority
+chain (reusing services/business_context.py rather than building a
+second, competing mechanism -- see that module's own docstring):
+
+  1. Explicit repository/CBOM/source evidence -- not currently
+     available: no CBOM property or source signal states how long
+     protected data must remain confidential, and this module does
+     not invent one (a data-retention requirement is an
+     organizational/business fact, not something observable in code
+     the way exposure or business-criticality proxies are).
+  2. Explicit per-finding business-context configuration
+     (data/business-context.json's "findings"."<bom_ref>" entry).
+  3. Repository-wide configured default (that same file's "default"
+     entry).
+  4. UNKNOWN (None) when none of the above apply -- never silently
+     replaced with a guessed number. This was previously a hardcoded
+     `5` applied identically to every finding in every repository;
+     see docs/CHANGELOG.md for the audit that found it.
+
+services/business_context.get_data_lifetime_years(bom_ref) already
+implements steps 2-4 (per-bom_ref lookup, falling back to the
+config's repository-wide default, else None) -- reused verbatim here,
+not reimplemented.
 """
 
 from models.risk_factors import RiskContext
-
-
-# ----------------------------------------------------------------
-# Fixed, documented threat-model assumptions.
-#
-# These are NOT derived from the repository being analyzed -- see
-# the module docstring for why. They previously lived as duplicated
-# hardcoded literals inside score_contextual_cbom.py and
-# explain_cbom.py; centralizing them here means there is exactly one
-# place to change the organization's assumed data-retention window or
-# quantum-threat horizon, applied uniformly and transparently instead
-# of being silently baked into a "contextual" number.
-# ----------------------------------------------------------------
-
-DEFAULT_DATA_LIFETIME_YEARS = 5
-DEFAULT_QUANTUM_THREAT_HORIZON_YEARS = 10
+from services.business_context import (
+    DEFAULT_QUANTUM_THREAT_HORIZON_YEARS,
+    get_data_lifetime_years,
+)
 
 
 # ----------------------------------------------------------------
@@ -217,13 +233,20 @@ def derive_risk_context(asset):
     evidence, so "contextual risk" actually reflects the analyzed
     project instead of one fixed value shared by every asset in
     every repository.
+
+    `data_lifetime_years` is looked up by this asset's own bom_ref
+    (the canonical finding identity used everywhere in ECDAT -- never
+    joined by algorithm name) via services/business_context.py, and
+    is None (UNKNOWN) unless an organization has explicitly
+    configured it in data/business-context.json. See this module's
+    own docstring for the full evidence-priority chain.
     """
 
     texts = _occurrence_texts(asset)
 
     return RiskContext(
         business_criticality=_derive_business_criticality(asset),
-        data_lifetime_years=DEFAULT_DATA_LIFETIME_YEARS,
+        data_lifetime_years=get_data_lifetime_years(asset.get("bom_ref")),
         migration_time_years=_derive_migration_time_years(asset),
         exposure=_derive_exposure(asset, texts),
         quantum_threat_horizon_years=DEFAULT_QUANTUM_THREAT_HORIZON_YEARS,

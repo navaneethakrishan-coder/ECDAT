@@ -1,5 +1,6 @@
 import { Activity, Gauge, ListChecks, RefreshCw, Shield, Sparkles, Target } from "lucide-react";
 
+import { strategyPqcPath } from "../migrationStrategy";
 import { SeverityBadge } from "./Badge";
 
 const SECTION_ICONS = {
@@ -45,8 +46,16 @@ export function AIAdvisorPanel({
     assetDetail?.migration_impact?.priority?.level ||
     "UNKNOWN";
 
-  const pqcCandidate =
-    assetDetail?.recommendation?.candidate || "No direct replacement";
+  // Same purpose-aware PQC path as the Migration Path panel beside it,
+  // so the strip never names a candidate the strategy has not selected.
+  const strategy = assetDetail?.migration_strategy;
+  const strategyPath = strategyPqcPath(strategy?.strategy, strategy?.pqc_component);
+
+  const pqcCandidate = strategyPath
+    ? strategyPath.text
+    : assetDetail?.recommendation?.candidate || "No direct replacement";
+
+  const pqcNone = strategyPath ? strategyPath.none : !assetDetail?.recommendation?.candidate;
 
   return (
     <section className="workspace-panel panel-ai" aria-labelledby="ai-advisor-heading">
@@ -74,7 +83,7 @@ export function AIAdvisorPanel({
       <p className="ai-context-line">
         Analyzing <strong>{assetName}</strong> ({primitive}) — <SeverityBadge value={riskSeverity} /> risk,{" "}
         <SeverityBadge value={priorityLevel} /> priority, PQC →{" "}
-        <em className={assetDetail?.recommendation?.candidate ? undefined : "ai-context-none"}>{pqcCandidate}</em>
+        <em className={pqcNone ? "ai-context-none" : undefined}>{pqcCandidate}</em>
       </p>
 
       {/* ---- Idle / call to action ---- */}
@@ -87,7 +96,7 @@ export function AIAdvisorPanel({
           aria-busy={isLoading}
         >
           <Sparkles size={15} aria-hidden="true" />
-          {isLoading ? "Generating..." : "Get AI Recommendation"}
+          {isLoading ? "Generating..." : "Get AI Analysis"}
         </button>
       )}
 
@@ -105,7 +114,7 @@ export function AIAdvisorPanel({
       {/* ---- Error ---- */}
       {status === "error" && (
         <div className="ai-error" role="alert">
-          <strong>AI recommendation failed</strong>
+          <strong>AI analysis failed</strong>
           <p>{error || "The AI advisor could not be reached. Confirm Ollama is running and try again."}</p>
           <button type="button" className="btn btn-outline btn-sm" onClick={onGenerate}>
             <RefreshCw size={14} />
@@ -118,7 +127,7 @@ export function AIAdvisorPanel({
       {status === "success" && advice?.advice && (
         <div className="ai-advice-result">
           <div className="ai-result-header">
-            <span>AI Recommendation</span>
+            <span>AI Analysis</span>
             <span className="ai-model-label">Powered by {advice.model}</span>
           </div>
 

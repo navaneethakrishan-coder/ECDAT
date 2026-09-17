@@ -24,11 +24,6 @@ import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import "./App.css";
 
-// Ordinal used only to sort the dashboard's "Critical Findings" list --
-// not a new score, just a ranking of the severity strings the backend
-// already returns.
-const SEVERITY_RANK = { CRITICAL: 3, HIGH: 2, MEDIUM: 1, LOW: 0 };
-
 // Chart colors follow the same "color means one specific thing"
 // language used everywhere else: severity distributions (risk,
 // source impact) use the same CRITICAL/HIGH/MEDIUM/LOW hues as every
@@ -397,19 +392,46 @@ function App() {
       migrationType: item.migration_type || "",
       pqcApplicable: Boolean(item.pqc_applicable),
       pqcCandidate: item.candidate,
+      // Purpose-aware migration strategy decided by the backend
+      // (KEEP / DIRECT_PQC / HYBRID / NEEDS_REVIEW) and the PQC
+      // component it selected, if any.
+      migrationStrategy: item.migration_strategy || null,
+      strategyPqcComponent: item.strategy_pqc_component || null,
       sourceImpact: item.source_impact || "UNKNOWN",
       priorityLevel: priorityInfo?.migration_priority?.priority || "UNKNOWN",
+      priorityScore: priorityInfo?.migration_priority?.priority_score ?? null,
       complexityLevel: priorityInfo?.migration_complexity?.level || "UNKNOWN",
       blastSeverity: priorityInfo?.blast_radius?.severity || "UNKNOWN",
     };
   });
 
-  // Top 5 HIGH/CRITICAL assets, surfaced on the dashboard's first
+  // Top 5 HIGH/CRITICAL-risk assets, surfaced on the dashboard's first
   // viewport next to the repository-analysis panel -- a client-side
   // sort of already-fetched data, not a new backend call or metric.
+  //
+  // "Migrate First" ranks by the backend's own migration_priority score
+  // (services/migration_priority.py's weighted blend of quantum risk,
+  // blast radius and migration complexity -- the same figure already
+  // shown as this asset's "Priority" badge everywhere else in the app),
+  // not by risk severity alone. Risk severity only decides which
+  // findings are quantum-vulnerable enough to be in the candidate pool;
+  // sorting that pool by severity bucket, with ties left in whatever
+  // order the API happened to return them, could bury the single
+  // highest-priority finding behind several lower-priority ones that
+  // merely share the same HIGH bucket -- exactly what was happening
+  // before this fix. Risk score, then bom_ref, break remaining ties so
+  // the order is fully deterministic.
   const criticalFindings = enrichedAssets
     .filter((asset) => asset.riskSeverity === "HIGH" || asset.riskSeverity === "CRITICAL")
-    .sort((a, b) => (SEVERITY_RANK[b.riskSeverity] ?? -1) - (SEVERITY_RANK[a.riskSeverity] ?? -1))
+    .sort((a, b) => {
+      const priorityDiff = (b.priorityScore ?? -1) - (a.priorityScore ?? -1);
+      if (priorityDiff !== 0) return priorityDiff;
+
+      const riskDiff = (b.riskScore ?? -1) - (a.riskScore ?? -1);
+      if (riskDiff !== 0) return riskDiff;
+
+      return String(a.bomRef || "").localeCompare(String(b.bomRef || ""));
+    })
     .slice(0, 5);
 
   const filteredAssets = enrichedAssets.filter((asset) => {

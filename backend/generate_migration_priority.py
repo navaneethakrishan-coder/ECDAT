@@ -2,7 +2,12 @@ import json
 from pathlib import Path
 
 from services.migration_priority import (
-    calculate_migration_priority
+    BASE_WEIGHTS,
+    calculate_migration_priority,
+)
+from services.business_context import (
+    get_business_criticality,
+    calculate_mosca_urgency,
 )
 
 
@@ -226,7 +231,12 @@ def main():
 
     results = []
 
-    for bom_ref in finding_ids:
+    # Iterate in a fixed order -- `finding_ids` is a set, whose
+    # iteration order is not guaranteed stable across separate process
+    # runs, which otherwise makes two findings that tie exactly on
+    # priority_score (a real, valid tie, not a bug) swap positions
+    # between identical pipeline runs with no underlying change.
+    for bom_ref in sorted(finding_ids):
 
         risk_record = risk_map.get(
             bom_ref,
@@ -278,13 +288,50 @@ def main():
         )
 
         # --------------------------------------------
+        # Business criticality / Mosca urgency
+        #
+        # Both are organization-provided, optional signals (see
+        # services/business_context.py) -- UNKNOWN (None) for every
+        # finding unless data/business-context.json explicitly
+        # configures one, never fabricated from the algorithm,
+        # category or repository. migration_time_years is NOT
+        # recomputed here -- it reuses the same per-asset value
+        # services/risk_context.py already derived from real CBOM
+        # evidence during the risk stage (ecdat-explainable-risk.json
+        # already carries it in risk_assessment.context).
+        # --------------------------------------------
+
+        risk_context = (
+            risk_record
+            .get("risk_assessment", {})
+            .get("context", {})
+        )
+
+        migration_time_years = risk_context.get("migration_time_years")
+
+        business_criticality = get_business_criticality(bom_ref)
+
+        mosca_analysis = calculate_mosca_urgency(
+            bom_ref,
+            migration_time_years,
+        )
+
+        mosca_urgency = (
+            mosca_analysis.get("migration_urgency")
+            if mosca_analysis
+            else None
+        )
+
+        # --------------------------------------------
         # Calculate priority
         # --------------------------------------------
 
         priority = calculate_migration_priority(
             risk_score,
             blast_score,
-            complexity_score
+            complexity_score,
+            business_criticality=business_criticality,
+            mosca_urgency=mosca_urgency,
         )
 
         # --------------------------------------------
@@ -333,6 +380,10 @@ def main():
                     )
             },
 
+            "business_criticality": business_criticality,
+
+            "mosca_analysis": mosca_analysis,
+
             "migration_priority": priority
         }
 
@@ -345,15 +396,15 @@ def main():
     # SORT
     # ========================================================
 
+    # bom_ref is an explicit secondary key (not just relying on the
+    # now-deterministic input order + Python's stable sort) so a tie
+    # on priority_score always resolves the same way no matter how
+    # this function is refactored later.
     results.sort(
-        key=lambda item:
-            item[
-                "migration_priority"
-            ][
-                "priority_score"
-            ],
-
-        reverse=True
+        key=lambda item: (
+            -item["migration_priority"]["priority_score"],
+            item["bom_ref"],
+        )
     )
 
 
@@ -402,14 +453,15 @@ def main():
         "asset_count":
             len(results),
 
-        "weights": {
-
-            "quantum_risk": 0.40,
-
-            "blast_radius": 0.35,
-
-            "migration_complexity": 0.25
-        },
+        # Base weights used when every factor is known (see
+        # services/migration_priority.py). Whenever
+        # business_criticality/mosca_urgency are UNKNOWN for a given
+        # finding -- the default, absent data/business-context.json --
+        # that finding's own weights are renormalized across only its
+        # known factors; see each finding's own
+        # migration_priority.score_breakdown for what was actually
+        # used.
+        "weights": BASE_WEIGHTS,
 
         "priority_distribution":
             priority_counts,

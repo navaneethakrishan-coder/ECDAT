@@ -8,8 +8,11 @@ async function request(endpoint) {
 
     try {
       const error = await response.json();
-      if (error.detail) {
+      if (typeof error.detail === "string") {
         detail = error.detail;
+      } else if (error.detail?.reason) {
+        // Structured errors ({reason_code, reason}) from bom_ref endpoints.
+        detail = error.detail.reason;
       }
     } catch {
       // Keep the default error message.
@@ -250,4 +253,68 @@ export async function getAIAdvice(assetName) {
 // ------------------------------------------------------------
 // AI Migration Advisor
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// Blast-radius relationships (findings addressed by bom_ref only)
+// ------------------------------------------------------------
+
+export function getBlastRadiusGraph(bomRef) {
+  return request(`/api/blast-radius/${encodeURIComponent(bomRef)}/graph`);
+}
+
+// ------------------------------------------------------------
+// Evidence Explorer (findings addressed by bom_ref only)
+// ------------------------------------------------------------
+
+export function getFindingEvidence(bomRef) {
+  return request(`/api/evidence/${encodeURIComponent(bomRef)}`);
+}
+
+// ------------------------------------------------------------
+// What-If Migration Simulator (findings addressed by bom_ref only)
+// ------------------------------------------------------------
+
+async function whatIfRequest(endpoint, body) {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: body ? "POST" : "GET",
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  if (!response.ok) {
+    let message = `What-if request failed: ${response.status}`;
+    let reasonCode = null;
+
+    try {
+      const error = await response.json();
+
+      // The scenario engine's rejections carry {reason_code, reason}.
+      if (error.detail?.reason) {
+        message = error.detail.reason;
+        reasonCode = error.detail.reason_code || null;
+      } else if (typeof error.detail === "string") {
+        message = error.detail;
+      }
+    } catch {
+      // Keep default error message.
+    }
+
+    const failure = new Error(message);
+    failure.reasonCode = reasonCode;
+    throw failure;
+  }
+
+  return response.json();
+}
+
+export function getWhatIfFinding(bomRef) {
+  return whatIfRequest(`/api/what-if/findings/${encodeURIComponent(bomRef)}`);
+}
+
+export function simulateWhatIf(bomRef, pqcOption) {
+  return whatIfRequest("/api/what-if/simulate", {
+    bom_ref: bomRef,
+    pqc_option: pqcOption,
+  });
+}
 

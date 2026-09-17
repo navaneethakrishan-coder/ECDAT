@@ -8,12 +8,18 @@
   },
   "summary": {
     "total_assets": 30,
-    "total_migration_actions": 294,
-    "assets_with_pqc_candidates": 10,
+    "total_migration_actions": 203,
+    "assets_with_pqc_candidates": 15,
     "migration_type_distribution": {
       "pqc-candidate": 10,
       "architectural-migration": 15,
       "no-direct-pqc-replacement": 5
+    },
+    "migration_strategy_distribution": {
+      "DIRECT_PQC": 5,
+      "NEEDS_REVIEW": 10,
+      "KEEP": 5,
+      "HYBRID": 10
     }
   },
   "assets": [
@@ -21,6 +27,7 @@
       "asset": "RSA-OAEP",
       "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-KEM-768",
       "pqc_family": "KEM",
       "affected_files": [
@@ -78,7 +85,7 @@
       "explanation": {
         "summary": "ECDAT generated 9 migration action(s) for RSA-OAEP.",
         "reasons": [
-          "The asset performs encryption and requires usage-specific migration analysis."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so RSA-OAEP can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
         ]
       }
     },
@@ -86,6 +93,7 @@
       "asset": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -104,50 +112,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
         ]
       }
     },
@@ -155,8 +147,9 @@
       "asset": "RSA-2048",
       "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
       "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
       "affected_files": [
         "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
       ],
@@ -173,50 +166,42 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 7,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 8,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 8,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA-2048.",
+        "summary": "ECDAT generated 8 migration action(s) for RSA-2048.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
         ]
       }
     },
@@ -224,6 +209,7 @@
       "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
       "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -238,50 +224,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
         ]
       }
     },
@@ -289,6 +259,7 @@
       "asset": "SHAKE256",
       "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8",
       "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -303,46 +274,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the current cryptographic purpose."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
         },
         {
           "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 8,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 9,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for SHAKE256.",
+        "summary": "ECDAT generated 6 migration action(s) for SHAKE256.",
         "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
         ]
       }
     },
@@ -350,6 +309,7 @@
       "asset": "DH",
       "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-KEM-768",
       "pqc_family": "KEM",
       "affected_files": [
@@ -407,7 +367,7 @@
       "explanation": {
         "summary": "ECDAT generated 10 migration action(s) for DH.",
         "reasons": [
-          "The asset performs key agreement and can be evaluated against a PQC KEM."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so DH can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
         ]
       }
     },
@@ -415,8 +375,9 @@
       "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
       "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "DIRECT_PQC",
+      "pqc_candidate": "ML-KEM-768",
+      "pqc_family": "KEM",
       "affected_files": [
         "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
       ],
@@ -429,50 +390,30 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate replacement ML-KEM-768 key material."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Retire and securely destroy this key after the governing algorithm is migrated."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
-        },
-        {
-          "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 4,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 5,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 5,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca.",
+        "summary": "ECDAT generated 5 migration action(s) for private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy DIRECT_PQC: This key material belongs to DH (CBOM dependency), whose strategy is DIRECT_PQC; the key material is replaced by new ML-KEM-768 key material."
         ]
       }
     },
@@ -480,8 +421,9 @@
       "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
       "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/serialization/ssh.py"
       ],
@@ -494,50 +436,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to DSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -545,8 +471,9 @@
       "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
       "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -559,50 +486,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to Ed25519 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -610,6 +521,7 @@
       "asset": "HMAC-SHA256",
       "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f",
       "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -624,46 +536,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the current cryptographic purpose."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
         },
         {
           "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 8,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 9,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for HMAC-SHA256.",
+        "summary": "ECDAT generated 6 migration action(s) for HMAC-SHA256.",
         "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
+          "Migration strategy KEEP: Message authentication (mac/hmac) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
         ]
       }
     },
@@ -671,6 +571,7 @@
       "asset": "HKDF-SHA256",
       "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3",
       "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -685,46 +586,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the current cryptographic purpose."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+          "action": "Confirm the configuration: Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
         },
         {
           "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 8,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 9,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for HKDF-SHA256.",
+        "summary": "ECDAT generated 6 migration action(s) for HKDF-SHA256.",
         "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
+          "Migration strategy KEEP: Key derivation (kdf) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: review -- Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
         ]
       }
     },
@@ -732,8 +621,9 @@
       "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
       "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/serialization/ssh.py"
       ],
@@ -746,50 +636,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@a4b99b30-778e-4a90-8b34-2d3e54023087.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@a4b99b30-778e-4a90-8b34-2d3e54023087.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to DSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -797,8 +671,9 @@
       "asset": "RSA-2048",
       "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
       "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
       "affected_files": [
         "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
       ],
@@ -811,50 +686,42 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 7,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 8,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 8,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA-2048.",
+        "summary": "ECDAT generated 8 migration action(s) for RSA-2048.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
         ]
       }
     },
@@ -862,6 +729,7 @@
       "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
       "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -876,50 +744,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
         ]
       }
     },
@@ -927,6 +779,7 @@
       "asset": "DSA",
       "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "HYBRID",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
@@ -941,50 +794,38 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Add ML-DSA-65 signatures alongside existing DSA signatures (composite or dual signing)."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate DSA."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "Plan retirement of DSA signatures once every verifier supports ML-DSA-65."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 7,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 7,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for DSA.",
+        "summary": "ECDAT generated 7 migration action(s) for DSA.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy HYBRID: Evidence of network-facing exposure (INTERNET), HIGH migration complexity, HIGH blast radius (3 dependent finding(s)) means the migration must interoperate and be phased, so DSA is kept alongside ML-DSA-65 during the transition."
         ]
       }
     },
@@ -992,6 +833,7 @@
       "asset": "Ed25519",
       "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "HYBRID",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
@@ -1006,50 +848,38 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Add ML-DSA-65 signatures alongside existing Ed25519 signatures (composite or dual signing)."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate Ed25519."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "Plan retirement of Ed25519 signatures once every verifier supports ML-DSA-65."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 7,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 7,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for Ed25519.",
+        "summary": "ECDAT generated 7 migration action(s) for Ed25519.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so Ed25519 is kept alongside ML-DSA-65 during the transition."
         ]
       }
     },
@@ -1057,6 +887,7 @@
       "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
       "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1071,50 +902,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@e3ed8834-1629-4468-9cc1-69b4304de212.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@e3ed8834-1629-4468-9cc1-69b4304de212.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
         ]
       }
     },
@@ -1122,6 +937,7 @@
       "asset": "x25519",
       "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-KEM-768",
       "pqc_family": "KEM",
       "affected_files": [
@@ -1179,7 +995,7 @@
       "explanation": {
         "summary": "ECDAT generated 10 migration action(s) for x25519.",
         "reasons": [
-          "The asset performs key agreement and can be evaluated against a PQC KEM."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so x25519 can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
         ]
       }
     },
@@ -1187,8 +1003,9 @@
       "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
       "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1201,50 +1018,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to Ed448 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -1252,6 +1053,7 @@
       "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
       "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1266,50 +1068,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@4ef12e90-f0bf-414b-a351-9995eab31aba.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@4ef12e90-f0bf-414b-a351-9995eab31aba.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
         ]
       }
     },
@@ -1317,8 +1103,9 @@
       "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
       "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1331,50 +1118,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to Ed25519 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -1382,8 +1153,9 @@
       "asset": "RSA",
       "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69",
       "migration_type": "pqc-candidate",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
       "affected_files": [
         "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
         "src/cryptography/hazmat/primitives/serialization/ssh.py"
@@ -1397,50 +1169,42 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 7,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 8,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 8,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for RSA.",
+        "summary": "ECDAT generated 8 migration action(s) for RSA.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
         ]
       }
     },
@@ -1448,6 +1212,7 @@
       "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
       "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1462,50 +1227,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@a39a081d-ad88-420e-903e-9e8abd7746dd.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@a39a081d-ad88-420e-903e-9e8abd7746dd.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
         ]
       }
     },
@@ -1513,8 +1262,9 @@
       "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
       "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/serialization/ssh.py"
       ],
@@ -1527,50 +1277,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for public-key@1da1d50f-f071-451b-bcc2-4de220801c61.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@1da1d50f-f071-451b-bcc2-4de220801c61.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to DSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     },
@@ -1578,6 +1312,7 @@
       "asset": "Ed448",
       "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "HYBRID",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
@@ -1592,50 +1327,38 @@
       "actions": [
         {
           "step": 1,
-          "action": "Identify all digital-signature generation and verification paths."
+          "action": "Add ML-DSA-65 signatures alongside existing Ed448 signatures (composite or dual signing)."
         },
         {
           "step": 2,
-          "action": "Identify certificate, key, and signature-format dependencies."
+          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate Ed448."
         },
         {
           "step": 3,
-          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+          "action": "Plan retirement of Ed448 signatures once every verifier supports ML-DSA-65."
         },
         {
           "step": 5,
-          "action": "Update signature generation and verification interfaces where required."
-        },
-        {
-          "step": 6,
-          "action": "Review certificate and trust-chain compatibility."
-        },
-        {
-          "step": 7,
-          "action": "Validate signature encoding and interoperability."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 7,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 7,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for Ed448.",
+        "summary": "ECDAT generated 7 migration action(s) for Ed448.",
         "reasons": [
-          "The asset performs digital signatures and can be evaluated against a PQC signature scheme."
+          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so Ed448 is kept alongside ML-DSA-65 during the transition."
         ]
       }
     },
@@ -1643,6 +1366,7 @@
       "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
       "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e",
       "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1657,50 +1381,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@4749a82c-f248-457e-a05a-c923811d5a0e.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@4749a82c-f248-457e-a05a-c923811d5a0e.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
         ]
       }
     },
@@ -1708,6 +1416,7 @@
       "asset": "SHA256",
       "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
       "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1723,46 +1432,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the current cryptographic purpose."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
         },
         {
           "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 8,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 9,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for SHA256.",
+        "summary": "ECDAT generated 6 migration action(s) for SHA256.",
         "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
         ]
       }
     },
@@ -1770,6 +1467,7 @@
       "asset": "x448",
       "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b",
       "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-KEM-768",
       "pqc_family": "KEM",
       "affected_files": [
@@ -1827,7 +1525,7 @@
       "explanation": {
         "summary": "ECDAT generated 10 migration action(s) for x448.",
         "reasons": [
-          "The asset performs key agreement and can be evaluated against a PQC KEM."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so x448 can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
         ]
       }
     },
@@ -1835,6 +1533,7 @@
       "asset": "SHA512",
       "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c",
       "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
@@ -1849,46 +1548,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Validate the current cryptographic purpose."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Determine whether the asset requires PQC migration or conventional cryptographic hardening."
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
         },
         {
           "step": 3,
-          "action": "Do not apply a PQC algorithm as a blind direct replacement."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Review dependent protocols and cryptographic constructions."
-        },
-        {
-          "step": 5,
-          "action": "Evaluate an architectural migration if the surrounding protocol is quantum-vulnerable."
-        },
-        {
-          "step": 6,
-          "action": "Perform security and interoperability testing."
-        },
-        {
-          "step": 7,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 8,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 9,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 9,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for SHA512.",
+        "summary": "ECDAT generated 6 migration action(s) for SHA512.",
         "reasons": [
-          "No direct PQC replacement is currently available for the identified asset."
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
         ]
       }
     },
@@ -1896,8 +1583,9 @@
       "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "migration_type": "architectural-migration",
-      "pqc_candidate": null,
-      "pqc_family": null,
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
         "src/cryptography/hazmat/primitives/twofactor/totp.py"
       ],
@@ -1910,50 +1598,34 @@
       "actions": [
         {
           "step": 1,
-          "action": "Determine the exact cryptographic purpose from source usage."
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
         },
         {
           "step": 2,
-          "action": "Identify whether the asset performs key agreement, encryption, signing, verification, or key management."
+          "action": "Update key storage, distribution and rotation to handle both keys."
         },
         {
           "step": 3,
-          "action": "Review all affected interfaces and protocol dependencies."
+          "action": "Retire this key once the governing algorithm's classical component is removed."
         },
         {
           "step": 4,
-          "action": "Do not perform a blind direct algorithm replacement."
-        },
-        {
-          "step": 5,
-          "action": "Perform architectural migration planning for the target post-quantum cryptographic architecture."
-        },
-        {
-          "step": 6,
-          "action": "Validate protocol and interoperability requirements."
-        },
-        {
-          "step": 7,
-          "action": "Create a controlled migration and rollback strategy."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35.",
+        "summary": "ECDAT generated 6 migration action(s) for private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35.",
         "reasons": [
-          "The asset requires usage-specific or architectural migration planning."
+          "Migration strategy HYBRID: This key material belongs to Ed448 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
         ]
       }
     }

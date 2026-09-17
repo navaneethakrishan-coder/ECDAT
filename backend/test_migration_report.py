@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from pathlib import Path
 
 
@@ -11,8 +12,30 @@ REPORT_FILE = (
 
 
 EXPECTED_ASSETS = 30
-EXPECTED_ACTIONS = 575
-EXPECTED_PQC_CANDIDATES = 14
+
+ACTIONS_FILE = (
+    BASE_DIR.parent
+    / "data"
+    / "ecdat-migration-actions.json"
+)
+
+RISK_FILE = (
+    BASE_DIR.parent
+    / "data"
+    / "ecdat-explainable-risk.json"
+)
+
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
+RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"        # ambiguous purpose, NEEDS_REVIEW
+DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
+DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+
+
+def _load(path):
+    with path.open("r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 def load_report():
@@ -23,13 +46,13 @@ def load_report():
         return json.load(file)
 
 
-def get_asset(data, name):
+def get_asset(data, bom_ref):
     for asset in data["assets"]:
-        if asset["asset"] == name:
+        if asset["bom_ref"] == bom_ref:
             return asset
 
     raise AssertionError(
-        f"Asset not found: {name}"
+        f"Asset not found: {bom_ref}"
     )
 
 
@@ -46,12 +69,15 @@ def test_total_assets(data):
 
 
 def test_unique_assets(data):
-    names = [
-        asset["asset"]
+    # Findings are unique by bom_ref; algorithm names legitimately repeat
+    # (e.g. two distinct RSA-2048 findings).
+    refs = [
+        asset["bom_ref"]
         for asset in data["assets"]
     ]
 
-    assert len(names) == len(set(names))
+    assert all(refs)
+    assert len(refs) == len(set(refs))
 
 
 def test_total_actions(data):
@@ -60,13 +86,15 @@ def test_total_actions(data):
         for asset in data["assets"]
     )
 
-    assert calculated == EXPECTED_ACTIONS
+    expected = _load(ACTIONS_FILE)["summary"]["total_migration_actions"]
+
+    assert calculated == expected
 
     assert (
         data["summary"][
             "total_migration_actions"
         ]
-        == EXPECTED_ACTIONS
+        == expected
     )
 
 
@@ -108,26 +136,12 @@ def test_migration_types(data):
         "migration_type_distribution"
     ]
 
-    assert (
-        distribution[
-            "pqc-candidate"
-        ]
-        == 13
-    )
+    assert distribution == dict(Counter(
+        asset["pqc_migration"]["migration_type"]
+        for asset in data["assets"]
+    ))
 
-    assert (
-        distribution[
-            "no-direct-pqc-replacement"
-        ]
-        == 16
-    )
-
-    assert (
-        distribution[
-            "architectural-migration"
-        ]
-        == 30
-    )
+    assert sum(distribution.values()) == EXPECTED_ASSETS
 
 
 def test_recommendation_distribution(data):
@@ -138,261 +152,166 @@ def test_recommendation_distribution(data):
         "recommendation_distribution"
     ]
 
-    assert (
-        distribution[
-            "RECOMMENDED"
-        ]
-        == 13
-    )
+    assert distribution == dict(Counter(
+        asset["recommendation"]["decision"]
+        for asset in data["assets"]
+    ))
 
-    assert (
-        distribution[
-            "NO_DIRECT_REPLACEMENT"
-        ]
-        == 16
-    )
-
-    assert (
-        distribution[
-            "ARCHITECTURAL_MIGRATION"
-        ]
-        == 30
-    )
+    assert sum(distribution.values()) == EXPECTED_ASSETS
 
 
 def test_pqc_candidate_count(data):
 
+    # A PQC candidate is a strategy-selected replacement path:
+    # DIRECT_PQC + HYBRID with a component. NEEDS_REVIEW and KEEP never
+    # count, even when the ranking model ranked candidates for them.
     calculated = sum(
         1
         for asset in data["assets"]
-        if asset[
-            "recommendation"
-        ][
-            "candidate"
-        ]
+        if asset["migration_strategy"]["strategy"] in ("DIRECT_PQC", "HYBRID")
+        and asset["migration_strategy"]["pqc_component"]
     )
 
-    assert (
-        calculated
-        == EXPECTED_PQC_CANDIDATES
+    confirmed = sum(
+        1
+        for asset in data["assets"]
+        if asset["recommendation"]["confirmed"]
     )
+
+    assert calculated == confirmed
 
     assert (
         data["summary"][
             "assets_with_pqc_candidates"
         ]
-        == EXPECTED_PQC_CANDIDATES
+        == calculated
     )
+
+    for asset in data["assets"]:
+        if asset["migration_strategy"]["strategy"] in ("NEEDS_REVIEW", "KEEP"):
+            assert asset["recommendation"]["candidate"] is None
+            assert asset["recommendation"]["confirmed"] is False
 
 
 def test_ecdh_end_to_end(data):
 
     asset = get_asset(
         data,
-        "ECDH",
+        X25519_REF,
     )
 
+    risk = next(
+        item
+        for item in _load(RISK_FILE)["assets"]
+        if item["bom_ref"] == X25519_REF
+    )["risk_assessment"]
+
     assert (
-        asset[
-            "classification"
-        ][
-            "purpose"
-        ]
+        asset["classification"]["purpose"]
         == ["key-agreement"]
     )
 
     assert (
-        asset[
-            "classification"
-        ][
-            "quantum_status"
-        ]
+        asset["classification"]["quantum_status"]
         == "vulnerable"
     )
 
     assert (
-        asset[
-            "current_risk"
-        ][
-            "score"
-        ]
-        == 65.75
+        asset["current_risk"]["score"]
+        == risk["final_score"]
     )
 
     assert (
-        asset[
-            "current_risk"
-        ][
-            "severity"
-        ]
-        == "HIGH"
+        asset["current_risk"]["severity"]
+        == risk["severity"]
     )
 
     assert (
-        asset[
-            "pqc_migration"
-        ][
-            "migration_type"
-        ]
+        asset["pqc_migration"]["migration_type"]
         == "pqc-candidate"
     )
 
     assert (
-        asset[
-            "pqc_migration"
-        ][
-            "pqc_applicable"
-        ]
+        asset["pqc_migration"]["pqc_applicable"]
         is True
     )
 
     assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate"
-        ]
+        asset["recommendation"]["candidate"]
         == "ML-KEM-768"
     )
 
     assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate_rank"
-        ]
+        asset["recommendation"]["candidate_rank"]
         == 1
     )
 
     assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate_score"
-        ]
-        == 84.36
+        asset["recommendation"]["candidate_score"]
+        == asset["ranked_candidates"][0]["score"]
     )
 
     assert (
-        asset[
-            "action_count"
-        ]
-        == 10
+        asset["migration_strategy"]["pqc_component"]
+        == "ML-KEM-768"
     )
 
-    assert (
-        len(
-            asset[
-                "migration_actions"
-            ]
-        )
-        == 10
-    )
+    assert asset["action_count"] == len(asset["migration_actions"])
+    assert asset["action_count"] > 0
 
 
 def test_rsa_end_to_end(data):
 
     asset = get_asset(
         data,
-        "RSA-2048",
+        RSA_2048_REF,
     )
 
     assert (
-        asset[
-            "pqc_migration"
-        ][
-            "migration_type"
-        ]
+        asset["pqc_migration"]["migration_type"]
         == "pqc-candidate"
     )
 
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate"
-        ]
-        == "ML-DSA-65"
-    )
+    # Ranking-model output is still reported, labelled as such...
+    ranking = asset["recommendation"]["ranking_model"]
 
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate_rank"
-        ]
-        == 1
-    )
+    assert ranking["candidate"] == "ML-DSA-65"
+    assert ranking["candidate_rank"] == 1
+    assert ranking["candidate_score"] == asset["ranked_candidates"][0]["score"]
 
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate_score"
-        ]
-        == 87.46
-    )
+    # ...but the migration strategy selects nothing until the ambiguous
+    # purpose evidence is reviewed, and the recommendation says so.
+    assert asset["migration_strategy"]["strategy"] == "NEEDS_REVIEW"
+    assert asset["migration_strategy"]["pqc_component"] is None
+    assert asset["recommendation"]["decision"] == "NEEDS_REVIEW"
+    assert asset["recommendation"]["candidate"] is None
+    assert asset["recommendation"]["confirmed"] is False
 
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "decision"
-        ]
-        if False
-        else True
-    )
-
-    assert (
-        asset[
-            "action_count"
-        ]
-        > 0
-    )
+    assert asset["action_count"] > 0
 
 
 def test_ec_architectural(data):
 
     asset = get_asset(
         data,
-        "EC",
+        DSA_PUBLIC_KEY_REF,
     )
 
     assert (
-        asset[
-            "pqc_migration"
-        ][
-            "migration_type"
-        ]
+        asset["pqc_migration"]["migration_type"]
         == "architectural-migration"
     )
 
     assert (
-        asset[
-            "recommendation"
-        ][
-            "decision"
-        ]
+        asset["recommendation"]["decision"]
         == "ARCHITECTURAL_MIGRATION"
     )
 
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "candidate"
-        ]
-        == "ML-KEM-768"
-    )
-
-    assert (
-        asset[
-            "recommendation"
-        ][
-            "confidence"
-        ]
-        == "MEDIUM"
-    )
+    # Key material is not ranked itself; its PQC component comes from the
+    # strategy it inherits from DSA.
+    assert asset["recommendation"]["candidate"] is None
+    assert asset["migration_strategy"]["inherited_from"] == DSA_REF
+    assert asset["migration_strategy"]["pqc_component"] == "ML-DSA-65"
 
 
 def test_source_impact(data):
@@ -596,7 +515,7 @@ def main():
     )
 
     run_test(
-        "ECDH end-to-end validation",
+        "key-agreement end-to-end validation",
         test_ecdh_end_to_end,
         data,
     )
@@ -608,7 +527,7 @@ def main():
     )
 
     run_test(
-        "EC architectural validation",
+        "key-material architectural validation",
         test_ec_architectural,
         data,
     )

@@ -23,6 +23,17 @@ export function RiskImpactPanel({ assetDetail }) {
     assetDetail?.blast_radius?.score ??
     assetDetail?.blast_radius_score;
 
+  // Organization-provided priority signals (see
+  // backend/services/business_context.py) -- UNKNOWN/absent for
+  // every finding unless explicitly configured in
+  // data/business-context.json. Shown only when actually known, so
+  // the panel stays exactly as it is today for every deployment that
+  // hasn't configured business context -- the "Why this priority"
+  // sentence below still explains that they were considered and
+  // found unknown either way.
+  const businessCriticality = assetDetail?.priority?.business_criticality;
+  const moscaUrgency = assetDetail?.priority?.mosca_analysis?.migration_urgency;
+
   return (
     <section className="workspace-panel panel-risk-impact" aria-labelledby="risk-impact-heading">
       <h3 id="risk-impact-heading">
@@ -50,6 +61,22 @@ export function RiskImpactPanel({ assetDetail }) {
             {sourceImpact.affected_file_count ?? 0} files · {sourceImpact.affected_function_count ?? 0} fns
           </small>
         </div>
+
+        {businessCriticality && (
+          <div className="metric-tile">
+            <span>Business Criticality</span>
+            <SeverityBadge value={businessCriticality} fallback="—" />
+            <small>Organization-provided</small>
+          </div>
+        )}
+
+        {moscaUrgency && (
+          <div className="metric-tile">
+            <span>Migration Urgency</span>
+            <SeverityBadge value={moscaUrgency} fallback="—" />
+            <small>Mosca data-lifetime timeline</small>
+          </div>
+        )}
       </div>
 
       {explanation?.summary && (

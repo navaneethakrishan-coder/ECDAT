@@ -1,4 +1,6 @@
-﻿from typing import Any, Dict, List
+from typing import Any, Dict, List
+
+from knowledge import migration_strategy_policy as policy
 
 
 def _normalize(value: Any) -> str:
@@ -56,6 +58,20 @@ def _get_pqc_family(migration: Dict[str, Any]) -> str:
         return ""
 
     return str(first.get("family", ""))
+
+
+def _get_migration_strategy(migration: Dict[str, Any]):
+    """
+    The purpose-aware strategy decided by services/migration_strategy.py
+    and recorded by generate_pqc_migration_plan.py, if present.
+    """
+
+    strategy = migration.get("migration_strategy")
+
+    if isinstance(strategy, dict) and strategy.get("strategy"):
+        return strategy
+
+    return None
 
 
 def _purpose_list(mapping: Dict[str, Any]) -> List[str]:
@@ -182,6 +198,185 @@ def _build_architectural_actions(candidate: str) -> List[str]:
     return actions
 
 
+# ================================================================
+# Strategy-driven actions
+#
+# When a purpose-aware migration strategy is available, actions are
+# derived from it -- its evidence-resolved role, its selected PQC
+# component (already restricted to the role's family), and hybrid vs
+# direct -- instead of from the raw purpose list and the first-ranked
+# candidate. That is what keeps an encryption-only finding from ever
+# receiving signature actions, and an ambiguous finding from receiving
+# a committed replacement.
+# ================================================================
+
+def _build_review_actions(strategy: Dict[str, Any]) -> List[str]:
+    code = strategy.get("reason_code")
+    options = strategy.get("review_options") or []
+
+    actions = [
+        "Do not replace this primitive until its migration-strategy review is resolved.",
+    ]
+
+    if code == "ambiguous-purpose" and options:
+        labels = [option.get("purpose_class_label") for option in options]
+        actions.append(
+            f"Confirm from source usage which role this finding performs: {' or '.join(labels)}."
+        )
+
+        for option in options:
+            if option.get("top_candidate"):
+                actions.append(
+                    f"If it performs {option.get('purpose_class_label')}, evaluate "
+                    f"{option.get('top_candidate')} ({option.get('pqc_family')})."
+                )
+
+    elif code == "conflicting-purpose-evidence":
+        actions.append(
+            "Reconcile the conflicting CBOM primitive and source-context evidence for this finding."
+        )
+
+    elif code in {
+        "governing-algorithm-needs-review",
+        "key-material-governed-by-conflicting-strategies",
+        "key-material-without-governing-algorithm",
+    }:
+        actions.append(
+            "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        )
+
+    elif code == "no-suitable-pqc-mapping":
+        actions.append(
+            "Identify a standardized post-quantum algorithm for this role; none is available in the current PQC mapping."
+        )
+
+    elif code == "protocol-components-unresolved":
+        actions.append(
+            "Identify the protocol's key-exchange and authentication components and assess each separately."
+        )
+
+    elif code == "quantum-status-unconfirmed":
+        actions.append(
+            "Confirm the primitive and its parameters to determine whether it is quantum-vulnerable."
+        )
+
+    else:
+        actions.append(
+            "Determine this finding's cryptographic purpose from source usage."
+        )
+
+    # Close with what the review actually has to establish: a finding
+    # whose role is already resolved still needs its quantum status or a
+    # PQC mapping confirmed, not its purpose.
+    if code == "quantum-status-unconfirmed":
+        actions.append(
+            "Record the confirmed quantum status so a migration strategy can be derived."
+        )
+    elif code == "no-suitable-pqc-mapping":
+        actions.append(
+            "Record the selected post-quantum algorithm so a migration strategy can be derived."
+        )
+    else:
+        actions.append(
+            "Record the confirmed purpose so a migration strategy can be derived."
+        )
+
+    return actions
+
+
+def _build_keep_actions(strategy: Dict[str, Any]) -> List[str]:
+    hardening = strategy.get("classical_hardening") or {}
+    status = hardening.get("status")
+    reason = hardening.get("reason")
+
+    actions = [
+        "No post-quantum algorithm replacement is required for this cryptographic role.",
+    ]
+
+    if status == "required":
+        actions.append(f"Replace this primitive with a stronger classical alternative: {reason}")
+    elif status == "recommended":
+        actions.append(f"Consider classical hardening: {reason}")
+    elif status == "review":
+        actions.append(f"Confirm the configuration: {reason}")
+    elif reason:
+        actions.append(f"Record the assessment against Grover's algorithm: {reason}")
+
+    if status == "required":
+        actions.append(
+            "Track the classical replacement in the cryptographic inventory until it is complete."
+        )
+    else:
+        actions.append(
+            "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        )
+
+    return actions
+
+
+def _build_hybrid_actions(strategy: Dict[str, Any]) -> List[str]:
+    role = strategy.get("purpose_class")
+    family = strategy.get("pqc_family")
+    pqc = strategy.get("pqc_component")
+    classical = strategy.get("classical_component")
+
+    if role == policy.KEY_MATERIAL:
+        return [
+            f"Generate {pqc} key material to be used alongside this existing key during the hybrid transition.",
+            "Update key storage, distribution and rotation to handle both keys.",
+            "Retire this key once the governing algorithm's classical component is removed.",
+        ]
+
+    if family == "KEM":
+        return [
+            f"Introduce {pqc} key encapsulation alongside the existing {classical} operation.",
+            "Derive the session or content key from both shared secrets through a KDF combiner (hybrid key establishment).",
+            "Negotiate hybrid support with peers, keeping the classical path only for peers without PQC support.",
+            "Validate encapsulation, decapsulation and combiner outputs in interoperability tests.",
+            f"Plan removal of the classical component once every peer supports {pqc}.",
+        ]
+
+    if family == "digital-signature":
+        return [
+            f"Add {pqc} signatures alongside existing {classical} signatures (composite or dual signing).",
+            f"Update verification to accept the dual-signature format while legacy verifiers still validate {classical}.",
+            "Review certificate, key and signature-format dependencies for the dual-signature transition.",
+            f"Plan retirement of {classical} signatures once every verifier supports {pqc}.",
+        ]
+
+    return _build_common_actions("")
+
+
+def _build_direct_actions(strategy: Dict[str, Any]) -> List[str]:
+    role = strategy.get("purpose_class")
+    pqc = strategy.get("pqc_component") or ""
+
+    if role == policy.KEY_MATERIAL:
+        return [
+            f"Generate replacement {pqc} key material.",
+            "Retire and securely destroy this key after the governing algorithm is migrated.",
+        ]
+
+    if role == policy.KEY_ESTABLISHMENT:
+        return _build_key_agreement_actions(pqc)
+
+    if role == policy.PUBLIC_KEY_ENCRYPTION:
+        return _build_encryption_actions(pqc)
+
+    if role == policy.DIGITAL_SIGNATURE:
+        return _build_signature_actions(pqc)
+
+    return _build_common_actions("")
+
+
+_STRATEGY_BUILDERS = {
+    "NEEDS_REVIEW": _build_review_actions,
+    "KEEP": _build_keep_actions,
+    "HYBRID": _build_hybrid_actions,
+    "DIRECT_PQC": _build_direct_actions,
+}
+
+
 def _deduplicate(actions: List[str]) -> List[str]:
     result = []
     seen = set()
@@ -198,6 +393,10 @@ def _deduplicate(actions: List[str]) -> List[str]:
     return result
 
 
+# Purposes that each select a different PQC family.
+_ROLE_SPECIFIC_PURPOSES = ("key-agreement", "digital-signature", "encryption")
+
+
 def generate_migration_actions(
     mapping: Dict[str, Any],
     impact: Dict[str, Any],
@@ -207,17 +406,51 @@ def generate_migration_actions(
     asset = str(mapping.get("asset", "UNKNOWN"))
 
     migration_type = _get_migration_type(migration)
-    candidate = _get_pqc_candidate(migration)
-    family = _get_pqc_family(migration)
+    strategy = _get_migration_strategy(migration)
+
+    if strategy:
+        candidate = strategy.get("pqc_component") or ""
+        family = strategy.get("pqc_family") or ""
+    else:
+        candidate = _get_pqc_candidate(migration)
+        family = _get_pqc_family(migration)
 
     purposes = _purpose_list(mapping)
 
     actions = []
     reasons = []
 
-    if migration_type == "pqc-candidate":
+    if strategy:
 
-        if "key-agreement" in purposes:
+        builder = _STRATEGY_BUILDERS.get(strategy["strategy"], lambda _: _build_common_actions(asset))
+
+        actions.extend(builder(strategy))
+
+        reasons.append(
+            f"Migration strategy {strategy['strategy']}: {strategy.get('rationale')}"
+        )
+
+    elif migration_type == "pqc-candidate":
+
+        role_purposes = [
+            purpose for purpose in _ROLE_SPECIFIC_PURPOSES if purpose in purposes
+        ]
+
+        if len(role_purposes) > 1:
+
+            # Several possible roles need different PQC families;
+            # picking one by branch order would silently choose a role.
+            actions.extend(
+                _build_architectural_actions("")
+            )
+
+            reasons.append(
+                "The asset's recorded purposes span multiple cryptographic roles "
+                f"({', '.join(role_purposes)}), so no role-specific actions are "
+                "generated until the actual usage is confirmed."
+            )
+
+        elif "key-agreement" in purposes:
 
             actions.extend(
                 _build_key_agreement_actions(candidate)
@@ -321,6 +554,7 @@ def generate_migration_actions(
             migration.get("migration_type")
             or migration.get("pqc_analysis", {}).get("migration_type")
         ),
+        "migration_strategy": strategy["strategy"] if strategy else None,
         "pqc_candidate": candidate if candidate else None,
         "pqc_family": family if family else None,
         "affected_files": affected_files,
@@ -418,6 +652,7 @@ def summarize_migration_actions(
     )
 
     action_distribution = {}
+    strategy_distribution = {}
 
     for item in actions:
 
@@ -436,6 +671,12 @@ def summarize_migration_actions(
             + 1
         )
 
+        strategy = item.get("migration_strategy") or "none"
+
+        strategy_distribution[strategy] = (
+            strategy_distribution.get(strategy, 0) + 1
+        )
+
     assets_with_candidates = sum(
         1
         for item in actions
@@ -447,5 +688,5 @@ def summarize_migration_actions(
         "total_migration_actions": total_actions,
         "assets_with_pqc_candidates": assets_with_candidates,
         "migration_type_distribution": action_distribution,
+        "migration_strategy_distribution": strategy_distribution,
     }
-

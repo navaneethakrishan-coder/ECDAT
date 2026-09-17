@@ -7,7 +7,15 @@ DATA_FILE = BASE_DIR.parent / "data" / "ecdat-migration-actions.json"
 
 
 EXPECTED_ASSETS = 30
-EXPECTED_PQC_CANDIDATES = 14
+
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
+DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"             # digital signature, HYBRID
+DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"        # ambiguous purpose, NEEDS_REVIEW
+
+MIGRATING_STRATEGIES = {"DIRECT_PQC", "HYBRID"}
 
 VALID_MIGRATION_TYPES = {
     "pqc-candidate",
@@ -34,9 +42,20 @@ def test_total_assets(data):
 
 
 def test_unique_assets(data):
-    names = [asset["asset"] for asset in data["assets"]]
+    # Findings are unique by bom_ref; algorithm names legitimately repeat
+    # (e.g. two distinct RSA-2048 findings).
+    refs = [asset["bom_ref"] for asset in data["assets"]]
 
-    assert len(names) == len(set(names))
+    assert all(refs)
+    assert len(refs) == len(set(refs))
+
+
+def _asset(data, bom_ref):
+    return next(
+        item
+        for item in data["assets"]
+        if item["bom_ref"] == bom_ref
+    )
 
 
 def test_migration_types(data):
@@ -87,18 +106,21 @@ def test_candidate_consistency(data):
 
             assert asset["pqc_family"] is not None
 
-        if migration_type == "pqc-candidate":
-            assert candidate is not None
+        # The purpose-aware strategy decides whether a PQC component is
+        # selected: only DIRECT_PQC / HYBRID ever carry one.
+        assert bool(candidate) == (
+            asset["migration_strategy"] in MIGRATING_STRATEGIES
+        )
 
-    assert pqc_count == EXPECTED_PQC_CANDIDATES
+    assert pqc_count == sum(
+        1
+        for asset in data["assets"]
+        if asset["migration_strategy"] in MIGRATING_STRATEGIES
+    )
 
 
 def test_ecd_h_validation(data):
-    asset = next(
-        item
-        for item in data["assets"]
-        if item["asset"] == "ECDH"
-    )
+    asset = _asset(data, X25519_REF)
 
     assert asset["migration_type"] == "pqc-candidate"
     assert asset["pqc_candidate"] == "ML-KEM-768"
@@ -131,13 +153,14 @@ def test_ecd_h_validation(data):
 
 
 def test_ec_architectural_validation(data):
-    asset = next(
-        item
-        for item in data["assets"]
-        if item["asset"] == "EC"
-    )
+    asset = _asset(data, DSA_PUBLIC_KEY_REF)
 
     assert asset["migration_type"] == "architectural-migration"
+
+    # Key material follows the HYBRID strategy of the algorithm it
+    # belongs to (DSA).
+    assert asset["migration_strategy"] == "HYBRID"
+    assert asset["pqc_candidate"] == "ML-DSA-65"
 
     actions = [
         item["action"].lower()
@@ -145,22 +168,18 @@ def test_ec_architectural_validation(data):
     ]
 
     assert any(
-        "architectural" in action
+        "hybrid" in action
         for action in actions
     )
 
     assert any(
-        "source usage" in action
+        "affected source files" in action
         for action in actions
     )
 
 
 def test_rsa_signature_validation(data):
-    asset = next(
-        item
-        for item in data["assets"]
-        if item["asset"] == "RSA-2048"
-    )
+    asset = _asset(data, DSA_REF)
 
     assert asset["migration_type"] == "pqc-candidate"
     assert asset["pqc_candidate"] == "ML-DSA-65"
@@ -171,7 +190,7 @@ def test_rsa_signature_validation(data):
     ]
 
     assert any(
-        "digital-signature" in action
+        "signature" in action
         for action in actions
     )
 
@@ -179,6 +198,23 @@ def test_rsa_signature_validation(data):
         "ml-dsa-65" in action
         for action in actions
     )
+
+    # An RSA-2048 finding with ambiguous purpose evidence is NEEDS_REVIEW:
+    # no candidate, and both possible roles are named for the reviewer.
+    review = _asset(data, RSA_2048_REF)
+
+    assert review["migration_type"] == "pqc-candidate"
+    assert review["migration_strategy"] == "NEEDS_REVIEW"
+    assert review["pqc_candidate"] is None
+
+    review_actions = [
+        item["action"].lower()
+        for item in review["actions"]
+    ]
+
+    assert "review is resolved" in review_actions[0]
+    assert any("digital signature" in action for action in review_actions)
+    assert any("public-key encryption" in action for action in review_actions)
 
 
 def test_no_direct_replacement(data):
@@ -189,7 +225,9 @@ def test_no_direct_replacement(data):
         == "no-direct-pqc-replacement"
     ]
 
-    assert len(no_direct_assets) == 16
+    assert len(no_direct_assets) == data["summary"][
+        "migration_type_distribution"
+    ].get("no-direct-pqc-replacement", 0)
 
     for asset in no_direct_assets:
         assert asset["pqc_candidate"] is None
@@ -202,6 +240,7 @@ def test_no_direct_replacement(data):
         assert any(
             "no direct" in action
             or "blind direct replacement" in action
+            or "no post-quantum algorithm replacement" in action
             for action in actions
         )
 
@@ -302,19 +341,19 @@ def main():
     )
 
     run_test(
-        "ECDH validation",
+        "key-agreement validation",
         test_ecd_h_validation,
         data,
     )
 
     run_test(
-        "EC architectural validation",
+        "key-material architectural validation",
         test_ec_architectural_validation,
         data,
     )
 
     run_test(
-        "RSA signature validation",
+        "signature and review validation",
         test_rsa_signature_validation,
         data,
     )

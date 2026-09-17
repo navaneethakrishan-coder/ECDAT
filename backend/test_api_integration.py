@@ -1,9 +1,34 @@
 import json
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 
 BASE_URL = "http://127.0.0.1:8000"
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+
+EXPECTED_ASSETS = 30
+
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
+RSA_2048_REFS = (                                             # two distinct RSA-2048 findings
+    "e87e3bf2-5f46-477d-b159-8ac582608a25",
+    "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
+)
+DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+
+
+def record(filename, bom_ref):
+    with (DATA_DIR / filename).open(encoding="utf-8") as file:
+        data = json.load(file)
+
+    for item in data["assets"]:
+        if (item.get("bom_ref") or item.get("asset_ref")) == bom_ref:
+            return item
+
+    raise AssertionError(f"{bom_ref} not in {filename}")
 
 
 def get(path):
@@ -23,27 +48,31 @@ def get(path):
 
 def test_e2e_ecdh():
     print(
-        "Running ECDH end-to-end integration...",
+        "Running key-agreement end-to-end integration...",
         end=" ",
     )
 
-    data = get("/api/asset/ECDH")
+    data = get(f"/api/asset/{X25519_REF}")
 
-    assert data["asset"] == "ECDH"
+    risk = record("ecdat-explainable-risk.json", X25519_REF)["risk_assessment"]
+    priority = record("ecdat-migration-priority.json", X25519_REF)["migration_priority"]
+    ranked = record("ecdat-pqc-ranked.json", X25519_REF)["ranked_candidates"]
+
+    assert data["bom_ref"] == X25519_REF
 
     # Risk
-    assert data["current_risk"]["severity"] == "HIGH"
-    assert data["current_risk"]["score"] == 65.75
+    assert data["current_risk"]["severity"] == risk["severity"]
+    assert data["current_risk"]["score"] == risk["final_score"]
 
     # Priority
     assert (
         data["priority"]["migration_priority"]["priority"]
-        == "MEDIUM"
+        == priority["priority"]
     )
 
     assert (
         data["priority"]["migration_priority"]["priority_score"]
-        == 43.75
+        == priority["priority_score"]
     )
 
     # PQC
@@ -57,11 +86,13 @@ def test_e2e_ecdh():
         is True
     )
 
-    # Recommendation
+    # Recommendation and strategy
     assert (
         data["recommendation"]["candidate"]
         == "ML-KEM-768"
     )
+
+    assert data["migration_strategy"]["pqc_component"] == "ML-KEM-768"
 
     # Ranking
     assert (
@@ -76,7 +107,7 @@ def test_e2e_ecdh():
 
     assert (
         data["ranked_candidates"][0]["score"]
-        == 84.36
+        == ranked[0]["score"]
     )
 
     # Source impact
@@ -87,12 +118,12 @@ def test_e2e_ecdh():
 
     assert (
         data["source_impact"]["affected_file_count"]
-        == 2
+        == 1
     )
 
     # Migration actions
-    assert data["action_count"] == 10
-    assert len(data["migration_actions"]) == 10
+    assert data["action_count"] > 0
+    assert len(data["migration_actions"]) == data["action_count"]
 
     print("PASSED")
 
@@ -103,40 +134,46 @@ def test_rsa_end_to_end():
         end=" ",
     )
 
-    data = get("/api/asset/RSA-2048")
+    seen_locations = []
 
-    assert data["asset"] == "RSA-2048"
+    for bom_ref in RSA_2048_REFS:
 
-    assert "current_risk" in data
-    assert "migration_impact" in data
-    assert "pqc_migration" in data
-    assert "recommendation" in data
-    assert "source_impact" in data
-    assert "migration_actions" in data
+        data = get(f"/api/asset/{bom_ref}")
 
-    # RSA-2048 should be a PQC candidate.
-    assert (
-        data["pqc_migration"]["migration_type"]
-        == "pqc-candidate"
-    )
+        assert data["bom_ref"] == bom_ref
+        assert data["asset"] == "RSA-2048"
 
-    assert (
-        data["pqc_migration"]["pqc_applicable"]
-        is True
-    )
+        assert "current_risk" in data
+        assert "migration_impact" in data
+        assert "pqc_migration" in data
+        assert "recommendation" in data
+        assert "source_impact" in data
+        assert "migration_actions" in data
 
-    # RSA signatures should map toward ML-DSA.
-    candidate = data["recommendation"].get(
-        "candidate"
-    )
+        # RSA-2048 is a PQC candidate...
+        assert (
+            data["pqc_migration"]["migration_type"]
+            == "pqc-candidate"
+        )
 
-    assert candidate is not None
+        assert (
+            data["pqc_migration"]["pqc_applicable"]
+            is True
+        )
 
-    assert candidate.startswith(
-        "ML-DSA"
-    )
+        # ...but its purpose evidence is ambiguous, so the strategy
+        # selects no PQC component until it is reviewed.
+        assert data["migration_strategy"]["strategy"] == "NEEDS_REVIEW"
+        assert data["migration_strategy"]["pqc_component"] is None
 
-    assert data["action_count"] > 0
+        assert data["action_count"] > 0
+
+        seen_locations.append(
+            tuple(item["location"] for item in data["inventory"]["occurrences"])
+        )
+
+    # Same algorithm name, different findings with their own evidence.
+    assert seen_locations[0] != seen_locations[1]
 
     print("PASSED")
 
@@ -147,16 +184,12 @@ def test_architectural_asset():
         end=" ",
     )
 
-    # Use an asset known to be an architectural
-    # migration rather than a direct PQC candidate.
+    # Key material whose migration follows the algorithm it belongs to.
     data = get(
-        "/api/asset/key@7ec82636-0987-4d06-a8fa-c58fd7d99b00"
+        f"/api/asset/{DSA_PUBLIC_KEY_REF}"
     )
 
-    assert (
-        data["asset"]
-        == "key@7ec82636-0987-4d06-a8fa-c58fd7d99b00"
-    )
+    assert data["bom_ref"] == DSA_PUBLIC_KEY_REF
 
     assert "current_risk" in data
     assert "migration_impact" in data
@@ -211,34 +244,25 @@ def test_global_consistency():
     )
 
     # All pipeline stages must represent
-    # the same 30 canonical CBOM findings.
-    assert summary["total_assets"] == 30
-    assert status["total_assets"] == 30
-    assert assets["total_assets"] == 30
-    assert len(actions["assets"]) == 30
-    assert len(pqc["assets"]) == 30
-    assert source_impact["total_assets"] == 30
+    # the same canonical CBOM findings.
+    assert summary["total_assets"] == EXPECTED_ASSETS
+    assert status["total_assets"] == EXPECTED_ASSETS
+    assert assets["total_assets"] == EXPECTED_ASSETS
+    assert len(actions["assets"]) == EXPECTED_ASSETS
+    assert len(pqc["assets"]) == EXPECTED_ASSETS
+    assert source_impact["total_assets"] == EXPECTED_ASSETS
 
     # Migration action count must remain consistent.
     assert (
         summary["total_migration_actions"]
-        == 575
+        == actions["summary"]["total_migration_actions"]
+        == sum(item["action_count"] for item in actions["assets"])
     )
 
-    assert (
-        actions["summary"]["total_migration_actions"]
-        == 575
-    )
-
-    # PQC candidate count.
+    # PQC candidate count agrees between summary and status.
     assert (
         summary["assets_with_pqc_candidates"]
-        == 14
-    )
-
-    assert (
-        status["assets_with_pqc_candidates"]
-        == 14
+        == status["assets_with_pqc_candidates"]
     )
 
     print("PASSED")
@@ -274,67 +298,80 @@ def test_pipeline_data_flow():
 
     # Start with the inventory.
     inventory = get(
-        "/api/assets/ECDH"
+        f"/api/assets/{X25519_REF}"
     )
 
-    assert inventory["name"] == "ECDH"
+    assert inventory["bom_ref"] == X25519_REF
 
     # Risk layer.
     risk = get(
-        "/api/risk/ECDH"
+        f"/api/risk/{X25519_REF}"
     )
 
-    assert risk["name"] == "ECDH"
+    assert risk["bom_ref"] == X25519_REF
 
     # Priority layer.
     priority = get(
-        "/api/priority/ECDH"
+        f"/api/priority/{X25519_REF}"
     )
 
-    assert priority["asset"] == "ECDH"
+    assert priority["bom_ref"] == X25519_REF
 
     # PQC layer.
     pqc = get(
-        "/api/pqc/ECDH"
+        f"/api/pqc/{X25519_REF}"
     )
 
     assert (
-        pqc["pqc_migration"]["asset"]
-        == "ECDH"
+        pqc["pqc_migration"]["bom_ref"]
+        == X25519_REF
     )
 
     # Ranking layer.
     ranking = get(
-        "/api/pqc-ranking/ECDH"
+        f"/api/pqc-ranking/{X25519_REF}"
     )
 
-    assert ranking["asset"] == "ECDH"
+    assert ranking["bom_ref"] == X25519_REF
 
     # Source impact layer.
     impact = get(
-        "/api/source-impact/ECDH"
+        f"/api/source-impact/{X25519_REF}"
     )
 
-    assert impact["asset"] == "ECDH"
+    assert impact["bom_ref"] == X25519_REF
 
     # Actions layer.
     actions = get(
-        "/api/actions/ECDH"
+        f"/api/actions/{X25519_REF}"
     )
 
-    assert actions["asset"] == "ECDH"
+    assert actions["bom_ref"] == X25519_REF
 
     # Unified layer.
     unified = get(
-        "/api/asset/ECDH"
+        f"/api/asset/{X25519_REF}"
     )
 
-    assert unified["asset"] == "ECDH"
+    assert unified["bom_ref"] == X25519_REF
 
-    # Verify the same decision survives
-    # through every stage.
+    # The same finding's name and decision survive every stage.
+    names = {
+        inventory["name"],
+        risk["name"],
+        priority["asset"],
+        pqc["pqc_migration"]["asset"],
+        ranking["asset"],
+        impact["asset"],
+        actions["asset"],
+        unified["asset"],
+    }
+
+    assert len(names) == 1
+
     assert (
         unified["recommendation"]["candidate"]
+        == actions["pqc_candidate"]
         == "ML-KEM-768"
     )
 

@@ -3,6 +3,8 @@ from pathlib import Path
 
 import requests
 
+from services.recommendation_state import NEEDS_REVIEW, selected_pqc_component, strategy_name
+
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "qwen3:14b"
@@ -143,8 +145,59 @@ def build_context(asset_name):
         "confidence": pqc_migration.get("confidence"),
     }
 
-    if recommendation.get("candidate"):
+    strategy_record = record.get("migration_strategy") or {}
 
+    if strategy_name(strategy_record):
+
+        # The migration strategy is authoritative. Only a DIRECT_PQC /
+        # HYBRID strategy has a recommended PQC component; a NEEDS_REVIEW
+        # finding gets no recommended_candidate at all (its ranking
+        # output, if any, is passed separately and labelled as such), and
+        # KEEP gets neither.
+        selected = selected_pqc_component(strategy_record)
+
+        if selected:
+            recommended = {
+                "candidate": selected,
+                "strategy": strategy_record.get("strategy"),
+                "family": strategy_record.get("pqc_family"),
+                "confidence": strategy_record.get("confidence"),
+            }
+
+            match = next(
+                (
+                    candidate
+                    for candidate in ranked_candidates
+                    if isinstance(candidate, dict) and candidate.get("candidate") == selected
+                ),
+                None,
+            )
+
+            if match:
+                recommended["rank"] = match.get("rank")
+                recommended["score"] = match.get("score")
+                recommended["compatibility"] = match.get("compatibility")
+                recommended["tradeoffs"] = match.get("tradeoffs", [])
+
+            context["pqc"]["recommended_candidate"] = recommended
+
+        elif strategy_name(strategy_record) == NEEDS_REVIEW and ranked_candidates:
+            top = ranked_candidates[0] if isinstance(ranked_candidates[0], dict) else {}
+            context["pqc"]["ranking_model_output"] = {
+                "top_ranked_candidate": top.get("candidate"),
+                "family": top.get("family"),
+                "score": top.get("score"),
+                "status": "NOT A RECOMMENDATION",
+                "note": (
+                    "Ranking-model output only. The migration strategy is "
+                    "NEEDS_REVIEW, so no PQC candidate is selected until the "
+                    "cryptographic role is confirmed."
+                ),
+            }
+
+    elif recommendation.get("candidate"):
+
+        # Legacy dataset without migration strategies.
         recommended = {
             "candidate": recommendation.get("candidate"),
             "score": recommendation.get("candidate_score"),
@@ -163,6 +216,27 @@ def build_context(asset_name):
                 recommended["tradeoffs"] = top.get("tradeoffs", [])
 
         context["pqc"]["recommended_candidate"] = recommended
+
+    # ---------------------------------------------------------
+    # Purpose-aware migration strategy (services/migration_strategy.py)
+    # -- the evidence-based decision (KEEP / DIRECT_PQC / HYBRID /
+    # NEEDS_REVIEW), so the model explains it rather than inventing one.
+    # ---------------------------------------------------------
+
+    strategy = record.get("migration_strategy") or {}
+
+    if strategy:
+        context["migration_strategy"] = {
+            "strategy": strategy.get("strategy"),
+            "label": strategy.get("label"),
+            "role": strategy.get("purpose_class_label"),
+            "classical_component": strategy.get("classical_component"),
+            "pqc_component": strategy.get("pqc_component"),
+            "confidence": strategy.get("confidence"),
+            "rationale": strategy.get("rationale"),
+            "harvest_now_decrypt_later": strategy.get("harvest_now_decrypt_later"),
+            "classical_hardening": (strategy.get("classical_hardening") or {}).get("status"),
+        }
 
     # ---------------------------------------------------------
     # Source impact (previously omitted, despite the dashboard's AI
@@ -208,6 +282,12 @@ purpose was resolved and how confident that resolution is. If its
 confidence is LOW or needs_review is true, say so plainly rather than
 stating the purpose as settled fact.
 
+The supplied "migration_strategy" field is ECDAT's evidence-based
+migration decision (KEEP, DIRECT_PQC, HYBRID or NEEDS_REVIEW). Explain
+that decision; do not recommend a different strategy or PQC algorithm.
+If it is NEEDS_REVIEW, say that the cryptographic role must be
+confirmed before any replacement is chosen.
+
 Asset:
 {asset_name}
 
@@ -225,7 +305,10 @@ MIGRATION:
 Explain the ECDAT migration decision.
 
 PQC:
-Explain the recommended PQC candidate, if available.
+Explain the recommended PQC candidate only if "recommended_candidate"
+is supplied. If only "ranking_model_output" is supplied, state that it
+is ranking-model output, not a recommendation, and that no PQC
+candidate is selected until the review is resolved.
 
 ACTIONS:
 Give the most important developer actions.

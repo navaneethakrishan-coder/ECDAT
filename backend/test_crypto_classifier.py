@@ -335,6 +335,71 @@ def test_classification_is_deterministic():
     assert first == second
 
 
+# ================================================================
+# C. Cross-repository generalization regression cases -- found by
+#    validating this registry against a second, Java-based
+#    repository's real CBOM output (not tuned to that repository's
+#    exact names, but to the general JCA naming conventions it uses).
+# ================================================================
+
+
+def test_jca_digest_with_rsa_signature_name_is_vulnerable_signature():
+    for name in ("SHA256withRSA", "SHA1withRSA", "SHA384withRSA"):
+        result = _classify(name)
+
+        assert result["category"] == "asymmetric", name
+        assert "digital-signature" in result["purpose"], name
+        assert result["quantum_status"] == "vulnerable", name
+
+
+def test_jca_digest_with_rsa_and_mgf1_signature_name_is_vulnerable():
+    result = _classify("SHA256withRSAandMGF1")
+
+    assert result["category"] == "asymmetric"
+    assert result["quantum_status"] == "vulnerable"
+
+
+def test_jca_digest_with_dsa_signature_name_is_vulnerable_signature():
+    result = _classify("SHA1withDSA")
+
+    assert result["category"] == "asymmetric"
+    assert "digital-signature" in result["purpose"]
+    assert result["quantum_status"] == "vulnerable"
+
+
+def test_jca_digest_with_ecdsa_signature_name_resolves_as_ec_signature():
+    result = _classify("SHA256withECDSA")
+
+    assert result["category"] == "asymmetric"
+    assert "digital-signature" in result["purpose"]
+    assert result["quantum_status"] == "vulnerable"
+
+    # A "withECDSA" name must never be captured by the plain DSA
+    # family's "WITHDSA" pattern -- confirms the two patterns don't
+    # overlap now that both exist.
+    dsa_only = _classify("SHA1withDSA")
+    assert dsa_only["category"] == "asymmetric"
+
+
+def test_aes_key_size_directly_concatenated_is_still_classified():
+    # "AES128" / "AES128-CBC-PKCS5" -- no separator between the family
+    # name and the key size -- previously fell through to
+    # category="unknown" because a bare \b never matches between two
+    # word characters ("S" and "1"), even though _AES_KEY_SIZE_RE
+    # already expected this exact no-separator spelling.
+    for name in ("AES128", "AES128-CBC-PKCS5", "AES256"):
+        result = _classify(name)
+
+        assert result["category"] == "symmetric", name
+        assert "encryption" in result["purpose"], name
+        assert result["quantum_status"] != "unknown", name
+
+    # Still resolves correctly for the separated spelling and the
+    # bare family name -- this fix must not narrow existing coverage.
+    assert _classify("AES-128-GCM")["category"] == "symmetric"
+    assert _classify("AES")["category"] == "symmetric"
+
+
 def test_family_registry_has_no_alias_collisions():
     """
     knowledge/crypto_knowledge.py raises at import time if two
@@ -394,6 +459,13 @@ if __name__ == "__main__":
     test_crypto_material_prefixes_are_distinguished()
 
     test_classification_is_deterministic()
+
+    test_jca_digest_with_rsa_signature_name_is_vulnerable_signature()
+    test_jca_digest_with_rsa_and_mgf1_signature_name_is_vulnerable()
+    test_jca_digest_with_dsa_signature_name_is_vulnerable_signature()
+    test_jca_digest_with_ecdsa_signature_name_resolves_as_ec_signature()
+    test_aes_key_size_directly_concatenated_is_still_classified()
+
     test_family_registry_has_no_alias_collisions()
 
     print("\nAll crypto-classifier tests passed.")

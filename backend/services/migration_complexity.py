@@ -40,10 +40,17 @@ def calculate_migration_complexity(
         0
     )
 
+    # None (UNKNOWN) whenever no organization-provided data lifetime
+    # is configured for this finding (see services/business_context.py)
+    # -- .get()'s own default only covers a missing key, not a key
+    # present with value None, so this is checked explicitly below
+    # rather than silently treated as 0.
     data_lifetime = context.get(
         "data_lifetime_years",
-        0
+        None
     )
+
+    data_lifetime_known = data_lifetime is not None
 
     business_criticality = context.get(
         "business_criticality",
@@ -187,9 +194,23 @@ def calculate_migration_complexity(
 
     # ========================================================
     # Factor 5 — Data lifetime pressure
+    #
+    # UNKNOWN (no configured data lifetime -- see
+    # services/business_context.py) contributes 0 points here, the
+    # same as a confirmed short lifetime. This is an additive point
+    # score, not a weighted average like migration_priority.py's or
+    # calculate_contextual_risk()'s, so there is no "exclude and
+    # rescale the remaining weights" available -- 0 is the smallest,
+    # least-alarming value this factor can take either way, so
+    # treating "unknown" the same as "confirmed short" never
+    # overstates complexity. `data_lifetime_known` is still recorded
+    # below so this is never confused with a genuine <2-year finding.
     # ========================================================
 
-    if data_lifetime >= 15:
+    if not data_lifetime_known:
+        lifetime_score = 0
+
+    elif data_lifetime >= 15:
         lifetime_score = 10
 
     elif data_lifetime >= 10:
@@ -277,10 +298,17 @@ def calculate_migration_complexity(
             f"indicate source-level migration surface."
         )
 
-    if data_lifetime > 0:
+    if data_lifetime_known and data_lifetime > 0:
         reasons.append(
             f"Protected data lifetime: "
             f"{data_lifetime} year(s)."
+        )
+
+    elif not data_lifetime_known:
+        reasons.append(
+            "Protected data lifetime is UNKNOWN for this finding "
+            "(see data/business-context.json), so it did not add to "
+            "this complexity estimate."
         )
 
     reasons.append(
@@ -332,6 +360,9 @@ def calculate_migration_complexity(
 
             "data_lifetime_years":
                 data_lifetime,
+
+            "data_lifetime_known":
+                data_lifetime_known,
 
             "direct_dependents":
                 direct_dependents,

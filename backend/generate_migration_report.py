@@ -1,6 +1,11 @@
 ﻿import json
 from pathlib import Path
 
+from services.recommendation_state import (
+    has_selected_pqc_path,
+    reconcile_recommendation,
+)
+
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR.parent / "data"
@@ -343,6 +348,22 @@ def build_report(
                 "priority_level"
             )
 
+        # Organization-provided signals feeding the priority formula
+        # above (see services/business_context.py) -- both None
+        # (UNKNOWN) for every finding unless explicitly configured in
+        # data/business-context.json. Never fabricated.
+        priority_business_criticality = priority.get(
+            "business_criticality"
+        )
+
+        priority_mosca_analysis = priority.get(
+            "mosca_analysis"
+        )
+
+        priority_score_breakdown = priority_section.get(
+            "score_breakdown"
+        )
+
         # -------------------------------------------------
         # PQC ANALYSIS
         # -------------------------------------------------
@@ -410,10 +431,15 @@ def build_report(
         )
 
         # If recommendation does not contain the selected
-        # candidate, use the first ranked candidate.
+        # candidate, use the first ranked candidate -- but only for a
+        # legacy record with no migration strategy. A strategy-reconciled
+        # record leaves the candidate empty on purpose (e.g. NEEDS_REVIEW),
+        # and back-filling it from the ranking would re-present ranking
+        # output as a recommendation.
         if (
             selected_candidate is None
             and ranked_candidates
+            and not recommendation.get("strategy")
         ):
 
             first_candidate = ranked_candidates[0]
@@ -576,6 +602,9 @@ def build_report(
                 "priority": {
                     "score": priority_score,
                     "level": priority_level,
+                    "business_criticality": priority_business_criticality,
+                    "mosca_analysis": priority_mosca_analysis,
+                    "score_breakdown": priority_score_breakdown,
                 },
             },
 
@@ -598,26 +627,48 @@ def build_report(
                 ),
             },
 
-            "recommendation": {
+            # Restated from the migration strategy
+            # (services/recommendation_state.py): candidate is only ever
+            # the strategy-selected component, `confirmed` says whether a
+            # PQC path was selected, and the ranking model's own values
+            # are kept under `ranking_model`.
+            "recommendation": reconcile_recommendation(
+                {
+                    "decision": recommendation.get(
+                        "decision"
+                    ),
 
-                "decision": recommendation.get(
-                    "decision"
-                ),
+                    "candidate": selected_candidate,
 
-                "candidate": selected_candidate,
+                    "candidate_score": candidate_score,
 
-                "candidate_score": candidate_score,
+                    "candidate_rank": candidate_rank,
 
-                "candidate_rank": candidate_rank,
+                    "confidence": recommendation.get(
+                        "confidence"
+                    ),
 
-                "confidence": recommendation.get(
-                    "confidence"
-                ),
+                    "reason": recommendation.get(
+                        "reason"
+                    ),
 
-                "reason": recommendation.get(
-                    "reason"
-                ),
-            },
+                    "ranking_model": recommendation.get(
+                        "ranking_model"
+                    ),
+                },
+                pqc.get("migration_strategy"),
+            ),
+
+            # Purpose-aware migration strategy (services/
+            # migration_strategy.py, recorded by the PQC migration plan
+            # stage): KEEP / DIRECT_PQC / HYBRID / NEEDS_REVIEW, with
+            # its evidence, confidence and explanation -- the
+            # authoritative migration decision.
+            "migration_strategy": (
+                pqc.get("migration_strategy")
+                if isinstance(pqc.get("migration_strategy"), dict)
+                else None
+            ),
 
             "ranked_candidates": ranked_candidates,
 
@@ -759,11 +810,11 @@ def build_summary(reports):
             "action_count"
         ]
 
-        if report[
-            "recommendation"
-        ][
-            "candidate"
-        ]:
+        # A PQC candidate means a strategy-selected replacement path
+        # (DIRECT_PQC / HYBRID) -- not merely a ranking-model candidate.
+        if has_selected_pqc_path(
+            report.get("migration_strategy")
+        ):
 
             candidates += 1
 
@@ -813,6 +864,18 @@ def build_summary(reports):
         "source_impact_distribution": (
             impact_distribution
         ),
+
+        "migration_strategy_distribution": {
+            strategy: sum(
+                1
+                for report in reports
+                if ((report.get("migration_strategy") or {}).get("strategy") or "NONE") == strategy
+            )
+            for strategy in sorted({
+                (report.get("migration_strategy") or {}).get("strategy") or "NONE"
+                for report in reports
+            })
+        },
     }
 
 

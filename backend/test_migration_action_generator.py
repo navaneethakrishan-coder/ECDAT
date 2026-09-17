@@ -40,14 +40,19 @@ def load_migration():
     return data["assets"]
 
 
-def test_echd_actions():
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
+DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"             # digital signature, HYBRID
+DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"        # ambiguous purpose, NEEDS_REVIEW
 
-    assets = load_assets()
 
+def _actions_for(bom_ref, strip_strategy=False):
     asset = next(
         item
-        for item in assets
-        if item["name"] == "ECDH"
+        for item in load_assets()
+        if item["bom_ref"] == bom_ref
     )
 
     mappings = map_assets_to_source(
@@ -58,23 +63,29 @@ def test_echd_actions():
         mappings
     )
 
-    migrations = load_migration()
-
-    migration = next(
+    migration = dict(next(
         item
-        for item in migrations
-        if item["asset"] == "ECDH"
-    )
+        for item in load_migration()
+        if item["bom_ref"] == bom_ref
+    ))
 
-    result = generate_migration_actions(
+    if strip_strategy:
+        migration.pop("migration_strategy", None)
+
+    return asset, generate_migration_actions(
         mappings[0],
         impacts[0],
         migration,
     )
 
+
+def test_echd_actions():
+
+    asset, result = _actions_for(X25519_REF)
+
     assert (
         result["asset"]
-        == "ECDH"
+        == asset["name"]
     )
 
     assert (
@@ -89,7 +100,7 @@ def test_echd_actions():
 
     assert (
         result["affected_file_count"]
-        == 2
+        == 1
     )
 
     assert (
@@ -117,40 +128,16 @@ def test_echd_actions():
 
 def test_architectural_migration():
 
-    assets = load_assets()
-
-    asset = next(
-        item
-        for item in assets
-        if item["name"] == "EC"
-    )
-
-    mappings = map_assets_to_source(
-        [asset]
-    )
-
-    impacts = analyze_all_source_usage(
-        mappings
-    )
-
-    migrations = load_migration()
-
-    migration = next(
-        item
-        for item in migrations
-        if item["asset"] == "EC"
-    )
-
-    result = generate_migration_actions(
-        mappings[0],
-        impacts[0],
-        migration,
-    )
+    # Architectural-migration key material follows its purpose-aware
+    # strategy (HYBRID, inherited from DSA) ...
+    _, result = _actions_for(DSA_PUBLIC_KEY_REF)
 
     assert (
         result["migration_type"]
         == "architectural-migration"
     )
+
+    assert result["pqc_candidate"] == "ML-DSA-65"
 
     actions = [
         item["action"]
@@ -158,49 +145,36 @@ def test_architectural_migration():
     ]
 
     assert any(
-        "architectural"
+        "hybrid"
         in action.lower()
         for action in actions
+    )
+
+    # ... and without a strategy the legacy path still refuses a blind
+    # direct replacement.
+    _, legacy = _actions_for(DSA_PUBLIC_KEY_REF, strip_strategy=True)
+
+    legacy_actions = [
+        item["action"]
+        for item in legacy["actions"]
+    ]
+
+    assert any(
+        "architectural"
+        in action.lower()
+        for action in legacy_actions
     )
 
     assert any(
         "blind direct"
         in action.lower()
-        for action in actions
+        for action in legacy_actions
     )
 
 
 def test_signature_migration():
 
-    assets = load_assets()
-
-    asset = next(
-        item
-        for item in assets
-        if item["name"] == "RSA-2048"
-    )
-
-    mappings = map_assets_to_source(
-        [asset]
-    )
-
-    impacts = analyze_all_source_usage(
-        mappings
-    )
-
-    migrations = load_migration()
-
-    migration = next(
-        item
-        for item in migrations
-        if item["asset"] == "RSA-2048"
-    )
-
-    result = generate_migration_actions(
-        mappings[0],
-        impacts[0],
-        migration,
-    )
+    _, result = _actions_for(DSA_REF)
 
     assert (
         result["pqc_candidate"]
@@ -213,7 +187,7 @@ def test_signature_migration():
     ]
 
     assert any(
-        "digital-signature"
+        "signature"
         in action.lower()
         for action in actions
     )
@@ -223,6 +197,15 @@ def test_signature_migration():
         in action
         for action in actions
     )
+
+    # An RSA-2048 finding whose evidence leaves its role ambiguous is
+    # NEEDS_REVIEW: no candidate is selected and no replacement is
+    # instructed until the review is resolved.
+    _, review = _actions_for(RSA_2048_REF)
+
+    assert review["pqc_candidate"] is None
+    assert review["migration_strategy"] == "NEEDS_REVIEW"
+    assert "review is resolved" in review["actions"][0]["action"]
 
 
 def test_all_assets():
@@ -367,7 +350,7 @@ def test_migration_actions():
     )
 
     print(
-        "Running ECDH actions...",
+        "Running key-agreement actions...",
         end=" ",
     )
 
@@ -376,7 +359,7 @@ def test_migration_actions():
     print("PASSED")
 
     print(
-        "Running EC architectural actions...",
+        "Running architectural actions...",
         end=" ",
     )
 
@@ -385,7 +368,7 @@ def test_migration_actions():
     print("PASSED")
 
     print(
-        "Running RSA signature actions...",
+        "Running signature and review actions...",
         end=" ",
     )
 

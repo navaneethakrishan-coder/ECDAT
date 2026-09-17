@@ -2,58 +2,79 @@
   "project": "ECDAT",
   "asset_count": 30,
   "weights": {
-    "quantum_risk": 0.4,
-    "blast_radius": 0.35,
-    "migration_complexity": 0.25
+    "quantum_risk": 0.32,
+    "blast_radius": 0.28,
+    "migration_complexity": 0.2,
+    "business_criticality": 0.1,
+    "mosca_urgency": 0.1
   },
   "priority_distribution": {
-    "CRITICAL": 0,
-    "HIGH": 1,
-    "MEDIUM": 4,
-    "LOW": 25
+    "CRITICAL": 1,
+    "HIGH": 3,
+    "MEDIUM": 7,
+    "LOW": 19
   },
   "assets": [
     {
       "asset": "RSA",
       "bom_ref": "cceeebbd-1115-4dab-978d-1a4f84a78c69",
       "quantum_risk": {
-        "score": 77.75,
-        "severity": "HIGH"
+        "score": 87.06,
+        "severity": "CRITICAL"
       },
       "blast_radius": {
-        "score": 76.66,
+        "score": 78.06,
         "severity": "CRITICAL"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 72,
+        "level": "HIGH"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 61.93,
-        "priority": "HIGH",
+        "priority_score": 80.15,
+        "priority": "CRITICAL",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 77.75,
+            "known": true,
+            "raw_score": 87.06,
             "weight": 0.4,
-            "weighted_score": 31.1
+            "weighted_score": 34.82
           },
           "blast_radius": {
-            "raw_score": 76.66,
+            "known": true,
+            "raw_score": 78.06,
             "weight": 0.35,
-            "weighted_score": 26.83
+            "weighted_score": 27.32
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 72.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 18.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 61.93/100 (HIGH).",
+          "summary": "Migration priority is 80.15/100 (CRITICAL).",
           "reasons": [
-            "Quantum-risk contribution: 31.1.",
-            "Blast-radius contribution: 26.83.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 34.82.",
+            "Blast-radius contribution: 27.32.",
+            "Migration-complexity contribution: 18.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -62,43 +83,62 @@
       "asset": "DSA",
       "bom_ref": "f3bf7d4c-7f24-46db-b416-0a30e8b487ea",
       "quantum_risk": {
-        "score": 71.75,
-        "severity": "HIGH"
+        "score": 80.0,
+        "severity": "CRITICAL"
       },
       "blast_radius": {
-        "score": 65.76,
+        "score": 67.0,
         "severity": "HIGH"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 58,
+        "level": "HIGH"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 55.72,
-        "priority": "MEDIUM",
+        "priority_score": 69.95,
+        "priority": "HIGH",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 71.75,
+            "known": true,
+            "raw_score": 80.0,
             "weight": 0.4,
-            "weighted_score": 28.7
+            "weighted_score": 32.0
           },
           "blast_radius": {
-            "raw_score": 65.76,
+            "known": true,
+            "raw_score": 67.0,
             "weight": 0.35,
-            "weighted_score": 23.02
+            "weighted_score": 23.45
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 58.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 14.5
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 55.72/100 (MEDIUM).",
+          "summary": "Migration priority is 69.95/100 (HIGH).",
           "reasons": [
-            "Quantum-risk contribution: 28.7.",
-            "Blast-radius contribution: 23.02.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 32.0.",
+            "Blast-radius contribution: 23.45.",
+            "Migration-complexity contribution: 14.5.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -107,43 +147,62 @@
       "asset": "Ed448",
       "bom_ref": "391d5d03-0319-4b14-8abb-0be817e490d2",
       "quantum_risk": {
-        "score": 65.75,
+        "score": 72.94,
         "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 54.86,
+        "score": 55.94,
         "severity": "HIGH"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 47,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 49.5,
-        "priority": "MEDIUM",
+        "priority_score": 60.5,
+        "priority": "HIGH",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 65.75,
+            "known": true,
+            "raw_score": 72.94,
             "weight": 0.4,
-            "weighted_score": 26.3
+            "weighted_score": 29.18
           },
           "blast_radius": {
-            "raw_score": 54.86,
+            "known": true,
+            "raw_score": 55.94,
             "weight": 0.35,
-            "weighted_score": 19.2
+            "weighted_score": 19.58
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 47.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 11.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 49.5/100 (MEDIUM).",
+          "summary": "Migration priority is 60.5/100 (HIGH).",
           "reasons": [
-            "Quantum-risk contribution: 26.3.",
-            "Blast-radius contribution: 19.2.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 29.18.",
+            "Blast-radius contribution: 19.58.",
+            "Migration-complexity contribution: 11.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -152,43 +211,62 @@
       "asset": "Ed25519",
       "bom_ref": "6d9d6763-7f15-4e5c-bc5f-4e1bd2c2963e",
       "quantum_risk": {
-        "score": 65.75,
+        "score": 72.94,
         "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 54.86,
+        "score": 55.94,
         "severity": "HIGH"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 47,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 49.5,
-        "priority": "MEDIUM",
+        "priority_score": 60.5,
+        "priority": "HIGH",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 65.75,
+            "known": true,
+            "raw_score": 72.94,
             "weight": 0.4,
-            "weighted_score": 26.3
+            "weighted_score": 29.18
           },
           "blast_radius": {
-            "raw_score": 54.86,
+            "known": true,
+            "raw_score": 55.94,
             "weight": 0.35,
-            "weighted_score": 19.2
+            "weighted_score": 19.58
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 47.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 11.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 49.5/100 (MEDIUM).",
+          "summary": "Migration priority is 60.5/100 (HIGH).",
           "reasons": [
-            "Quantum-risk contribution: 26.3.",
-            "Blast-radius contribution: 19.2.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 29.18.",
+            "Blast-radius contribution: 19.58.",
+            "Migration-complexity contribution: 11.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -197,88 +275,62 @@
       "asset": "DH",
       "bom_ref": "b2da61d9-31ed-4a67-92eb-b9d06b70dd13",
       "quantum_risk": {
-        "score": 65.0,
+        "score": 72.06,
         "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 29.75,
+        "score": 30.81,
         "severity": "MEDIUM"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 40,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 40.41,
+        "priority_score": 49.61,
         "priority": "MEDIUM",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 65.0,
+            "known": true,
+            "raw_score": 72.06,
             "weight": 0.4,
-            "weighted_score": 26.0
+            "weighted_score": 28.82
           },
           "blast_radius": {
-            "raw_score": 29.75,
+            "known": true,
+            "raw_score": 30.81,
             "weight": 0.35,
-            "weighted_score": 10.41
+            "weighted_score": 10.78
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 40.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 10.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 40.41/100 (MEDIUM).",
+          "summary": "Migration priority is 49.61/100 (MEDIUM).",
           "reasons": [
-            "Quantum-risk contribution: 26.0.",
-            "Blast-radius contribution: 10.41.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "x25519",
-      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
-      "quantum_risk": {
-        "score": 65.75,
-        "severity": "HIGH"
-      },
-      "blast_radius": {
-        "score": 19.86,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 37.25,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 65.75,
-            "weight": 0.4,
-            "weighted_score": 26.3
-          },
-          "blast_radius": {
-            "raw_score": 19.86,
-            "weight": 0.35,
-            "weighted_score": 6.95
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 37.25/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 26.3.",
-            "Blast-radius contribution: 6.95.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 28.82.",
+            "Blast-radius contribution: 10.78.",
+            "Migration-complexity contribution: 10.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -287,133 +339,126 @@
       "asset": "x448",
       "bom_ref": "45d8b627-553c-4bf0-badf-2aeb183d9c2b",
       "quantum_risk": {
-        "score": 65.75,
+        "score": 72.94,
         "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 19.86,
+        "score": 20.94,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 37,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 37.25,
-        "priority": "LOW",
+        "priority_score": 45.76,
+        "priority": "MEDIUM",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 65.75,
+            "known": true,
+            "raw_score": 72.94,
             "weight": 0.4,
-            "weighted_score": 26.3
+            "weighted_score": 29.18
           },
           "blast_radius": {
-            "raw_score": 19.86,
+            "known": true,
+            "raw_score": 20.94,
             "weight": 0.35,
-            "weighted_score": 6.95
+            "weighted_score": 7.33
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 37.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 9.25
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 37.25/100 (LOW).",
+          "summary": "Migration priority is 45.76/100 (MEDIUM).",
           "reasons": [
-            "Quantum-risk contribution: 26.3.",
-            "Blast-radius contribution: 6.95.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 29.18.",
+            "Blast-radius contribution: 7.33.",
+            "Migration-complexity contribution: 9.25.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
     },
     {
-      "asset": "SHA256",
-      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
+      "asset": "x25519",
+      "bom_ref": "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c",
       "quantum_risk": {
-        "score": 40.75,
-        "severity": "MEDIUM"
+        "score": 72.94,
+        "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 46.11,
-        "severity": "MEDIUM"
+        "score": 20.94,
+        "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 37,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 36.44,
-        "priority": "LOW",
+        "priority_score": 45.76,
+        "priority": "MEDIUM",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 40.75,
+            "known": true,
+            "raw_score": 72.94,
             "weight": 0.4,
-            "weighted_score": 16.3
+            "weighted_score": 29.18
           },
           "blast_radius": {
-            "raw_score": 46.11,
+            "known": true,
+            "raw_score": 20.94,
             "weight": 0.35,
-            "weighted_score": 16.14
+            "weighted_score": 7.33
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 37.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 9.25
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 36.44/100 (LOW).",
+          "summary": "Migration priority is 45.76/100 (MEDIUM).",
           "reasons": [
-            "Quantum-risk contribution: 16.3.",
-            "Blast-radius contribution: 16.14.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "RSA-2048",
-      "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
-      "quantum_risk": {
-        "score": 55.0,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 28.25,
-        "severity": "MEDIUM"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 35.89,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 55.0,
-            "weight": 0.4,
-            "weighted_score": 22.0
-          },
-          "blast_radius": {
-            "raw_score": 28.25,
-            "weight": 0.35,
-            "weighted_score": 9.89
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 35.89/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 22.0.",
-            "Blast-radius contribution: 9.89.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 29.18.",
+            "Blast-radius contribution: 7.33.",
+            "Migration-complexity contribution: 9.25.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -422,43 +467,126 @@
       "asset": "RSA-2048",
       "bom_ref": "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
       "quantum_risk": {
-        "score": 55.0,
-        "severity": "MEDIUM"
+        "score": 60.29,
+        "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 28.25,
+        "score": 29.04,
         "severity": "MEDIUM"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 40,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 35.89,
-        "priority": "LOW",
+        "priority_score": 44.28,
+        "priority": "MEDIUM",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 55.0,
+            "known": true,
+            "raw_score": 60.29,
             "weight": 0.4,
-            "weighted_score": 22.0
+            "weighted_score": 24.12
           },
           "blast_radius": {
-            "raw_score": 28.25,
+            "known": true,
+            "raw_score": 29.04,
             "weight": 0.35,
-            "weighted_score": 9.89
+            "weighted_score": 10.16
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 40.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 10.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 35.89/100 (LOW).",
+          "summary": "Migration priority is 44.28/100 (MEDIUM).",
           "reasons": [
-            "Quantum-risk contribution: 22.0.",
-            "Blast-radius contribution: 9.89.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 24.12.",
+            "Blast-radius contribution: 10.16.",
+            "Migration-complexity contribution: 10.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "RSA-2048",
+      "bom_ref": "e87e3bf2-5f46-477d-b159-8ac582608a25",
+      "quantum_risk": {
+        "score": 60.29,
+        "severity": "HIGH"
+      },
+      "blast_radius": {
+        "score": 29.04,
+        "severity": "MEDIUM"
+      },
+      "migration_complexity": {
+        "score": 40,
+        "level": "MEDIUM"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 44.28,
+        "priority": "MEDIUM",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 60.29,
+            "weight": 0.4,
+            "weighted_score": 24.12
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 29.04,
+            "weight": 0.35,
+            "weighted_score": 10.16
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 40.0,
+            "weight": 0.25,
+            "weighted_score": 10.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 44.28/100 (MEDIUM).",
+          "reasons": [
+            "Quantum-risk contribution: 24.12.",
+            "Blast-radius contribution: 10.16.",
+            "Migration-complexity contribution: 10.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -467,43 +595,126 @@
       "asset": "RSA-OAEP",
       "bom_ref": "5aa4e131-7f20-49f7-87b8-46ef8e928fb1",
       "quantum_risk": {
-        "score": 56.75,
-        "severity": "MEDIUM"
+        "score": 62.35,
+        "severity": "HIGH"
       },
       "blast_radius": {
-        "score": 18.51,
+        "score": 19.35,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 42,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 33.18,
-        "priority": "LOW",
+        "priority_score": 42.21,
+        "priority": "MEDIUM",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 56.75,
+            "known": true,
+            "raw_score": 62.35,
             "weight": 0.4,
-            "weighted_score": 22.7
+            "weighted_score": 24.94
           },
           "blast_radius": {
-            "raw_score": 18.51,
+            "known": true,
+            "raw_score": 19.35,
             "weight": 0.35,
-            "weighted_score": 6.48
+            "weighted_score": 6.77
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 42.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 10.5
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 33.18/100 (LOW).",
+          "summary": "Migration priority is 42.21/100 (MEDIUM).",
           "reasons": [
-            "Quantum-risk contribution: 22.7.",
-            "Blast-radius contribution: 6.48.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 24.94.",
+            "Blast-radius contribution: 6.77.",
+            "Migration-complexity contribution: 10.5.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "SHA256",
+      "bom_ref": "40964bb6-b5cb-4281-a17c-298643b5a7a8",
+      "quantum_risk": {
+        "score": 43.53,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 46.53,
+        "severity": "MEDIUM"
+      },
+      "migration_complexity": {
+        "score": 32,
+        "level": "MEDIUM"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 41.7,
+        "priority": "MEDIUM",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 43.53,
+            "weight": 0.4,
+            "weighted_score": 17.41
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 46.53,
+            "weight": 0.35,
+            "weighted_score": 16.29
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 32.0,
+            "weight": 0.25,
+            "weighted_score": 8.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 41.7/100 (MEDIUM).",
+          "reasons": [
+            "Quantum-risk contribution: 17.41.",
+            "Blast-radius contribution: 16.29.",
+            "Migration-complexity contribution: 8.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -512,43 +723,62 @@
       "asset": "SHAKE256",
       "bom_ref": "46e95b5d-f88e-4b4d-b421-82598d647bd8",
       "quantum_risk": {
-        "score": 34.75,
+        "score": 36.47,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 40.21,
+        "score": 40.47,
         "severity": "MEDIUM"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 25,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 31.97,
+        "priority_score": 35.0,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 34.75,
+            "known": true,
+            "raw_score": 36.47,
             "weight": 0.4,
-            "weighted_score": 13.9
+            "weighted_score": 14.59
           },
           "blast_radius": {
-            "raw_score": 40.21,
+            "known": true,
+            "raw_score": 40.47,
             "weight": 0.35,
-            "weighted_score": 14.07
+            "weighted_score": 14.16
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 25.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 6.25
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 31.97/100 (LOW).",
+          "summary": "Migration priority is 35.0/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 13.9.",
-            "Blast-radius contribution: 14.07.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 14.59.",
+            "Blast-radius contribution: 14.16.",
+            "Migration-complexity contribution: 6.25.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -557,88 +787,62 @@
       "asset": "SHA512",
       "bom_ref": "e8198882-51c3-4cde-add6-ac5dcb3c057c",
       "quantum_risk": {
-        "score": 34.75,
+        "score": 36.47,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 40.21,
+        "score": 40.47,
         "severity": "MEDIUM"
       },
       "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
+        "score": 25,
+        "level": "MEDIUM"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 31.97,
+        "priority_score": 35.0,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 34.75,
+            "known": true,
+            "raw_score": 36.47,
             "weight": 0.4,
-            "weighted_score": 13.9
+            "weighted_score": 14.59
           },
           "blast_radius": {
-            "raw_score": 40.21,
+            "known": true,
+            "raw_score": 40.47,
             "weight": 0.35,
-            "weighted_score": 14.07
+            "weighted_score": 14.16
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 25.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 6.25
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 31.97/100 (LOW).",
+          "summary": "Migration priority is 35.0/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 13.9.",
-            "Blast-radius contribution: 14.07.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
-      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
-      "quantum_risk": {
-        "score": 45.8,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 16.87,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 28.22,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 45.8,
-            "weight": 0.4,
-            "weighted_score": 18.32
-          },
-          "blast_radius": {
-            "raw_score": 16.87,
-            "weight": 0.35,
-            "weighted_score": 5.9
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 14.59.",
+            "Blast-radius contribution: 14.16.",
+            "Migration-complexity contribution: 6.25.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -647,133 +851,62 @@
       "asset": "public-key@1da1d50f-f071-451b-bcc2-4de220801c61",
       "bom_ref": "1da1d50f-f071-451b-bcc2-4de220801c61",
       "quantum_risk": {
-        "score": 45.8,
+        "score": 49.47,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.87,
+        "score": 17.42,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 28.22,
+        "priority_score": 28.63,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 45.8,
+            "known": true,
+            "raw_score": 49.47,
             "weight": 0.4,
-            "weighted_score": 18.32
+            "weighted_score": 19.79
           },
           "blast_radius": {
-            "raw_score": 16.87,
+            "known": true,
+            "raw_score": 17.42,
             "weight": 0.35,
-            "weighted_score": 5.9
+            "weighted_score": 6.1
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
+          "summary": "Migration priority is 28.63/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
-      "quantum_risk": {
-        "score": 45.8,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 16.87,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 28.22,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 45.8,
-            "weight": 0.4,
-            "weighted_score": 18.32
-          },
-          "blast_radius": {
-            "raw_score": 16.87,
-            "weight": 0.35,
-            "weighted_score": 5.9
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
-      "quantum_risk": {
-        "score": 45.8,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 16.87,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 28.22,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 45.8,
-            "weight": 0.4,
-            "weighted_score": 18.32
-          },
-          "blast_radius": {
-            "raw_score": 16.87,
-            "weight": 0.35,
-            "weighted_score": 5.9
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -782,43 +915,254 @@
       "asset": "private-key@4ef12e90-f0bf-414b-a351-9995eab31aba",
       "bom_ref": "4ef12e90-f0bf-414b-a351-9995eab31aba",
       "quantum_risk": {
-        "score": 45.8,
+        "score": 49.47,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.87,
+        "score": 17.42,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 28.22,
+        "priority_score": 28.63,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 45.8,
+            "known": true,
+            "raw_score": 49.47,
             "weight": 0.4,
-            "weighted_score": 18.32
+            "weighted_score": 19.79
           },
           "blast_radius": {
-            "raw_score": 16.87,
+            "known": true,
+            "raw_score": 17.42,
             "weight": 0.35,
-            "weighted_score": 5.9
+            "weighted_score": 6.1
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
+          "summary": "Migration priority is 28.63/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "public-key@a39a081d-ad88-420e-903e-9e8abd7746dd",
+      "bom_ref": "a39a081d-ad88-420e-903e-9e8abd7746dd",
+      "quantum_risk": {
+        "score": 49.47,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 17.42,
+        "severity": "LOW"
+      },
+      "migration_complexity": {
+        "score": 11,
+        "level": "LOW"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 28.63,
+        "priority": "LOW",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 49.47,
+            "weight": 0.4,
+            "weighted_score": 19.79
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 17.42,
+            "weight": 0.35,
+            "weighted_score": 6.1
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 11.0,
+            "weight": 0.25,
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 28.63/100 (LOW).",
+          "reasons": [
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "private-key@a4b99b30-778e-4a90-8b34-2d3e54023087",
+      "bom_ref": "a4b99b30-778e-4a90-8b34-2d3e54023087",
+      "quantum_risk": {
+        "score": 49.47,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 17.42,
+        "severity": "LOW"
+      },
+      "migration_complexity": {
+        "score": 11,
+        "level": "LOW"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 28.63,
+        "priority": "LOW",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 49.47,
+            "weight": 0.4,
+            "weighted_score": 19.79
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 17.42,
+            "weight": 0.35,
+            "weighted_score": 6.1
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 11.0,
+            "weight": 0.25,
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 28.63/100 (LOW).",
+          "reasons": [
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "public-key@bf60d857-1cde-405e-a49c-1ec20494e2fe",
+      "bom_ref": "bf60d857-1cde-405e-a49c-1ec20494e2fe",
+      "quantum_risk": {
+        "score": 49.47,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 17.42,
+        "severity": "LOW"
+      },
+      "migration_complexity": {
+        "score": 11,
+        "level": "LOW"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 28.63,
+        "priority": "LOW",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 49.47,
+            "weight": 0.4,
+            "weighted_score": 19.79
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 17.42,
+            "weight": 0.35,
+            "weighted_score": 6.1
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 11.0,
+            "weight": 0.25,
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 28.63/100 (LOW).",
+          "reasons": [
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -827,43 +1171,62 @@
       "asset": "public-key@cfe52e86-a0fb-40a1-b072-2e206a950d7c",
       "bom_ref": "cfe52e86-a0fb-40a1-b072-2e206a950d7c",
       "quantum_risk": {
-        "score": 45.8,
+        "score": 49.47,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.87,
+        "score": 17.42,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 28.22,
+        "priority_score": 28.63,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 45.8,
+            "known": true,
+            "raw_score": 49.47,
             "weight": 0.4,
-            "weighted_score": 18.32
+            "weighted_score": 19.79
           },
           "blast_radius": {
-            "raw_score": 16.87,
+            "known": true,
+            "raw_score": 17.42,
             "weight": 0.35,
-            "weighted_score": 5.9
+            "weighted_score": 6.1
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 28.22/100 (LOW).",
+          "summary": "Migration priority is 28.63/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 18.32.",
-            "Blast-radius contribution: 5.9.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 19.79.",
+            "Blast-radius contribution: 6.1.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -872,133 +1235,62 @@
       "asset": "HMAC-SHA256",
       "bom_ref": "707aeeaf-8358-4b8f-83e6-d89f5be5d77f",
       "quantum_risk": {
-        "score": 39.75,
+        "score": 42.35,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 20.96,
+        "score": 21.35,
         "severity": "LOW"
       },
       "migration_complexity": {
         "score": 16,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 27.24,
+        "priority_score": 28.41,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 39.75,
+            "known": true,
+            "raw_score": 42.35,
             "weight": 0.4,
-            "weighted_score": 15.9
+            "weighted_score": 16.94
           },
           "blast_radius": {
-            "raw_score": 20.96,
+            "known": true,
+            "raw_score": 21.35,
             "weight": 0.35,
-            "weighted_score": 7.34
+            "weighted_score": 7.47
           },
           "migration_complexity": {
+            "known": true,
             "raw_score": 16.0,
             "weight": 0.25,
             "weighted_score": 4.0
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 27.24/100 (LOW).",
+          "summary": "Migration priority is 28.41/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 15.9.",
-            "Blast-radius contribution: 7.34.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
-      "quantum_risk": {
-        "score": 40.8,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 16.12,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 25.96,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 40.8,
-            "weight": 0.4,
-            "weighted_score": 16.32
-          },
-          "blast_radius": {
-            "raw_score": 16.12,
-            "weight": 0.35,
-            "weighted_score": 5.64
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 25.96/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 16.32.",
-            "Blast-radius contribution: 5.64.",
-            "Migration-complexity contribution: 4.0."
-          ]
-        }
-      }
-    },
-    {
-      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
-      "quantum_risk": {
-        "score": 40.8,
-        "severity": "MEDIUM"
-      },
-      "blast_radius": {
-        "score": 16.12,
-        "severity": "LOW"
-      },
-      "migration_complexity": {
-        "score": 16,
-        "level": "LOW"
-      },
-      "migration_priority": {
-        "priority_score": 25.96,
-        "priority": "LOW",
-        "score_breakdown": {
-          "quantum_risk": {
-            "raw_score": 40.8,
-            "weight": 0.4,
-            "weighted_score": 16.32
-          },
-          "blast_radius": {
-            "raw_score": 16.12,
-            "weight": 0.35,
-            "weighted_score": 5.64
-          },
-          "migration_complexity": {
-            "raw_score": 16.0,
-            "weight": 0.25,
-            "weighted_score": 4.0
-          }
-        },
-        "explanation": {
-          "summary": "Migration priority is 25.96/100 (LOW).",
-          "reasons": [
-            "Quantum-risk contribution: 16.32.",
-            "Blast-radius contribution: 5.64.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 16.94.",
+            "Blast-radius contribution: 7.47.",
+            "Migration-complexity contribution: 4.0.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -1007,88 +1299,126 @@
       "asset": "private-key@2ec98148-2452-4643-a1e0-3c5f81bc5667",
       "bom_ref": "2ec98148-2452-4643-a1e0-3c5f81bc5667",
       "quantum_risk": {
-        "score": 40.8,
+        "score": 43.59,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.12,
+        "score": 16.54,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 25.96,
+        "priority_score": 25.98,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 40.8,
+            "known": true,
+            "raw_score": 43.59,
             "weight": 0.4,
-            "weighted_score": 16.32
+            "weighted_score": 17.44
           },
           "blast_radius": {
-            "raw_score": 16.12,
+            "known": true,
+            "raw_score": 16.54,
             "weight": 0.35,
-            "weighted_score": 5.64
+            "weighted_score": 5.79
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 25.96/100 (LOW).",
+          "summary": "Migration priority is 25.98/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 16.32.",
-            "Blast-radius contribution: 5.64.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 17.44.",
+            "Blast-radius contribution: 5.79.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
     },
     {
-      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
-      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
+      "asset": "private-key@51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
+      "bom_ref": "51dac6d6-186a-4b58-91cd-a1f53ffc71ba",
       "quantum_risk": {
-        "score": 40.8,
+        "score": 43.59,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.12,
+        "score": 16.54,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 25.96,
+        "priority_score": 25.98,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 40.8,
+            "known": true,
+            "raw_score": 43.59,
             "weight": 0.4,
-            "weighted_score": 16.32
+            "weighted_score": 17.44
           },
           "blast_radius": {
-            "raw_score": 16.12,
+            "known": true,
+            "raw_score": 16.54,
             "weight": 0.35,
-            "weighted_score": 5.64
+            "weighted_score": 5.79
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 25.96/100 (LOW).",
+          "summary": "Migration priority is 25.98/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 16.32.",
-            "Blast-radius contribution: 5.64.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 17.44.",
+            "Blast-radius contribution: 5.79.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -1097,133 +1427,190 @@
       "asset": "private-key@75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "bom_ref": "75d936e2-a788-4fad-96d3-c9aa033b7f35",
       "quantum_risk": {
-        "score": 40.8,
+        "score": 43.59,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 16.12,
+        "score": 16.54,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 25.96,
+        "priority_score": 25.98,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 40.8,
+            "known": true,
+            "raw_score": 43.59,
             "weight": 0.4,
-            "weighted_score": 16.32
+            "weighted_score": 17.44
           },
           "blast_radius": {
-            "raw_score": 16.12,
+            "known": true,
+            "raw_score": 16.54,
             "weight": 0.35,
-            "weighted_score": 5.64
+            "weighted_score": 5.79
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 25.96/100 (LOW).",
+          "summary": "Migration priority is 25.98/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 16.32.",
-            "Blast-radius contribution: 5.64.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 17.44.",
+            "Blast-radius contribution: 5.79.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
     },
     {
-      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
-      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
+      "asset": "private-key@9a0527eb-b51b-4979-8ffe-6919574d3dca",
+      "bom_ref": "9a0527eb-b51b-4979-8ffe-6919574d3dca",
       "quantum_risk": {
-        "score": 30.8,
+        "score": 43.59,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 14.62,
+        "score": 16.54,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 21.44,
+        "priority_score": 25.98,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 30.8,
+            "known": true,
+            "raw_score": 43.59,
             "weight": 0.4,
-            "weighted_score": 12.32
+            "weighted_score": 17.44
           },
           "blast_radius": {
-            "raw_score": 14.62,
+            "known": true,
+            "raw_score": 16.54,
             "weight": 0.35,
-            "weighted_score": 5.12
+            "weighted_score": 5.79
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 21.44/100 (LOW).",
+          "summary": "Migration priority is 25.98/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 12.32.",
-            "Blast-radius contribution: 5.12.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 17.44.",
+            "Blast-radius contribution: 5.79.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
     },
     {
-      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
-      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
+      "asset": "private-key@aa4d3972-d536-4c2d-ad9f-597d6514d75a",
+      "bom_ref": "aa4d3972-d536-4c2d-ad9f-597d6514d75a",
       "quantum_risk": {
-        "score": 30.8,
+        "score": 43.59,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 14.62,
+        "score": 16.54,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 21.44,
+        "priority_score": 25.98,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 30.8,
+            "known": true,
+            "raw_score": 43.59,
             "weight": 0.4,
-            "weighted_score": 12.32
+            "weighted_score": 17.44
           },
           "blast_radius": {
-            "raw_score": 14.62,
+            "known": true,
+            "raw_score": 16.54,
             "weight": 0.35,
-            "weighted_score": 5.12
+            "weighted_score": 5.79
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 21.44/100 (LOW).",
+          "summary": "Migration priority is 25.98/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 12.32.",
-            "Blast-radius contribution: 5.12.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 17.44.",
+            "Blast-radius contribution: 5.79.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -1232,43 +1619,62 @@
       "asset": "private-key@4749a82c-f248-457e-a05a-c923811d5a0e",
       "bom_ref": "4749a82c-f248-457e-a05a-c923811d5a0e",
       "quantum_risk": {
-        "score": 30.8,
+        "score": 31.82,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 14.62,
+        "score": 14.77,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 21.44,
+        "priority_score": 20.65,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 30.8,
+            "known": true,
+            "raw_score": 31.82,
             "weight": 0.4,
-            "weighted_score": 12.32
+            "weighted_score": 12.73
           },
           "blast_radius": {
-            "raw_score": 14.62,
+            "known": true,
+            "raw_score": 14.77,
             "weight": 0.35,
-            "weighted_score": 5.12
+            "weighted_score": 5.17
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 21.44/100 (LOW).",
+          "summary": "Migration priority is 20.65/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 12.32.",
-            "Blast-radius contribution: 5.12.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 12.73.",
+            "Blast-radius contribution: 5.17.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -1277,43 +1683,190 @@
       "asset": "private-key@92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "bom_ref": "92e84a5d-79dc-468f-a45c-ab4fbbbe166e",
       "quantum_risk": {
-        "score": 30.8,
+        "score": 31.82,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 14.62,
+        "score": 14.77,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 21.44,
+        "priority_score": 20.65,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 30.8,
+            "known": true,
+            "raw_score": 31.82,
             "weight": 0.4,
-            "weighted_score": 12.32
+            "weighted_score": 12.73
           },
           "blast_radius": {
-            "raw_score": 14.62,
+            "known": true,
+            "raw_score": 14.77,
             "weight": 0.35,
-            "weighted_score": 5.12
+            "weighted_score": 5.17
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 21.44/100 (LOW).",
+          "summary": "Migration priority is 20.65/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 12.32.",
-            "Blast-radius contribution: 5.12.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 12.73.",
+            "Blast-radius contribution: 5.17.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "private-key@9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
+      "bom_ref": "9fa1c9ed-3faf-4872-94cf-3fcdf8ee95b7",
+      "quantum_risk": {
+        "score": 31.82,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 14.77,
+        "severity": "LOW"
+      },
+      "migration_complexity": {
+        "score": 11,
+        "level": "LOW"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 20.65,
+        "priority": "LOW",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 31.82,
+            "weight": 0.4,
+            "weighted_score": 12.73
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 14.77,
+            "weight": 0.35,
+            "weighted_score": 5.17
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 11.0,
+            "weight": 0.25,
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 20.65/100 (LOW).",
+          "reasons": [
+            "Quantum-risk contribution: 12.73.",
+            "Blast-radius contribution: 5.17.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
+          ]
+        }
+      }
+    },
+    {
+      "asset": "public-key@e3ed8834-1629-4468-9cc1-69b4304de212",
+      "bom_ref": "e3ed8834-1629-4468-9cc1-69b4304de212",
+      "quantum_risk": {
+        "score": 31.82,
+        "severity": "MEDIUM"
+      },
+      "blast_radius": {
+        "score": 14.77,
+        "severity": "LOW"
+      },
+      "migration_complexity": {
+        "score": 11,
+        "level": "LOW"
+      },
+      "business_criticality": null,
+      "mosca_analysis": null,
+      "migration_priority": {
+        "priority_score": 20.65,
+        "priority": "LOW",
+        "score_breakdown": {
+          "quantum_risk": {
+            "known": true,
+            "raw_score": 31.82,
+            "weight": 0.4,
+            "weighted_score": 12.73
+          },
+          "blast_radius": {
+            "known": true,
+            "raw_score": 14.77,
+            "weight": 0.35,
+            "weighted_score": 5.17
+          },
+          "migration_complexity": {
+            "known": true,
+            "raw_score": 11.0,
+            "weight": 0.25,
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          }
+        },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
+        "explanation": {
+          "summary": "Migration priority is 20.65/100 (LOW).",
+          "reasons": [
+            "Quantum-risk contribution: 12.73.",
+            "Blast-radius contribution: 5.17.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }
@@ -1322,43 +1875,62 @@
       "asset": "HKDF-SHA256",
       "bom_ref": "65c474d2-12ae-4b77-b609-b8eb3eaee2c3",
       "quantum_risk": {
-        "score": 30.0,
+        "score": 30.88,
         "severity": "MEDIUM"
       },
       "blast_radius": {
-        "score": 14.5,
+        "score": 14.63,
         "severity": "LOW"
       },
       "migration_complexity": {
-        "score": 16,
+        "score": 11,
         "level": "LOW"
       },
+      "business_criticality": null,
+      "mosca_analysis": null,
       "migration_priority": {
-        "priority_score": 21.07,
+        "priority_score": 20.22,
         "priority": "LOW",
         "score_breakdown": {
           "quantum_risk": {
-            "raw_score": 30.0,
+            "known": true,
+            "raw_score": 30.88,
             "weight": 0.4,
-            "weighted_score": 12.0
+            "weighted_score": 12.35
           },
           "blast_radius": {
-            "raw_score": 14.5,
+            "known": true,
+            "raw_score": 14.63,
             "weight": 0.35,
-            "weighted_score": 5.07
+            "weighted_score": 5.12
           },
           "migration_complexity": {
-            "raw_score": 16.0,
+            "known": true,
+            "raw_score": 11.0,
             "weight": 0.25,
-            "weighted_score": 4.0
+            "weighted_score": 2.75
+          },
+          "business_criticality": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
+          },
+          "mosca_urgency": {
+            "known": false,
+            "reason": "Not configured for this finding (see data/business-context.json)."
           }
         },
+        "unknown_factors": [
+          "business_criticality",
+          "mosca_urgency"
+        ],
         "explanation": {
-          "summary": "Migration priority is 21.07/100 (LOW).",
+          "summary": "Migration priority is 20.22/100 (LOW).",
           "reasons": [
-            "Quantum-risk contribution: 12.0.",
-            "Blast-radius contribution: 5.07.",
-            "Migration-complexity contribution: 4.0."
+            "Quantum-risk contribution: 12.35.",
+            "Blast-radius contribution: 5.12.",
+            "Migration-complexity contribution: 2.75.",
+            "Business-criticality is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate.",
+            "Mosca/data-lifetime urgency is UNKNOWN for this finding, so it was excluded rather than guessed; the remaining factors' weights were rescaled to compensate."
           ]
         }
       }

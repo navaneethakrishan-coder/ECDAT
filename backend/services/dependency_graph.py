@@ -128,4 +128,8 @@ def get_transitive_dependents(
         asset_ref
     )
 
-    return list(visited)
+    # Sorted rather than a raw list(set(...)) -- set iteration order
+    # is not guaranteed stable across separate process runs, which
+    # otherwise reordered this same, unchanged set of bom_refs between
+    # identical pipeline runs.
+    return sorted(visited)

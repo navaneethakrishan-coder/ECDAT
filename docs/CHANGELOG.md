@@ -4,6 +4,152 @@ Dated log of meaningful changes to the codebase and to this documentation set. N
 
 ---
 
+## 2026-09-17 — Final cleanup: AI button wording and current-state docs
+
+**Date:** 2026-09-17
+
+- **UI wording only:** `AIAdvisorPanel.jsx` button "Get AI Recommendation" → "Get AI Analysis"; its result heading and error title now read "AI Analysis" / "AI analysis failed" for consistency. No change to AI Advisor behavior, prompt, API, ranking or strategy.
+- **`docs/ARCHITECTURE.md` rewritten** as a current-state document. It covers:
+  - `bom_ref` identity and CBOM parsing/duplicate handling
+  - classification and purpose resolution, explainable risk, RiskContext, business context and unknown values, Mosca
+  - blast radius, complexity, priority, PQC ranking
+  - the migration strategy, and ranking-model candidate vs. recommendation (`recommendation_state.py`)
+  - What-If, Evidence Explorer, the blast-radius view, the AI Advisor
+  - the API, the frontend, testing, and limitations/extension areas
+
+  The previous round-by-round frontend redesign history now lives only in this changelog.
+- **`docs/PROJECT_CONTEXT.md` rewritten** with features, terminology, a dataset snapshot, the stack, layout, how to run, and prototype boundaries. Both documents state explicitly that binary, container-image, cloud, network and runtime scanning are not implemented.
+- **Not updated:** `docs/AI_ADVISOR.md` still describes the request as an asset name, the pre-strategy `recommended_candidate` behavior, and the old button label. See `ARCHITECTURE.md` §16 for current behavior.
+
+---
+
+## 2026-09-17 — NEEDS_REVIEW recommendation leakage fix
+
+**Date:** 2026-09-17
+
+### Problem (found by the pre-commit audit)
+
+- `make_recommendation()` builds `recommendation` from the ranking model alone. So the three NEEDS_REVIEW RSA findings (`cceeebbd`, `4049d4df`, `e87e3bf2`) carried `decision=RECOMMENDED, candidate=ML-DSA-65` in the plan, the report and `/api/asset`.
+- Because of that record, the header band showed "PQC RECOMMENDATION ML-DSA-65". The AI advisor received `recommended_candidate=ML-DSA-65` alongside `strategy=NEEDS_REVIEW`. The dashboard's "PQC Candidates" tile counted these findings (it counted `pqc_applicable`).
+- The report generator also back-filled any empty candidate from the first ranked candidate.
+
+### Fix
+
+- **New `services/recommendation_state.py`:** `reconcile_recommendation()` restates the recommendation from the migration strategy. It is idempotent and leaves legacy records without a strategy unchanged.
+  - DIRECT_PQC/HYBRID: `confirmed=true`, `selected_component`.
+  - NEEDS_REVIEW: `decision=NEEDS_REVIEW`, candidate cleared.
+  - KEEP: no candidate.
+  - The ranking model's original values are kept under `recommendation.ranking_model`, with a note.
+- **Applied in:** `generate_pqc_migration_plan.py`, `generate_migration_report.py` (whose back-fill now runs only for legacy records without a strategy), and `/api/asset`, `/api/migration-report/assets` and `/api/migration-report/assets/{bom_ref}` (a defensive guard).
+- **`assets_with_pqc_candidates`** (API status/summary and report summary) now counts strategy-selected paths only: DIRECT_PQC + HYBRID = **15**, previously 10, which included NEEDS_REVIEW.
+- **`services/ai_advisor.py`:** `recommended_candidate` is the strategy-selected component (DIRECT_PQC/HYBRID only). NEEDS_REVIEW gets only `ranking_model_output`, marked "NOT A RECOMMENDATION"; KEEP gets neither. The prompt says how to treat ranking output.
+- **Frontend:**
+  - `AssetHeaderBand` derives its fact from the strategy (`migrationDecisionDisplay` in `migrationStrategy.js`): "PQC Recommendation · Direct PQC/Hybrid" only for a selected component, "Migration Decision: Needs review" for NEEDS_REVIEW, "No PQC migration" for KEEP.
+  - Migration Path labels ranking output "Ranking-model candidate: … — not selected: migration requires review" (or "selected by the migration strategy").
+  - The dashboard tile subtitle now reads "Direct PQC or hybrid path selected".
+- **Regenerated:** plan → actions → report. Only `recommendation.*` fields and recommendation summaries changed; the actions file is byte-identical. Strategies, ranked candidates, risk, priority and complexity are unchanged.
+
+### Tests
+
+- New `test_recommendation_state.py` (10 tests). `test_pqc_migration_plan.py` and `test_migration_report.py` were updated: they previously asserted the leaked `recommendation.candidate=ML-DSA-65` and now assert it under `ranking_model`.
+
+---
+
+## 2026-09-17 — Blast-Radius Visualization
+
+**Date:** 2026-09-17
+
+### Existing data reused
+
+- The only recorded relationships are the CycloneDX `dependencies` edges (`ref dependsOn X`). There are 19 unique edges; the CBOM lists each twice. They sit in `ecdat-assets.json`, and `generate_blast_radius.py` builds its graph from them.
+- `ecdat-blast-radius.json` already records per finding: direct-dependency, direct-dependent and transitive-dependent bom_ref sets, score, severity, breakdown and reasons.
+- The existing `GET /api/blast-radius/{bom_ref}` returns only flat bom_ref lists. It has no names and no record of which dependent reaches the finding through which other finding, so a tree could not be drawn from it.
+- The CBOM contains only cryptographic findings, with no services or application components. "Affected components" are therefore dependent findings plus the finding's own source locations.
+
+### What changed
+
+- `services/blast_radius_view.py` + `GET /api/blast-radius/{bom_ref}/graph` (read-only):
+  - Nodes are exactly the recorded bom_ref sets, named from the inventory.
+  - Edges are exactly the recorded `dependsOn` edges between those nodes that the blast-radius traversal covers.
+  - Indirect dependents list the recorded edge(s) they are reached `via`.
+  - Score, severity, breakdown, reasons and complexity are copied, not recomputed.
+  - A NEEDS_REVIEW strategy is flagged only so the UI can say blast radius does not confirm a migration path.
+- `frontend/src/components/detail/BlastRadiusPanel.jsx`: a full-width workspace panel between the grid and the Evidence Explorer, with:
+  - Six metric tiles.
+  - A top-down tree: upstream dependencies above; one dependent drawn straight down, 2–5 fanned out on one row (≥901px); a left rail list at ≤900px; indirect dependents nested under the finding they depend on.
+  - A "No dependency relationships recorded" empty state, plus disclosures for source locations and the recorded score breakdown.
+- `api.js`: `getBlastRadiusGraph`.
+
+### Tests
+
+- `test_blast_radius_view.py` (8 tests). Relationships are checked against the raw `keycloak-cbom.json` edges with an independent reverse traversal. The tests cover:
+  - both RSA-2048 findings
+  - findings with no relationships (x25519, x448, RSA-OAEP)
+  - co-located findings with no edge, which must not be related
+  - read-only behaviour
+
+### Limitations
+
+- Transitive chains in this dataset are at most two levels deep (SHA512 → Ed25519 → keys; SHAKE256 → Ed448 → keys). The nested rendering handles deeper chains but has only been exercised at this depth.
+- More than 5 direct dependents fall back to the rail list even on wide screens. The current maximum is 5 (RSA).
+
+---
+
+## 2026-09-17 — Evidence Explorer + migration-complexity identity fix
+
+**Date:** 2026-09-17
+
+### Bug fixed: every finding's complexity came from one finding
+
+- `generate_migration_complexity.py`'s calculation loop never set `bom_ref`, so it reused the value left from the validation loop (the last finding). All 30 complexity records were computed from `private-key@75d936e2`'s risk and blast records (all scored 11/LOW with a `crypto-material`/`private-key` context).
+- Fixed with one line. With the user's approval, the downstream stages were regenerated: complexity → priority → PQC mapping → ranking → plan → actions → report → consistency check. Parsing, classification, risk and blast radius were not re-run.
+- Effect: 14 complexity scores changed, and 10 priority levels changed (RSA HIGH → CRITICAL; DSA, Ed25519, Ed448 MEDIUM → HIGH). High/critical priority findings rose from 1 to 4, so readiness went 97% → 87%. PQC ranking scores shifted. No strategy decision or selected PQC component changed. Weights and logic are unchanged.
+- Regression test: `test_finding_identity.py::test_every_stage_joins_upstream_values_by_its_own_bom_ref`. It fails on the pre-fix data.
+
+### Evidence Explorer
+
+- `services/evidence_explorer.py` + `GET /api/evidence/{bom_ref}`: a read-only regrouping of existing outputs for one finding (identity with the raw CycloneDX component; purpose evidence; source occurrences and dependency graph; quantum status; risk contributions and context; blast radius, complexity, priority; strategy; PQC candidates; an evidence → decision chain). It computes nothing. Unknown values stay `null` or `known: false`, with the stage's recorded reason. NEEDS_REVIEW findings get `pqc.status = "unresolved"`, no selected component, and candidates labelled ranking-model output only.
+- `frontend/src/components/detail/EvidenceExplorer.jsx`: a full-width workspace panel between the Evidence/Risk/Migration grid and the AI Advisor. The chain is always visible, with five collapsible sections. `api.js` gained `getFindingEvidence`; `request()` now surfaces structured `{reason}` error details.
+
+### Stale tests updated (fixtures from an earlier Keycloak CBOM, or name-based identity)
+
+- `test_migration_action_generator.py`, `test_source_crypto_mapper.py`, `test_source_impact_analyzer.py`, `test_pqc_migration_plan.py`, `test_migration_action_validation.py`, `test_migration_report.py`, `test_api_validation.py`, `test_api_integration.py`.
+- `ECDH`/`EC`/`key@7ec8…` no longer exist in the scanned CBOM. Fixtures are now chosen by bom_ref (x25519, DSA, DSA public key, RSA-2048). Name-uniqueness checks became bom_ref-uniqueness checks.
+- Snapshot counts from the old dataset became consistency checks (summary = per-finding counts, report = actions stage). RSA-2048 expectations now reflect its NEEDS_REVIEW strategy. No production code was changed to make a test pass.
+
+### Known limitations
+
+- The risk-context derivation (path/keyword proxies for business criticality and exposure) records only the resulting value, not which path or keyword matched. The explorer shows the documented rule, not a per-finding match.
+- The What-If entry below says no valid simulation could change the 97% readiness. That was true only on the pre-fix data. After regeneration, simulating DSA → ML-DSA-65 moves it HIGH → MEDIUM, and readiness goes 87% → 90%.
+- `recommendation.candidate` in the plan/report remains the ranking model's top candidate even for NEEDS_REVIEW findings (e.g. RSA-2048 → ML-DSA-65 "RECOMMENDED"). The explorer does not present it as a decision, but the existing Migration Path meta row ("Top-ranked") still shows it.
+
+---
+
+## 2026-09-17 — What-If Migration Simulator
+
+**Date:** 2026-09-17
+
+### What changed
+
+- **Backend service** (`services/migration_scenario.py`): added `simulation_eligibility`, `simulation_options` and `load_ranked_candidates`. `simulate_pqc_option`'s NEEDS_REVIEW and no-PQC-role checks moved into a shared helper, so the options endpoint and the simulation apply the same rules. Its results and check order are unchanged. The risk engine, priority weights and strategy decision are untouched.
+- **API** (`main.py`): new read-only endpoints, addressed by bom_ref only.
+  - `GET /api/what-if/findings/{bom_ref}`: current state, strategy, whether the finding can be simulated, and valid options (ranked candidates in the role's family, then unranked registry entries of that family).
+  - `POST /api/what-if/simulate` `{bom_ref, pqc_option}`: before/after/delta for risk and priority, plus portfolio readiness. Rejected options return 422 with the engine's `reason_code`; an unknown bom_ref returns 404.
+  - `POST /api/what-if/portfolio` `{replacements: {bom_ref: option}}`.
+  - Request bodies forbid extra fields. Nothing is written to `data/`.
+- **Frontend**: `components/detail/WhatIfSimulator.jsx`, mounted inside Migration Path below the strategy block, plus `getWhatIfFinding` / `simulateWhatIf` in `api.js` and `.what-if*` styles in `App.css`. KEEP and NEEDS_REVIEW findings show a "Not simulatable" explanation with no options.
+
+### Known limitations
+
+- The risk engine scores the post-migration *quantum status*, not the parameter set, so every option in the same family gives identical scores. The UI says so.
+- In the current dataset, the only HIGH-priority finding (RSA) is NEEDS_REVIEW, so no valid simulation changes the 97% readiness. The UI explains why readiness is unchanged.
+
+### Tests
+
+- New `test_what_if_api.py` (9 tests against the real dataset, including data-file checksums). `test_migration_scenario.py` gained 3 tests. No frontend test runner exists in the project.
+
+---
+
 ## 2026-09-15 — Console-grade visual system & workspace re-composition (fourth frontend round)
 
 **Date:** 2026-09-15

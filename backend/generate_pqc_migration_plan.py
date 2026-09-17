@@ -2,6 +2,13 @@ import json
 from pathlib import Path
 from collections import Counter
 
+from services.migration_strategy import (
+    build_migration_inputs,
+    determine_migration_strategy,
+    resolve_key_material_strategies,
+)
+from services.recommendation_state import reconcile_recommendation
+
 
 # ============================================================
 # PATHS
@@ -835,6 +842,9 @@ def generate_plan():
     missing_complexity = 0
     missing_priority = 0
 
+    strategy_inputs_by_ref = {}
+    strategies_by_ref = {}
+
     for pqc_record in pqc_assets:
 
         bom_ref = asset_key(pqc_record)
@@ -867,14 +877,52 @@ def generate_plan():
         if priority_record is None:
             missing_priority += 1
 
-        assets.append(
-            build_asset_plan(
-                pqc_record,
-                risk_record or {},
-                blast_record or {},
-                complexity_record or {},
-                priority_record or {},
-            )
+        plan = build_asset_plan(
+            pqc_record,
+            risk_record or {},
+            blast_record or {},
+            complexity_record or {},
+            priority_record or {},
+        )
+
+        # Purpose-aware migration strategy from this finding's own
+        # evidence: resolved purpose + confidence, quantum status,
+        # role-family PQC candidates, exposure, complexity and blast
+        # radius (see services/migration_strategy.py). Migration
+        # priority is already final at this stage and is not affected.
+        strategy_inputs_by_ref[bom_ref] = build_migration_inputs(
+            {**(risk_record or {}), "bom_ref": bom_ref},
+            blast_record or {},
+            complexity_record or {},
+            priority_record or {},
+            plan["pqc_analysis"],
+            plan["ranked_candidates"],
+        )
+
+        strategies_by_ref[bom_ref] = determine_migration_strategy(
+            strategy_inputs_by_ref[bom_ref]
+        )
+
+        assets.append(plan)
+
+    # Key material follows the algorithm it belongs to (CBOM dependency
+    # graph), so it is resolved once every algorithm's own strategy is
+    # known.
+    strategies_by_ref = resolve_key_material_strategies(
+        strategies_by_ref,
+        strategy_inputs_by_ref,
+    )
+
+    for asset in assets:
+        asset["migration_strategy"] = strategies_by_ref[asset["bom_ref"]]
+
+        # The ranking model's top candidate is not a recommendation for a
+        # NEEDS_REVIEW finding: restate the recommendation from the
+        # strategy, keeping the ranking values under `ranking_model`
+        # (services/recommendation_state.py).
+        asset["recommendation"] = reconcile_recommendation(
+            asset["recommendation"],
+            asset["migration_strategy"],
         )
 
     # ========================================================

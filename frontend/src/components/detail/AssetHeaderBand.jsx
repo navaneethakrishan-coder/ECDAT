@@ -1,3 +1,4 @@
+import { migrationDecisionDisplay } from "../../migrationStrategy";
 import { SeverityBadge } from "../Badge";
 
 const SEVERITY_TONE = new Set(["low", "medium", "high", "critical"]);
@@ -25,7 +26,16 @@ export function AssetHeaderBand({ assetName, assetDetail }) {
   const rawScore = assetDetail?.current_risk?.score ?? assetDetail?.risk_assessment?.final_score;
   const hasScore = typeof rawScore === "number";
   const priorityLevel = assetDetail?.priority?.level || assetDetail?.migration_impact?.priority?.level;
-  const pqcCandidate = assetDetail?.recommendation?.candidate;
+  // The headline migration fact comes from the authoritative migration
+  // strategy, never from the ranking model's top candidate alone (a
+  // NEEDS_REVIEW finding still has ranking output, but no recommendation).
+  const strategy = assetDetail?.migration_strategy;
+  const decision = migrationDecisionDisplay(strategy?.strategy, strategy?.pqc_component) || {
+    // Legacy dataset without strategies.
+    label: "PQC Recommendation",
+    text: assetDetail?.recommendation?.candidate || "No direct replacement",
+    state: assetDetail?.recommendation?.candidate ? "selected" : "none",
+  };
 
   const tone = toneFor(severity);
 
@@ -71,10 +81,18 @@ export function AssetHeaderBand({ assetName, assetDetail }) {
           </div>
         )}
 
-        <div className="risk-hero-fact">
-          <span>PQC Recommendation</span>
-          <strong className={`risk-hero-pqc${pqcCandidate ? "" : " risk-hero-pqc-none"}`}>
-            {pqcCandidate || "No direct replacement"}
+        <div className="risk-hero-fact" data-decision-state={decision.state}>
+          <span>{decision.label}</span>
+          <strong
+            className={`risk-hero-pqc${
+              decision.state === "unresolved"
+                ? " risk-hero-pqc-review"
+                : decision.state === "none"
+                ? " risk-hero-pqc-none"
+                : ""
+            }`}
+          >
+            {decision.text}
           </strong>
         </div>
       </div>

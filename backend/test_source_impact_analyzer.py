@@ -11,6 +11,12 @@ from services.source_impact_analyzer import (
 )
 
 
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"    # key agreement, 2 occurrences in 1 file
+RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"  # Java KeyFactory#getInstance context
+
+
 def load_assets():
     with open(
         "../data/ecdat-explainable-risk.json",
@@ -29,7 +35,7 @@ def test_echd_source_impact():
     asset = next(
         item
         for item in assets
-        if item["name"] == "ECDH"
+        if item["bom_ref"] == X25519_REF
     )
 
     mappings = map_assets_to_source(
@@ -40,11 +46,12 @@ def test_echd_source_impact():
         mappings[0]
     )
 
-    assert result["asset"] == "ECDH"
+    assert result["asset"] == asset["name"]
+    assert result["bom_ref"] == X25519_REF
 
     assert (
         result["affected_file_count"]
-        == 2
+        == 1
     )
 
     assert (
@@ -59,17 +66,17 @@ def test_echd_source_impact():
 
     assert len(
         result["affected_files"]
-    ) == 2
+    ) == 1
 
 
-def test_key_agreement_function_detection():
+def test_api_function_detection():
 
     assets = load_assets()
 
     asset = next(
         item
         for item in assets
-        if item["name"] == "ECDH"
+        if item["bom_ref"] == RSA_2048_REF
     )
 
     mappings = map_assets_to_source(
@@ -211,7 +218,7 @@ def test_source_impact():
     )
 
     print(
-        "Running ECDH source impact...",
+        "Running key-agreement source impact...",
         end=" ",
     )
 
@@ -224,7 +231,7 @@ def test_source_impact():
         end=" ",
     )
 
-    test_key_agreement_function_detection()
+    test_api_function_detection()
 
     print("PASSED")
 

@@ -241,7 +241,7 @@ export function HeroOverview({ summary, totalAssetsScanned }) {
           <StatCard
             title="PQC Candidates"
             value={pqcCandidates}
-            subtitle="Ready for PQC replacement"
+            subtitle="Direct PQC or hybrid path selected"
             icon={TrendingUp}
             tone="cyan"
           />

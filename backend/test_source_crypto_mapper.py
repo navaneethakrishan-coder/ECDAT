@@ -7,6 +7,11 @@ from services.source_crypto_mapper import (
 )
 
 
+# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
+# by bom_ref -- the canonical finding identity -- never by algorithm name.
+X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"  # key agreement, 2 occurrences in 1 file
+
+
 def load_assets():
     with open(
         "../data/ecdat-explainable-risk.json",
@@ -24,12 +29,13 @@ def test_single_asset():
     asset = next(
         item
         for item in assets
-        if item["name"] == "ECDH"
+        if item["bom_ref"] == X25519_REF
     )
 
     result = map_asset_source_usage(asset)
 
-    assert result["asset"] == "ECDH"
+    assert result["asset"] == asset["name"]
+    assert result["bom_ref"] == X25519_REF
 
     assert (
         result["classification"]["category"]
@@ -43,7 +49,7 @@ def test_single_asset():
 
     assert result["evidence_count"] == 2
 
-    assert result["affected_file_count"] == 2
+    assert result["affected_file_count"] == 1
 
     assert (
         result["migration_surface"]
@@ -64,7 +70,7 @@ def test_key_agreement_detection():
     asset = next(
         item
         for item in assets
-        if item["name"] == "ECDH"
+        if item["bom_ref"] == X25519_REF
     )
 
     result = map_asset_source_usage(asset)
@@ -152,7 +158,7 @@ def test_source_mapping():
     print("================================")
 
     print(
-        "Running ECDH source mapping...",
+        "Running key-agreement source mapping...",
         end=" ",
     )
     test_single_asset()
