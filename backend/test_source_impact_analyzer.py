@@ -1,4 +1,4 @@
-import json
+import fixture_dataset
 
 from services.source_crypto_mapper import (
     map_assets_to_source,
@@ -11,21 +11,15 @@ from services.source_impact_analyzer import (
 )
 
 
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"    # key agreement, 2 occurrences in 1 file
-RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"  # Java KeyFactory#getInstance context
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+X25519_REF = fixture_dataset.ref("x25519")         # key agreement, 2 occurrences in 1 file
+RSA_2048_REF = fixture_dataset.ref("rsa2048_java")  # Java KeyFactory#getInstance context
 
 
 def load_assets():
-    with open(
-        "../data/ecdat-explainable-risk.json",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        data = json.load(file)
-
-    return data["assets"]
+    return fixture_dataset.load("ecdat-explainable-risk.json")["assets"]
 
 
 def test_echd_source_impact():

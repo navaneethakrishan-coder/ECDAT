@@ -1,4 +1,4 @@
-﻿import json
+import fixture_dataset
 
 from services.source_crypto_mapper import (
     map_assets_to_source,
@@ -15,37 +15,21 @@ from services.migration_action_generator import (
 )
 
 
-def load_json(path):
-    with open(
-        path,
-        "r",
-        encoding="utf-8",
-    ) as file:
-        return json.load(file)
-
-
 def load_assets():
-    data = load_json(
-        "../data/ecdat-explainable-risk.json"
-    )
-
-    return data["assets"]
+    return fixture_dataset.load("ecdat-explainable-risk.json")["assets"]
 
 
 def load_migration():
-    data = load_json(
-        "../data/ecdat-pqc-migration-plan.json"
-    )
-
-    return data["assets"]
+    return fixture_dataset.load("ecdat-pqc-migration-plan.json")["assets"]
 
 
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
-DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"             # digital signature, HYBRID
-DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
-RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"        # ambiguous purpose, NEEDS_REVIEW
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+X25519_REF = fixture_dataset.ref("x25519")                  # key agreement, DIRECT_PQC
+DSA_REF = fixture_dataset.ref("dsa")                        # digital signature, HYBRID
+DSA_PUBLIC_KEY_REF = fixture_dataset.ref("dsa_public_key")  # key material, inherits its strategy
+RSA_2048_REF = fixture_dataset.ref("rsa2048_java")          # ambiguous purpose, NEEDS_REVIEW
 
 
 def _actions_for(bom_ref, strip_strategy=False):
@@ -228,10 +212,12 @@ def test_all_assets():
         migrations,
     )
 
-    assert (
-        len(results)
-        == 30
-    )
+    # Every finding gets actions: the point of the assertion, stated as a
+    # relationship rather than a count copied from one dataset.
+    assert len(results) == len(load_assets())
+    assert {result["bom_ref"] for result in results} == {
+        asset["bom_ref"] for asset in load_assets()
+    }
 
     for result in results:
 
@@ -277,10 +263,9 @@ def test_summary():
         results
     )
 
-    assert (
-        summary["total_assets"]
-        == 30
-    )
+    # The summary counts exactly the findings it was given.
+    assert summary["total_assets"] == len(results)
+    assert summary["total_assets"] == len(load_assets())
 
     assert (
         summary[

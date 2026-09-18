@@ -1,49 +1,29 @@
-import json
 from collections import Counter
-from pathlib import Path
+
+import fixture_dataset
 
 
-BASE_DIR = Path(__file__).resolve().parent
-REPORT_FILE = (
-    BASE_DIR.parent
-    / "data"
-    / "ecdat-migration-report.json"
-)
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+EXPECTED_ASSETS = fixture_dataset.expected_assets()
 
+REPORT_FILE = "ecdat-migration-report.json"
+ACTIONS_FILE = "ecdat-migration-actions.json"
+RISK_FILE = "ecdat-explainable-risk.json"
 
-EXPECTED_ASSETS = 30
-
-ACTIONS_FILE = (
-    BASE_DIR.parent
-    / "data"
-    / "ecdat-migration-actions.json"
-)
-
-RISK_FILE = (
-    BASE_DIR.parent
-    / "data"
-    / "ecdat-explainable-risk.json"
-)
-
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
-RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"        # ambiguous purpose, NEEDS_REVIEW
-DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
-DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+X25519_REF = fixture_dataset.ref("x25519")                  # key agreement, DIRECT_PQC
+RSA_2048_REF = fixture_dataset.ref("rsa2048_java")          # ambiguous purpose, NEEDS_REVIEW
+DSA_REF = fixture_dataset.ref("dsa")
+DSA_PUBLIC_KEY_REF = fixture_dataset.ref("dsa_public_key")  # key material, inherits its strategy
 
 
 def _load(path):
-    with path.open("r", encoding="utf-8") as file:
-        return json.load(file)
+    return fixture_dataset.load(path)
 
 
 def load_report():
-    with REPORT_FILE.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        return json.load(file)
+    return _load(REPORT_FILE)
 
 
 def get_asset(data, bom_ref):

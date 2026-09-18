@@ -209,6 +209,168 @@ def test_history_keeps_the_most_recent_scans_first():
         assert history[0]["target"]["slug"] == "o/two"
 
 
+def test_a_second_scan_is_refused_while_one_is_running():
+    """The single scan slot: two callers must never both own data/."""
+    import threading
+
+    with tempfile.TemporaryDirectory() as tmp:
+        release = threading.Event()
+
+        class BlockingScanner(FakeScanner):
+            def scan(self, target, progress=None):
+                release.wait(5)
+                return super().scan(target, progress)
+
+        service = build(tmp, BlockingScanner())
+        worker = threading.Thread(target=lambda: service.run_sync("https://github.com/o/one", "main"))
+        worker.start()
+        try:
+            while not service.is_running():
+                pass
+
+            refused = None
+            try:
+                service.start("https://github.com/o/two", "main")
+            except RuntimeError as error:
+                refused = str(error)
+            assert refused and "already running" in refused, refused
+
+            # The CLI path takes the same slot, so it is refused too.
+            try:
+                service.run_sync("https://github.com/o/three", "main")
+            except RuntimeError as error:
+                refused = str(error)
+            assert "already running" in refused, refused
+        finally:
+            release.set()
+            worker.join(10)
+
+        assert service.snapshot()["status"] == "completed"
+        # The slot is free again once the scan ends.
+        assert service.run_sync("https://github.com/o/four", "main")["status"] == "completed"
+
+
+def test_the_dataset_lock_is_released_even_when_a_scan_fails():
+    from services.scanning.service import LOCK_FILENAME
+
+    with tempfile.TemporaryDirectory() as tmp:
+        service = build(tmp, FakeScanner(available=False))
+        assert service.run_sync("https://github.com/o/one", "main")["status"] == "failed"
+        assert not (Path(tmp) / LOCK_FILENAME).exists(), "a failed scan left the dataset locked"
+
+        # And a later scan can still run.
+        service = build(tmp)
+        assert service.run_sync("https://github.com/o/one", "main")["status"] == "completed"
+
+
+def test_a_lock_held_by_a_live_process_blocks_a_second_process():
+    import json as _json
+    import os as _os
+
+    from services.scanning.service import LOCK_FILENAME
+
+    with tempfile.TemporaryDirectory() as tmp:
+        # A lock file naming this (running) process stands in for another
+        # ECDAT process mid-scan.
+        (Path(tmp) / LOCK_FILENAME).write_text(
+            _json.dumps({"pid": _os.getpid(), "scan_id": "other", "started_at": "now"}), encoding="utf-8"
+        )
+        service = build(tmp)
+        try:
+            service.run_sync("https://github.com/o/one", "main")
+        except RuntimeError as error:
+            assert "another ECDAT process" in str(error), error
+        else:
+            raise AssertionError("a live lock holder must block a new scan")
+
+
+def test_a_lock_left_by_a_dead_process_is_taken_over():
+    import json as _json
+
+    from services.scanning.service import LOCK_FILENAME
+
+    with tempfile.TemporaryDirectory() as tmp:
+        # PID 0 is never a live process ECDAT could be running as.
+        (Path(tmp) / LOCK_FILENAME).write_text(
+            _json.dumps({"pid": 0, "scan_id": "dead", "started_at": "then"}), encoding="utf-8"
+        )
+        service = build(tmp)
+        assert service.run_sync("https://github.com/o/one", "main")["status"] == "completed"
+
+
+def test_a_pipeline_stage_timeout_is_reported_as_its_own_failure():
+    class TimingOutPipeline(FakePipeline):
+        def __call__(self, on_stage_start=None, on_stage_end=None):
+            name, script = self.STAGES[0]
+            if on_stage_start:
+                on_stage_start(name, script)
+            result = self.Result(name, script, False, -1, "")
+            result.timed_out = True
+            if on_stage_end:
+                on_stage_end(result)
+            return False, [result]
+
+    with tempfile.TemporaryDirectory() as tmp:
+        state = build(tmp, pipeline=TimingOutPipeline()).run_sync("https://github.com/o/one", "main")
+
+        assert state["status"] == "failed"
+        assert state["error_code"] == "pipeline-stage-timeout", state["error_code"]
+        assert "did not finish in time" in state["error"]
+        assert stage(state, "pipeline")["status"] == "failed"
+
+
+def test_a_scan_record_left_running_by_a_dead_process_is_closed_out():
+    with tempfile.TemporaryDirectory() as tmp:
+        (Path(tmp) / "ecdat-scan.json").write_text(
+            json.dumps({"scan_id": "abc", "status": "running", "started_at": "2026-01-01T00:00:00+00:00"}),
+            encoding="utf-8",
+        )
+        (Path(tmp) / "ecdat-scan-history.json").write_text(
+            json.dumps({"scans": [{"scan_id": "abc", "status": "running"}]}), encoding="utf-8"
+        )
+
+        service = build(tmp)  # construction reconciles the stale record
+
+        record = json.loads((Path(tmp) / "ecdat-scan.json").read_text(encoding="utf-8"))
+        assert record["status"] == "interrupted"
+        assert record["error_code"] == "scan-interrupted"
+        assert record["finished_at"]
+        assert service.history()[0]["status"] == "interrupted"
+        # A completed record is left exactly as it was.
+        service2 = build(tmp)
+        assert json.loads((Path(tmp) / "ecdat-scan.json").read_text(encoding="utf-8"))["status"] == "interrupted"
+        assert service2.snapshot()["status"] == "idle"
+
+
+def test_writes_are_atomic_and_leave_no_temp_files_behind():
+    with tempfile.TemporaryDirectory() as tmp:
+        service = build(tmp)
+        service.run_sync("https://github.com/o/one", "main")
+
+        leftovers = [path.name for path in Path(tmp).iterdir() if path.name.startswith(".") and path.suffix == ".tmp"]
+        assert not leftovers, leftovers
+        # The CBOM is complete, parseable JSON.
+        cbom = json.loads((Path(tmp) / "keycloak-cbom.json").read_text(encoding="utf-8"))
+        assert cbom["components"][0]["bom-ref"] == "finding-1"
+
+
+def test_a_cached_cbom_is_described_as_cached_in_the_completion_message():
+    class CachedScanner(FakeScanner):
+        def scan(self, target, progress=None):
+            artifact = super().scan(target, progress)
+            artifact.source.update(
+                {"freshness": "cbomkit-cached", "cbom_created_at": "2026-08-30T13:58:40+00:00"}
+            )
+            return artifact
+
+    with tempfile.TemporaryDirectory() as tmp:
+        state = build(tmp, CachedScanner()).run_sync("https://github.com/o/one", "main")
+
+        assert state["status"] == "completed"
+        assert "already held" in state["message"], state["message"]
+        assert state["result"]["source"]["freshness"] == "cbomkit-cached"
+
+
 def test_capabilities_come_from_the_registry():
     with tempfile.TemporaryDirectory() as tmp:
         capabilities = build(tmp).capabilities()
@@ -224,5 +386,13 @@ if __name__ == "__main__":
     test_an_invalid_cbom_stops_before_the_pipeline_runs()
     test_a_failing_pipeline_stage_is_named_in_the_status()
     test_history_keeps_the_most_recent_scans_first()
+    test_a_second_scan_is_refused_while_one_is_running()
+    test_the_dataset_lock_is_released_even_when_a_scan_fails()
+    test_a_lock_held_by_a_live_process_blocks_a_second_process()
+    test_a_lock_left_by_a_dead_process_is_taken_over()
+    test_a_pipeline_stage_timeout_is_reported_as_its_own_failure()
+    test_a_scan_record_left_running_by_a_dead_process_is_closed_out()
+    test_writes_are_atomic_and_leave_no_temp_files_behind()
+    test_a_cached_cbom_is_described_as_cached_in_the_completion_message()
     test_capabilities_come_from_the_registry()
     print("All scan service tests passed.")

@@ -128,21 +128,27 @@ Implemented by `backend/services/scanning/` and exposed as `POST /api/scan` (ali
 - **Real progress.** The status payload reports the seven stages above with `pending / running / done / failed` and a per-stage detail line, plus the 13 pipeline substages and the stage currently executing. No stage advances on a timer; every transition is a real completion.
 - **Validation before analysis.** A CBOM that is not a CycloneDX object, has no components, has components without a `bom-ref`, has two *different* components sharing one `bom-ref`, or contains no cryptographic components is **rejected before the pipeline runs**, so a bad scan cannot overwrite a good analysis. Repeated *identical* component entries are a warning, not an error — CBOMKit emits them routinely (the current CBOM has 27) and ECDAT keys findings by `bom_ref`, so each is analysed once.
 - **Normalization is minimal.** Only missing `components` / `dependencies` containers are added. No value is invented, corrected or inferred.
-- **Honest failures.** Every failure carries a reason code — `empty-url`, `unsupported-host`, `malformed-url`, `invalid-branch`, `cbomkit-unavailable`, `cbomkit-scan-rejected`, `cbomkit-timeout`, `unsupported-target`, a validation code, or the name of the pipeline stage that failed — and names the stage it failed at.
+- **A scan never reuses an older CBOM.** CBOMKit stores every CBOM it has produced, so a previously scanned repository already has one waiting. ECDAT records what CBOMKit holds *before* requesting the scan and only accepts a CBOM whose CBOMKit record is later (newer timestamp, or a different commit). If CBOMKit keeps the record it already had — its answer for an unchanged commit — the result is labelled **cached**, in the status message and in the UI, and never presented as a freshly scanned commit.
+- **Honest failures.** Every failure carries a reason code — `empty-url`, `unsupported-host`, `malformed-url`, `invalid-branch` (target validation); `no-scanner`, `scanner-unavailable`, `scanner-crashed`; `cbomkit-unavailable`, `cbomkit-scan-rejected`, `cbomkit-timeout`, `unsupported-target`; a validation code; `pipeline-stage-failed` or `pipeline-stage-timeout` — and names the stage it failed at.
+- **One scan at a time, across processes.** The API and the CLI share one scan slot (an in-process lock plus `data/.ecdat-scan.lock`), so two pipelines can never write the dataset at once. A second request gets `409`. Runtime files are written atomically, and a record left `running` by a killed process is closed out as `interrupted` at startup.
+- **Dependency counts are named, not conflated.** The scan panel reports *recorded dependency entries* as the scanner produced them (37 in the current CBOM); the map and blast radius use *unique dependency edges* (19). Both are real; `ARCHITECTURE.md` §2.1.3 defines each.
 - **Extensible by design.** Scanners implement one `Scanner` interface (`check_availability`, `scan`) and are added to the registry; binary, library and container scanners can be added without touching the service, the API or the UI, and are currently declared as not implemented rather than stubbed.
 
 ---
 
 ## 4. Current dataset snapshot
 
-`data/keycloak-cbom.json` currently holds a CBOMKit scan of `pyca/cryptography` (commit `a825ca0`). The filename is fixed and historical. From it:
+`data/keycloak-cbom.json` currently holds a CBOMKit scan of `pyca/cryptography` (branch `main`, commit `39138c6`), produced through the scan workflow in §3.1 and verified as a fresh CBOM rather than one CBOMKit already held. The filename is fixed and historical. From it:
 
-- **Findings:** 30 (57 raw component entries, with exact `bom_ref` duplicates merged).
-- **Relationships:** 19 unique CycloneDX dependency edges. Three findings have none: `x25519`, `x448`, `RSA-OAEP`.
-- **Strategies:** KEEP 5, DIRECT_PQC 5, HYBRID 10, NEEDS_REVIEW 10 (the three RSA algorithms and seven key-material findings).
-- **PQC Candidates (selected paths):** 15.
-- **Priority:** 4 findings are HIGH/CRITICAL, giving 87% readiness.
+- **Findings:** 25 (47 raw component entries, with exact `bom_ref` duplicates merged).
+- **Relationships:** 29 recorded dependency entries, giving 15 unique CycloneDX dependency edges. Three findings have none: `x25519`, `x448`, `RSA-OAEP`.
+- **Strategies:** KEEP 4, DIRECT_PQC 5, HYBRID 6, NEEDS_REVIEW 10 (the three RSA algorithms and seven key-material findings).
+- **PQC Candidates (selected paths):** 11.
+- **Priority:** 3 findings are HIGH/CRITICAL (1 CRITICAL, 2 HIGH), giving 88% readiness.
+- **Duplicate names:** two distinct `RSA-2048` findings (`afc4f1a7…`, `9eae7f2e…`), a reminder that `bom_ref` is the only identity.
 - **Business context:** none configured, so business criticality and data lifetime are UNKNOWN for all findings and Mosca analysis is not performed.
+
+Earlier revisions of these documents describe a 30-finding scan of the same repository at commit `a825ca0`; `CHANGELOG.md` keeps those figures as history. Nothing in the analysis changed — the repository did.
 
 ---
 
@@ -210,7 +216,8 @@ backend/
       service.py      scan lifecycle, state, records and history
   knowledge/crypto_knowledge.py, knowledge/migration_strategy_policy.py
   models/risk_factors.py       RiskContext
-  test_*.py                    35 test scripts (run individually with python)
+  test_*.py                    36 test scripts (run individually with python)
+  fixture_dataset.py           deterministic test dataset, independent of data/
   Legacy/unused: main_backup*.py, cbom_parser_backup.py, score_contextual_cbom.py,
                  generate_summary.py, inspect_dependencies.py
 frontend/src/

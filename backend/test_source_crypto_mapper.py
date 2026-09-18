@@ -1,4 +1,4 @@
-import json
+import fixture_dataset
 
 from services.source_crypto_mapper import (
     map_asset_source_usage,
@@ -7,20 +7,14 @@ from services.source_crypto_mapper import (
 )
 
 
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"  # key agreement, 2 occurrences in 1 file
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+X25519_REF = fixture_dataset.ref("x25519")  # key agreement, 2 occurrences in 1 file
 
 
 def load_assets():
-    with open(
-        "../data/ecdat-explainable-risk.json",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        data = json.load(file)
-
-    return data["assets"]
+    return fixture_dataset.load("ecdat-explainable-risk.json")["assets"]
 
 
 def test_single_asset():

@@ -1,26 +1,20 @@
-import json
 from collections import Counter
-from pathlib import Path
 
-
-DATA_FILE = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "ecdat-pqc-migration-plan.json"
-)
+import fixture_dataset
 
 
 def load_data():
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return fixture_dataset.load("ecdat-pqc-migration-plan.json")
 
 
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"
-RSA_2048_REF = "e87e3bf2-5f46-477d-b159-8ac582608a25"
-DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"
-DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+EXPECTED_ASSETS = fixture_dataset.expected_assets()
+X25519_REF = fixture_dataset.ref("x25519")
+RSA_2048_REF = fixture_dataset.ref("rsa2048_java")
+DSA_REF = fixture_dataset.ref("dsa")
+DSA_PUBLIC_KEY_REF = fixture_dataset.ref("dsa_public_key")
 
 
 def get_asset(data, bom_ref):
@@ -48,8 +42,8 @@ def test_pqc_migration_plan():
 
     print("Running total asset validation...", end=" ")
 
-    assert len(assets) == 30
-    assert summary["total_assets"] == 30
+    assert len(assets) == EXPECTED_ASSETS
+    assert summary["total_assets"] == len(assets)
 
     print("PASSED")
 

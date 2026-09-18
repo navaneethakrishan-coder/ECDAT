@@ -10,32 +10,38 @@ Fixture findings are addressed by bom_ref only.
 
 import copy
 import json
-from pathlib import Path
+
+import fixture_dataset
 
 import main
+from services import ai_advisor
 from services.ai_advisor import build_context
 from services.recommendation_state import (
     count_selected_pqc_paths,
     reconcile_recommendation,
 )
 
+# The API and AI-context layers are exercised in-process here, so they read
+# the fixture dataset too rather than whatever is in data/.
+fixture_dataset.use_fixture_data(main, ai_advisor)
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
-RSA_REF = "cceeebbd-1115-4dab-978d-1a4f84a78c69"             # NEEDS_REVIEW
-RSA_2048_REFS = (                                             # NEEDS_REVIEW, duplicate name
-    "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
-    "e87e3bf2-5f46-477d-b159-8ac582608a25",
+# Findings come from the fixture dataset (fixture_dataset.py), not from
+# data/, so this test says the same thing whatever ECDAT last scanned.
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+RSA_2048_REFS = (                                            # NEEDS_REVIEW, duplicate name
+    fixture_dataset.ref("rsa2048_java"),
+    fixture_dataset.ref("rsa2048_python"),
 )
-NEEDS_REVIEW_ALGORITHMS = (RSA_REF,) + RSA_2048_REFS
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # DIRECT_PQC -> ML-KEM-768
-DSA_REF = "f3bf7d4c-7f24-46db-b416-0a30e8b487ea"             # HYBRID -> ML-DSA-65
-SHA256_REF = "40964bb6-b5cb-4281-a17c-298643b5a7a8"          # KEEP
+RSA_REF = RSA_2048_REFS[0]                                   # NEEDS_REVIEW
+NEEDS_REVIEW_ALGORITHMS = RSA_2048_REFS
+X25519_REF = fixture_dataset.ref("x25519")                   # DIRECT_PQC -> ML-KEM
+DSA_REF = fixture_dataset.ref("dsa")                         # HYBRID -> ML-DSA
+SHA256_REF = fixture_dataset.ref("sha256")                   # KEEP
 
 
 def _records(filename):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        return {record["bom_ref"]: record for record in json.load(file)["assets"]}
+    return {record["bom_ref"]: record for record in fixture_dataset.load(filename)["assets"]}
 
 
 def _all_needs_review_refs():
@@ -168,10 +174,24 @@ def test_dashboard_pqc_candidate_count_excludes_needs_review_and_keep():
     summary = main.get_summary()
     status = main.get_status()
 
-    assert summary["assets_with_pqc_candidates"] == status["assets_with_pqc_candidates"] == expected == 15
-    # Ranking-model candidates alone would have produced a different count.
-    ranked = sum(1 for record in report.values() if record["ranked_candidates"])
-    assert ranked != expected
+    # The dashboard count is exactly the strategy-selected paths -- derived
+    # from the data under test, not a number copied from one scan.
+    assert expected > 0, "the dataset must contain at least one selected PQC path"
+    assert summary["assets_with_pqc_candidates"] == status["assets_with_pqc_candidates"] == expected
+    # Ranking-model candidates alone would have produced a different answer:
+    # compare the sets, not their sizes, so this states the real property
+    # (some ranked findings are deliberately not counted) on any dataset.
+    ranked_refs = {ref for ref, record in report.items() if record["ranked_candidates"]}
+    selected_refs = {
+        ref for ref, record in report.items()
+        if record["migration_strategy"]["strategy"] in ("DIRECT_PQC", "HYBRID")
+        and record["migration_strategy"]["pqc_component"]
+    }
+    assert ranked_refs != selected_refs
+    assert any(
+        report[ref]["migration_strategy"]["strategy"] == "NEEDS_REVIEW"
+        for ref in ranked_refs
+    ), "a ranked NEEDS_REVIEW finding is what this count has to exclude"
     assert summary["recommendation_distribution"].get("NEEDS_REVIEW") == len(_all_needs_review_refs())
 
 

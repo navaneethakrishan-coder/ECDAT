@@ -1,24 +1,25 @@
 import json
 import urllib.error
 import urllib.request
-from pathlib import Path
+
+import fixture_dataset
 
 
-BASE_URL = "http://127.0.0.1:8000"
+# Set when the fixture API server starts (see main()). These tests run the
+# real application over the fixture dataset on its own port, so they assert
+# exact values without depending on a dev server or on whichever repository
+# ECDAT last scanned.
+BASE_URL = None
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+EXPECTED_ASSETS = fixture_dataset.expected_assets()
 
-EXPECTED_ASSETS = 30
-
-# Fixture finding in the current CBOM (pyca/cryptography scan). Every
-# per-finding endpoint is addressed by bom_ref -- the canonical finding
-# identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"  # key agreement, DIRECT_PQC
+# Every per-finding endpoint is addressed by bom_ref -- the canonical
+# finding identity -- never by algorithm name.
+X25519_REF = fixture_dataset.ref("x25519")  # key agreement, DIRECT_PQC
 
 
 def record(filename, bom_ref=X25519_REF):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        data = json.load(file)
+    data = fixture_dataset.load(filename)
 
     for item in data["assets"]:
         if (item.get("bom_ref") or item.get("asset_ref")) == bom_ref:
@@ -28,8 +29,7 @@ def record(filename, bom_ref=X25519_REF):
 
 
 def summary(filename):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        return json.load(file)["summary"]
+    return fixture_dataset.load(filename)["summary"]
 
 
 def get(path):
@@ -403,4 +403,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with fixture_dataset.api_server() as base_url:
+        BASE_URL = base_url
+        main()

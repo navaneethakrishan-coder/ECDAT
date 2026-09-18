@@ -20,11 +20,22 @@ def test_the_real_scanned_cbom_validates():
 
     assert report["ok"], report["errors"]
     assert report["stats"]["crypto_components"] > 0
-    # Findings are unique bom_refs, which is what the dashboard shows.
-    assert report["stats"]["findings"] == 30
+    # Whatever repository was scanned last, the stats have to be internally
+    # consistent. Pinning a finding count here would only assert which CBOM
+    # happens to be on disk, and would break every time ECDAT does its job.
+    stats = report["stats"]
+    # Findings are unique cryptographic bom_refs, which is what the dashboard shows.
+    assert stats["findings"] > 0
+    assert stats["findings"] == len(
+        {
+            component["bom-ref"]
+            for component in cbom["components"]
+            if component.get("bom-ref") and isinstance(component.get("cryptoProperties"), dict)
+        }
+    )
     # CBOMKit repeats identical entries; findings are keyed by bom_ref.
-    assert report["stats"]["unique_bom_refs"] <= report["stats"]["components"]
-    assert report["stats"]["unique_bom_refs"] == 30
+    assert stats["unique_bom_refs"] <= stats["components"]
+    assert stats["findings"] <= stats["unique_bom_refs"]
 
 
 def test_repeated_identical_entries_are_normal_but_conflicting_refs_are_rejected():

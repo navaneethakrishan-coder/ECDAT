@@ -16,6 +16,7 @@ real validation result and the real counts from the produced CBOM.
 """
 
 import json
+import os
 import threading
 import time
 import uuid
@@ -37,6 +38,38 @@ CBOM_FILENAME = "keycloak-cbom.json"
 SCAN_RECORD_FILENAME = "ecdat-scan.json"
 SCAN_HISTORY_FILENAME = "ecdat-scan-history.json"
 HISTORY_LIMIT = 20
+
+# Cross-process guard: the API server and the CLI are different processes
+# writing the same data/ directory, so the in-process lock is not enough.
+LOCK_FILENAME = ".ecdat-scan.lock"
+
+
+def _process_alive(pid: int) -> bool:
+    """Whether a process is still running, without signalling it.
+
+    os.kill(pid, 0) terminates the target on Windows, so that is never used
+    here; each platform gets the check that only observes.
+    """
+    if not isinstance(pid, int) or pid <= 0:
+        return False
+
+    if os.name == "nt":
+        import ctypes
+
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        handle = ctypes.windll.kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if not handle:
+            return False
+        ctypes.windll.kernel32.CloseHandle(handle)
+        return True
+
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
 
 STAGE_DEFINITIONS = [
     ("target", "Validate repository target"),
@@ -72,6 +105,7 @@ class ScanService:
         self._lock = threading.RLock()
         self._state = self._idle_state()
         self._thread = None
+        self._reconcile_persisted_record()
 
     # ------------------------------------------------------------------
     # State
@@ -176,11 +210,72 @@ class ScanService:
     # ------------------------------------------------------------------
 
     def _write_json(self, filename, payload):
+        """Writes JSON atomically: a crash mid-write cannot truncate the file.
+
+        The bytes are identical to a direct write -- only the way they reach
+        the file changes (temp file in the same directory, then os.replace,
+        which is atomic on Windows and POSIX alike).
+        """
         self.data_dir.mkdir(parents=True, exist_ok=True)
         path = self.data_dir / filename
-        with path.open("w", encoding="utf-8") as file:
-            json.dump(payload, file, indent=2)
+        temp_path = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+        try:
+            with temp_path.open("w", encoding="utf-8") as file:
+                json.dump(payload, file, indent=2)
+                file.flush()
+                os.fsync(file.fileno())
+            os.replace(temp_path, path)
+        except BaseException:
+            temp_path.unlink(missing_ok=True)
+            raise
         return path
+
+    def _reconcile_persisted_record(self):
+        """Closes out a scan the previous process died in the middle of.
+
+        The in-memory state starts idle, so a record still saying "running"
+        would outlive its scan and be reported by the history endpoint
+        forever. Nothing can resume that scan, so it is recorded as
+        interrupted -- never as completed, and never silently dropped.
+        """
+        path = self.data_dir / SCAN_RECORD_FILENAME
+        if not path.exists():
+            return
+        try:
+            with path.open(encoding="utf-8") as file:
+                record = json.load(file)
+        except (json.JSONDecodeError, OSError):
+            return
+
+        if record.get("status") not in {"starting", "running"}:
+            return
+
+        record.update(
+            {
+                "status": "interrupted",
+                "error": "The backend stopped while this scan was running; its result is unknown.",
+                "error_code": "scan-interrupted",
+                "finished_at": _now(),
+            }
+        )
+
+        try:
+            self._write_json(SCAN_RECORD_FILENAME, record)
+            history = self.history()
+            for entry in history:
+                if entry.get("scan_id") == record.get("scan_id"):
+                    entry.update(
+                        {
+                            "status": record["status"],
+                            "error": record["error"],
+                            "error_code": record["error_code"],
+                            "finished_at": record["finished_at"],
+                        }
+                    )
+            self._write_json(SCAN_HISTORY_FILENAME, {"scans": history[:HISTORY_LIMIT]})
+        except OSError:
+            # A read-only data directory must not stop the API from starting.
+            pass
 
     def _write_record(self):
         state = self.snapshot()
@@ -227,17 +322,70 @@ class ScanService:
         Raises TargetError for an unusable target and RuntimeError if a scan
         is already running, so the API can answer 400/409 truthfully.
         """
-        if self.is_running():
-            raise RuntimeError("A scan is already running.")
-
         target = parse_repository_target(repository, branch)
+        self._claim(target)
 
+        self._thread = threading.Thread(target=self._run, args=(target,), daemon=True)
+        self._thread.start()
+        return self.snapshot()
+
+    def _acquire_dataset_lock(self, scan_id):
+        """Claims data/ for this scan across processes, or raises RuntimeError."""
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        path = self.data_dir / LOCK_FILENAME
+        payload = json.dumps({"pid": os.getpid(), "scan_id": scan_id, "started_at": _now()})
+
+        try:
+            handle = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        except FileExistsError:
+            holder = {}
+            try:
+                holder = json.loads(path.read_text(encoding="utf-8") or "{}")
+            except (json.JSONDecodeError, OSError):
+                holder = {}
+
+            if _process_alive(holder.get("pid")):
+                raise RuntimeError(
+                    "A scan is already running in another ECDAT process "
+                    f"(pid {holder.get('pid')}, started {holder.get('started_at')})."
+                )
+            # The process that held the lock is gone, so its scan cannot
+            # still be writing; take the lock over rather than blocking
+            # every future scan.
+            path.unlink(missing_ok=True)
+            handle = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+
+        with os.fdopen(handle, "w", encoding="utf-8") as file:
+            file.write(payload)
+
+    def _release_dataset_lock(self):
+        try:
+            (self.data_dir / LOCK_FILENAME).unlink(missing_ok=True)
+        except OSError:
+            pass
+
+    def _claim(self, target):
+        """Takes the single scan slot, or refuses.
+
+        The check and the state transition happen under one lock hold, so two
+        callers -- two API requests, or an API request and the CLI -- can
+        never both believe they own the scan and run two pipelines over the
+        same dataset.
+        """
         with self._lock:
+            if self._state["status"] in {"starting", "running"}:
+                raise RuntimeError("A scan is already running.")
+
+            scan_id = uuid.uuid4().hex[:12]
+            # Raises RuntimeError if another process owns data/; the state is
+            # untouched in that case, so this scan never half-starts.
+            self._acquire_dataset_lock(scan_id)
+
             self._state = self._idle_state()
             self._state.update(
                 {
                     "status": "starting",
-                    "scan_id": uuid.uuid4().hex[:12],
+                    "scan_id": scan_id,
                     "repository": target.url,
                     "branch": target.branch,
                     "target": target.describe(),
@@ -247,30 +395,26 @@ class ScanService:
             )
         self._stage("target", "done", f"{target.slug} on branch {target.branch}.")
 
-        self._thread = threading.Thread(target=self._run, args=(target,), daemon=True)
-        self._thread.start()
-        return self.snapshot()
-
     def run_sync(self, repository: str, branch: str = "main"):
-        """Same scan, run in the caller's thread (used by the CLI)."""
+        """Same scan, run in the caller's thread (used by the CLI).
+
+        Takes the same single scan slot as start(), so a CLI scan cannot
+        overlap an API scan writing the same dataset.
+        """
         target = parse_repository_target(repository, branch)
-        with self._lock:
-            self._state = self._idle_state()
-            self._state.update(
-                {
-                    "status": "starting",
-                    "scan_id": uuid.uuid4().hex[:12],
-                    "repository": target.url,
-                    "branch": target.branch,
-                    "target": target.describe(),
-                    "started_at": _now(),
-                }
-            )
-        self._stage("target", "done", f"{target.slug} on branch {target.branch}.")
+        self._claim(target)
         self._run(target)
         return self.snapshot()
 
     def _run(self, target):
+        try:
+            self._run_stages(target)
+        except Exception as error:  # the scan slot must never leak on a crash
+            self._fail("scan-crashed", f"The scan failed unexpectedly: {error}")
+        finally:
+            self._release_dataset_lock()
+
+    def _run_stages(self, target):
         self._update(status="running", message=f"Scanning {target.slug} ({target.branch}).")
 
         # ---- scanner selection
@@ -340,6 +484,16 @@ class ScanService:
         )
         if not ok:
             failed = results[-1]
+            if getattr(failed, "timed_out", False):
+                self._fail(
+                    "pipeline-stage-timeout",
+                    (
+                        f"Pipeline stage '{failed.name}' did not finish in time and was stopped. "
+                        f"{failed.output_tail}"
+                    ).strip(),
+                    "pipeline",
+                )
+                return
             self._fail(
                 "pipeline-stage-failed",
                 f"Pipeline stage '{failed.name}' failed (exit {failed.returncode}). {failed.output_tail}".strip(),
@@ -359,16 +513,29 @@ class ScanService:
             "dependency_edges": stats["dependency_edges"],
             "asset_types": stats["asset_types"],
         }
+        # A CBOM the scanner reports as cached is described as cached here
+        # too, so a completed scan never implies a freshly scanned commit
+        # that did not happen.
+        cached = (artifact.source or {}).get("freshness") == "cbomkit-cached"
+        message = (
+            f"Scanned {target.slug} ({target.branch}): "
+            f"{stats['findings']} cryptographic finding(s) analysed."
+        )
+        if cached:
+            scanned_at = (artifact.source or {}).get("cbom_created_at")
+            message = (
+                f"Analysed {target.slug} ({target.branch}) from the CBOM CBOMKit already held"
+                + (f", scanned {scanned_at}" if scanned_at else "")
+                + f": {stats['findings']} cryptographic finding(s)."
+            )
+
         with self._lock:
             started_at = self._state["started_at"]
             self._state.update(
                 {
                     "status": "completed",
                     "result": result,
-                    "message": (
-                        f"Scanned {target.slug} ({target.branch}): "
-                        f"{stats['findings']} cryptographic finding(s) analysed."
-                    ),
+                    "message": message,
                     "error": None,
                     "error_code": None,
                     "current_stage": None,

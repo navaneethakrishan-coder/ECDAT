@@ -48,6 +48,15 @@ export function RepositoryAnalysisPanel({
   const planned = capabilities?.planned_targets || [];
   const warnings = validation?.warnings || [];
   const source = result?.source;
+  // CBOMKit keeps the record it already has when a commit has not changed.
+  // That is a valid answer, but it is not a fresh scan, so it is never shown
+  // as one.
+  const cachedResult = source?.freshness === "cbomkit-cached";
+
+  // Which input a rejected target points at, so the field itself is marked
+  // invalid rather than only the message.
+  const urlRejected = ["malformed-url", "unsupported-host", "empty-url", "unsupported-target"].includes(errorCode);
+  const branchRejected = errorCode === "invalid-branch";
 
   return (
     <section className="repository-analysis-panel" aria-labelledby="repo-analysis-heading">
@@ -105,7 +114,8 @@ export function RepositoryAnalysisPanel({
             onChange={(event) => onRepositoryChange(event.target.value)}
             placeholder="https://github.com/owner/repository"
             disabled={running}
-            aria-invalid={status === "failed" && errorCode === "malformed-url" ? "true" : undefined}
+            aria-invalid={status === "failed" && urlRejected ? "true" : undefined}
+            aria-describedby={status === "failed" && urlRejected ? "scan-failure-message" : undefined}
           />
         </div>
 
@@ -119,6 +129,8 @@ export function RepositoryAnalysisPanel({
             onChange={(event) => onBranchChange(event.target.value)}
             placeholder="main"
             disabled={running}
+            aria-invalid={status === "failed" && branchRejected ? "true" : undefined}
+            aria-describedby={status === "failed" && branchRejected ? "scan-failure-message" : undefined}
           />
         </div>
 
@@ -152,7 +164,7 @@ export function RepositoryAnalysisPanel({
                 ? "Scan failed"
                 : "Scan in progress"}
             </strong>
-            <p>{error || message || "Scanning repository..."}</p>
+            <p id="scan-failure-message">{error || message || "Scanning repository..."}</p>
             {status === "failed" && errorCode && <code className="analysis-error-code">{errorCode}</code>}
           </div>
         </div>
@@ -185,6 +197,17 @@ export function RepositoryAnalysisPanel({
             <p className="scan-result-source">
               {source.git_url} · {source.branch}
               {source.commit ? ` · ${String(source.commit).slice(0, 10)}` : ""}
+            </p>
+          )}
+
+          {cachedResult && (
+            <p className="scan-result-cached">
+              <AlertTriangle size={13} aria-hidden="true" />
+              <span>
+                CBOMKit returned no new CBOM for this request and kept the one it already held
+                {source?.cbom_created_at ? ` (scanned ${formatTime(source.cbom_created_at)})` : ""}. These findings
+                describe that CBOM, not a scan run just now.
+              </span>
             </p>
           )}
 

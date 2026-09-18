@@ -1,28 +1,30 @@
 import json
 import urllib.error
 import urllib.request
-from pathlib import Path
+
+import fixture_dataset
 
 
-BASE_URL = "http://127.0.0.1:8000"
+# Set when the fixture API server starts (see main()). These tests run the
+# real application over the fixture dataset on its own port, so they assert
+# exact values without depending on a dev server or on whichever repository
+# ECDAT last scanned.
+BASE_URL = None
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+EXPECTED_ASSETS = fixture_dataset.expected_assets()
 
-EXPECTED_ASSETS = 30
-
-# Fixture findings in the current CBOM (pyca/cryptography scan), addressed
-# by bom_ref -- the canonical finding identity -- never by algorithm name.
-X25519_REF = "a4c88095-ebd8-41ab-8acd-2b1e6b55fc3c"          # key agreement, DIRECT_PQC
+# Addressed by bom_ref -- the canonical finding identity -- never by name.
+X25519_REF = fixture_dataset.ref("x25519")                    # key agreement, DIRECT_PQC
 RSA_2048_REFS = (                                             # two distinct RSA-2048 findings
-    "e87e3bf2-5f46-477d-b159-8ac582608a25",
-    "4049d4df-3643-4d72-99e0-3a4ad66eaa26",
+    fixture_dataset.ref("rsa2048_java"),
+    fixture_dataset.ref("rsa2048_python"),
 )
-DSA_PUBLIC_KEY_REF = "1da1d50f-f071-451b-bcc2-4de220801c61"  # key material, architectural-migration
+DSA_PUBLIC_KEY_REF = fixture_dataset.ref("dsa_public_key")    # key material, inherits its strategy
+MISSING_REF = fixture_dataset.MISSING_REF                     # well-formed, belongs to no finding
 
 
 def record(filename, bom_ref):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        data = json.load(file)
+    data = fixture_dataset.load(filename)
 
     for item in data["assets"]:
         if (item.get("bom_ref") or item.get("asset_ref")) == bom_ref:
@@ -414,4 +416,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    with fixture_dataset.api_server() as base_url:
+        BASE_URL = base_url
+        main()

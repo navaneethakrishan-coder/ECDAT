@@ -220,6 +220,10 @@ export function CryptographicSecurityMap({
       ref={sectionRef}
       className={`panel security-map-panel${expanded ? " is-expanded" : ""}${dock ? " is-dock" : ""}`}
       aria-labelledby="security-map-heading"
+      // Not in the tab order, but focusable programmatically: opening the
+      // security space after a scan moves focus here, so keyboard and
+      // screen-reader users land on the view that just changed.
+      tabIndex={-1}
     >
       <header className="security-map-header">
         <div className="section-heading">

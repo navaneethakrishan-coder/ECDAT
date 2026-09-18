@@ -239,11 +239,18 @@ function App() {
 
       await startAnalysis(repository.trim(), branch.trim() || "main");
 
-      // The scan's real stages arrive with the first status poll.
-      const status = await getAnalysisStatus();
-      setScanStatus(status);
-      setAnalysisStatus(status.status);
-      setAnalysisMessage(status.message || "");
+      // The scan is running from here on. The first status fetch is only a
+      // head start on the poller, so a hiccup on this one request must not
+      // report a scan that is genuinely running as failed.
+      try {
+        const status = await getAnalysisStatus();
+        setScanStatus(status);
+        setAnalysisStatus(status.status);
+        setAnalysisMessage(status.message || "");
+      } catch {
+        setAnalysisStatus("running");
+        setAnalysisMessage("Scan started. Waiting for the first status update…");
+      }
     } catch (err) {
       // A rejected target is an expected answer, not a client fault; only
       // unexpected failures are worth a console error.
@@ -412,9 +419,16 @@ function App() {
       return;
     }
 
+    // If the backend disappears mid-scan, stop claiming the scan is still
+    // running after this many consecutive failed polls (~1 minute) instead
+    // of spinning forever with the form disabled.
+    const MAX_FAILED_POLLS = 20;
+    let failedPolls = 0;
+
     const interval = setInterval(async () => {
       try {
         const status = await getAnalysisStatus();
+        failedPolls = 0;
 
         setScanStatus(status);
         setAnalysisStatus(status.status);
@@ -444,7 +458,17 @@ function App() {
           }
         }
       } catch (err) {
+        failedPolls += 1;
         console.error("Analysis status error:", err);
+
+        if (failedPolls >= MAX_FAILED_POLLS) {
+          setAnalysisRunning(false);
+          setAnalysisStatus("failed");
+          setAnalysisError(
+            "Lost contact with the ECDAT backend while the scan was running. " +
+              "The scan may still be running on the server — reload once the backend is back to see its real state.",
+          );
+        }
       }
     }, 3000);
 
@@ -576,6 +600,12 @@ function App() {
     setSecurityMapFilters(DEFAULT_MAP_FILTERS);
     if (isStageRef.current) goSection("landscape");
     else scrollToMap();
+
+    // Move focus with the view, so the change is not silent for keyboard
+    // and screen-reader users left behind on the scan panel's button.
+    requestAnimationFrame(() => {
+      document.getElementById("security-map-section")?.focus({ preventScroll: true });
+    });
   }, [goSection, scrollToMap]);
   const publishSimulation = useCallback((bomRef, summary) => {
     setSimulation((current) => {

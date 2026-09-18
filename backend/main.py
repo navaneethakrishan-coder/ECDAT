@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import os
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -102,9 +103,30 @@ def start_scan_request(request: AnalyzeRequest):
     }
 
 
+# The dashboard's own origins. POST /api/scan overwrites the whole dataset
+# and makes this machine scan a repository, so it is not left open to every
+# site the user happens to have in another tab: only the local ECDAT dev
+# servers are allowed. Extra origins can be added for a deployment with
+# ECDAT_ALLOWED_ORIGINS (comma-separated).
+DEV_ORIGINS = [
+    "http://localhost:5173",   # vite dev (default)
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",   # vite's fallback when 5173 is taken
+    "http://127.0.0.1:5174",
+    "http://localhost:5199",   # second dev server used for verification runs
+    "http://127.0.0.1:5199",
+    "http://localhost:4173",   # vite preview (built bundle)
+    "http://127.0.0.1:4173",
+]
+ALLOWED_ORIGINS = DEV_ORIGINS + [
+    origin.strip()
+    for origin in os.environ.get("ECDAT_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     # No request in this app carries cookies/auth headers, and
     # "allow_origins=*" combined with allow_credentials=True is an
     # invalid CORS combination per spec (browsers reject it) --
