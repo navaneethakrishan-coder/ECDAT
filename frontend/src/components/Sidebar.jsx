@@ -4,6 +4,7 @@ import {
   FileWarning,
   Gauge,
   LayoutGrid,
+  Network,
   Radar,
   ShieldAlert,
   ShieldCheck,
@@ -11,12 +12,14 @@ import {
   Zap,
 } from "lucide-react";
 
+import { scrollBehavior } from "../spatial/motion";
+
 function scrollToId(id) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
 }
 
 function scrollToSelector(selector) {
-  document.querySelector(selector)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.querySelector(selector)?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
 }
 
 // The AI Advisor only exists in the DOM once an asset is selected
@@ -28,15 +31,16 @@ function scrollToAIAdvisor() {
   const panel = document.querySelector(".panel-ai");
 
   if (panel) {
-    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    panel.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
   } else {
     scrollToSelector(".asset-explorer");
   }
 }
 
 const NAV_ITEMS = [
-  { key: "overview", label: "Overview", icon: Gauge, action: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+  { key: "overview", label: "Overview", icon: Gauge, action: () => window.scrollTo({ top: 0, behavior: scrollBehavior() }) },
   { key: "repository", label: "Repository Analysis", icon: Radar, action: () => scrollToSelector(".repository-analysis-panel") },
+  { key: "security-map", label: "Security Map", icon: Network, action: () => scrollToId("security-map-section") },
   { key: "assets", label: "Cryptographic Assets", icon: Database, action: () => scrollToSelector(".asset-explorer") },
   { key: "risk", label: "Risk Analysis", icon: ShieldAlert, action: () => scrollToId("risk-analysis-section") },
   { key: "pqc", label: "PQC Migration", icon: Zap, action: () => scrollToId("pqc-migration-section") },
@@ -46,9 +50,19 @@ const NAV_ITEMS = [
   { key: "reports", label: "Reports", icon: LayoutGrid, action: () => scrollToSelector(".dashboard-footer") },
 ];
 
-export function Sidebar({ backendConnected }) {
+/**
+ * Spatial navigation rail. The active item follows the section being
+ * read (scroll spy in App.jsx) and a single illuminated indicator slides
+ * between items instead of each item lighting up independently.
+ */
+export function Sidebar({ backendConnected, activeKey = "overview", investigation = null, inert = false, onNavigate = null }) {
+  const activeIndex = Math.max(
+    NAV_ITEMS.findIndex((item) => item.key === activeKey),
+    0,
+  );
+
   return (
-    <aside className="sidebar">
+    <aside className="sidebar" inert={inert || undefined}>
       <div className="brand">
         <div className="brand-mark">
           <ShieldCheck size={24} />
@@ -63,18 +77,33 @@ export function Sidebar({ backendConnected }) {
       <nav className="sidebar-nav">
         <div className="nav-section">Workspace</div>
 
-        {NAV_ITEMS.map((item, index) => (
-          <button
-            type="button"
-            key={item.key}
-            className={`nav-item${index === 0 ? " active" : ""}`}
-            onClick={item.action}
-          >
-            <item.icon size={18} />
-            {item.label}
-          </button>
-        ))}
+        <div className="nav-rail" style={{ "--active-index": activeIndex }}>
+          <span className="nav-rail-indicator" aria-hidden="true" />
+          {NAV_ITEMS.map((item, index) => (
+            <button
+              type="button"
+              key={item.key}
+              className={`nav-item${index === activeIndex ? " active" : ""}`}
+              onClick={onNavigate ? () => onNavigate(item.key) : item.action}
+              aria-current={index === activeIndex ? "location" : undefined}
+              title={item.label}
+            >
+              <item.icon size={18} />
+              {item.label}
+            </button>
+          ))}
+        </div>
       </nav>
+
+      {investigation && (
+        <div className="sidebar-investigation" role="status">
+          <span className="sidebar-investigation-beacon" aria-hidden="true" />
+          <div>
+            <span>{investigation.open ? "Investigating" : "Focused"}</span>
+            <strong title={investigation.bomRef}>{investigation.name}</strong>
+          </div>
+        </div>
+      )}
 
       <div className="sidebar-footer">
         <div className={`connection-dot${backendConnected ? "" : " connection-dot-down"}`} />

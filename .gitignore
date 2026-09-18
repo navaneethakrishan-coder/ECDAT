@@ -14,3 +14,11 @@ __pycache__/
 # Throwaway runtime logs from local dev servers
 backend/.scratch_backend.log
 *.scratch*
+
+# Scan runtime records: rewritten by every scan, carrying that run's id,
+# timestamps and durations. Only the scan service reads them, and it treats
+# them as absent on a fresh checkout. The pipeline's analysis outputs
+# (data/ecdat-assets.json and the rest) stay tracked — only these two are
+# per-run machine state.
+data/ecdat-scan.json
+data/ecdat-scan-history.json

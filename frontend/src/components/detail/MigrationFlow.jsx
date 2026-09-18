@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUpRight, Binary, GitCompareArrows, ShieldAlert, ShieldCheck } from "lucide-react";
 
 import { strategyPqcPath } from "../../migrationStrategy";
+import { MigrationTransition } from "./MigrationTransition";
 import { WhatIfSimulator } from "./WhatIfSimulator";
 
 const SEVERITY_TONE = new Set(["low", "medium", "high", "critical"]);
@@ -151,6 +152,8 @@ export function MigrationFlow({ assetDetail }) {
         <GitCompareArrows size={15} aria-hidden="true" />
         Migration Path
       </h3>
+
+      <MigrationTransition strategy={strategy} topRanked={topRanked} />
 
       <div className="migration-flow">
         <div className="flow-node flow-node-current">

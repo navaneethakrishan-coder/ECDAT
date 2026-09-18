@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { AlertTriangle, FileWarning, ShieldAlert, Zap } from "lucide-react";
 
@@ -7,6 +8,8 @@ import {
   getAsset,
   getAIAdvice,
   getAnalysisStatus,
+  getScanCapabilities,
+  getScanHistory,
   getHealth,
   getMigrationReportAssets,
   getPriority,
@@ -22,7 +25,23 @@ import { HeroOverview } from "./components/HeroOverview";
 import { RepositoryAnalysisPanel } from "./components/RepositoryAnalysisPanel";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
+import { migrationStages } from "./components/detail/migrationStages";
+import { CryptographicSecurityMap } from "./components/visualization/CryptographicSecurityMap";
+import { usePrefersReducedMotion } from "./components/visualization/mapEnvironment";
+import { useLandscapeState, useSecurityMapModel } from "./components/visualization/useSecurityMapModel";
+import { DEFAULT_FILTERS as DEFAULT_MAP_FILTERS } from "./components/visualization/securityMapModel";
+import { FindingContextBar } from "./spatial/FindingContextBar";
+import { scrollBehavior } from "./spatial/motion";
+import { postureFromSummary } from "./spatial/posture";
+import { SpaceLayer } from "./spatial/SpaceLayer";
+import { SpatialContext } from "./spatial/SpatialContext";
+import { SpatialEnvironment } from "./spatial/SpatialEnvironment";
+import { StageLayout } from "./spatial/stage/StageLayout";
+import { useLayoutMode } from "./spatial/stage/useLayoutMode";
+import { branchSummaries } from "./spatial/surfaces";
+import { useScrollSpy } from "./spatial/useScrollSpy";
 import "./App.css";
+import "./spatial/spatial.css";
 
 // Chart colors follow the same "color means one specific thing"
 // language used everywhere else: severity distributions (risk,
@@ -34,6 +53,54 @@ import "./App.css";
 const RISK_DONUT_COLORS = ["#ef4444", "#f97316", "#eab308", "#22c55e"]; // CRITICAL, HIGH, MEDIUM, LOW
 const IMPACT_DONUT_COLORS = ["#f97316", "#eab308", "#22c55e"]; // HIGH, MEDIUM, LOW
 const MIGRATION_DONUT_COLORS = ["#22d3ee", "#5b9cf6", "#64748b", "#334155"]; // PQC Candidate, Architectural, No Direct Replacement, Not Applicable
+
+// Page regions the navigation rail tracks (keys match Sidebar NAV_ITEMS).
+const SECTION_SPY_TARGETS = [
+  { key: "overview", selector: ".hero" },
+  { key: "repository", selector: ".dashboard-row-primary" },
+  { key: "security-map", selector: "#security-map-section" },
+  { key: "risk", selector: ".migration-intelligence-section" },
+  { key: "assets", selector: ".asset-explorer" },
+  { key: "reports", selector: ".dashboard-footer" },
+];
+
+// Sidebar item → stage dock section (desktop / tablet stage layout).
+const NAV_TO_SECTION = {
+  overview: "posture",
+  repository: "operations",
+  "security-map": "landscape",
+  assets: "findings",
+  risk: "intelligence",
+  pqc: "intelligence",
+  actions: "intelligence",
+  impact: "intelligence",
+  reports: "intelligence",
+};
+
+const SECTION_TO_NAV = {
+  posture: "overview",
+  operations: "repository",
+  landscape: "security-map",
+  intelligence: "risk",
+  findings: "assets",
+};
+
+const METRIC_FILTERS = {
+  assets: {},
+  priority: { priorities: ["CRITICAL", "HIGH"] },
+  pqc: { strategies: ["DIRECT_PQC", "HYBRID"] },
+};
+
+const MIGRATION_TYPE_CHART_NAMES = {
+  "pqc-candidate": "PQC Candidate",
+  "architectural-migration": "Architectural",
+  "no-direct-pqc-replacement": "No Direct Replacement",
+  "not-applicable": "Not Applicable",
+};
+
+function sameSet(list, expected) {
+  return list.length === expected.length && expected.every((value) => list.includes(value));
+}
 
 function App() {
   // ==========================================================
@@ -56,6 +123,20 @@ function App() {
   const [sourceImpactFilter, setSourceImpactFilter] = useState("ALL");
 
   const [selectedAsset, setSelectedAsset] = useState(null);
+  // The finding (bom_ref) currently focused in the Security Map and
+  // highlighted in the Asset Explorer. Opening a finding sets both this
+  // and selectedAsset, so the map, the explorer and the investigation
+  // workspace always point at the same bom_ref.
+  const [focusedFinding, setFocusedFinding] = useState(null);
+  const [securityMapFilters, setSecurityMapFilters] = useState(DEFAULT_MAP_FILTERS);
+  // Investigation workspace navigation: which analysis surface to bring
+  // forward on entry, and the findings visited before this one (so a
+  // dependency opened from Blast Radius can return to where it came from).
+  const [activeSurface, setActiveSurface] = useState(null);
+  const [investigationTrail, setInvestigationTrail] = useState([]);
+  const [locateRequest, setLocateRequest] = useState(null);
+  // The What-If result currently on screen (backend values only), keyed by bom_ref.
+  const [simulation, setSimulation] = useState(null);
   const [assetDetail, setAssetDetail] = useState(null);
   const [assetDetailLoading, setAssetDetailLoading] = useState(false);
   const [assetDetailError, setAssetDetailError] = useState("");
@@ -66,6 +147,29 @@ function App() {
   const [analysisMessage, setAnalysisMessage] = useState("");
   const [analysisError, setAnalysisError] = useState("");
   const [analysisRunning, setAnalysisRunning] = useState(false);
+  // The scan service's own status payload (stages, validation, result).
+  const [scanStatus, setScanStatus] = useState(null);
+  // A rejected scan start (bad target) never reaches the scan service.
+  const [scanStartErrorCode, setScanStartErrorCode] = useState(null);
+  const [scanCapabilities, setScanCapabilities] = useState(null);
+  const [scanHistory, setScanHistory] = useState([]);
+
+  // ---- spatial layout (desktop / tablet stage, or the scrolling layout)
+  const [contextLost, setContextLost] = useState(false);
+  const { mode: layoutMode, tier: stageTier } = useLayoutMode(contextLost);
+  const isStage = layoutMode === "stage";
+  const isStageRef = useRef(isStage);
+  // Which dock section the stage shows; navigation state, not selection.
+  const [stageSection, setStageSection] = useState("posture");
+  const [mapQuery, setMapQuery] = useState("");
+  // The evidence chain currently shown (display copy, keyed by bom_ref).
+  const [evidenceChain, setEvidenceChain] = useState(null);
+  const stageRef = useRef(null);
+  const reducedMotion = usePrefersReducedMotion();
+
+  useEffect(() => {
+    isStageRef.current = isStage;
+  }, [isStage]);
 
   const [aiAdvice, setAiAdvice] = useState(null);
   // "idle" | "loading" | "success" | "error"
@@ -125,29 +229,30 @@ function App() {
   }
 
   async function handleAnalyzeRepository() {
-    if (!repository.trim()) {
-      setAnalysisError("Please enter a GitHub repository URL.");
-      setAnalysisStatus("failed");
-      return;
-    }
-
     try {
       setAnalysisRunning(true);
       setAnalysisError("");
       setAnalysisStatus("starting");
-      setAnalysisMessage("Starting CBOMKit scan...");
+      setAnalysisMessage("Starting repository scan…");
+      setScanStatus(null);
+      setScanStartErrorCode(null);
 
       await startAnalysis(repository.trim(), branch.trim() || "main");
 
-      setAnalysisStatus("running");
-      setAnalysisMessage(
-        "CBOMKit is scanning the repository and ECDAT is processing the results..."
-      );
+      // The scan's real stages arrive with the first status poll.
+      const status = await getAnalysisStatus();
+      setScanStatus(status);
+      setAnalysisStatus(status.status);
+      setAnalysisMessage(status.message || "");
     } catch (err) {
-      console.error("Repository analysis error:", err);
+      // A rejected target is an expected answer, not a client fault; only
+      // unexpected failures are worth a console error.
+      if (!err?.reasonCode) console.error("Repository scan error:", err);
 
       setAnalysisStatus("failed");
-      setAnalysisError(err?.message || "Unable to start repository analysis.");
+      // The backend rejects an unusable target with its own reason.
+      setAnalysisError(err?.message || "Unable to start the repository scan.");
+      setScanStartErrorCode(err?.reasonCode || null);
       setAnalysisRunning(false);
     }
   }
@@ -189,6 +294,40 @@ function App() {
 
     initialLoad();
   }, [loadDashboard]);
+
+  // What this deployment can scan, and what it has scanned before.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadScanContext() {
+      try {
+        const [capabilities, history, status] = await Promise.all([
+          getScanCapabilities(),
+          getScanHistory(),
+          getAnalysisStatus(),
+        ]);
+        if (cancelled) return;
+        setScanCapabilities(capabilities);
+        setScanHistory(history.scans || []);
+        setScanStatus(status);
+        if (status.status === "running" || status.status === "starting") {
+          // A scan started elsewhere (CLI, another tab) keeps reporting here.
+          setAnalysisRunning(true);
+          setAnalysisStatus(status.status);
+          setAnalysisMessage(status.message || "");
+          if (status.repository) setRepository(status.repository);
+          if (status.branch) setBranch(status.branch);
+        }
+      } catch (err) {
+        console.error("Scan context error:", err);
+      }
+    }
+
+    loadScanContext();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Lightweight live health check — makes the sidebar's connection
   // indicator reflect reality instead of always claiming "Connected".
@@ -247,13 +386,15 @@ function App() {
   // ==========================================================
 
   useEffect(() => {
-    if (!selectedAsset) {
+    if (!selectedAsset || isStageRef.current) {
       return;
     }
 
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         setSelectedAsset(null);
+        setInvestigationTrail([]);
+        setActiveSurface(null);
       }
     }
 
@@ -275,6 +416,7 @@ function App() {
       try {
         const status = await getAnalysisStatus();
 
+        setScanStatus(status);
         setAnalysisStatus(status.status);
         setAnalysisMessage(status.message || "");
 
@@ -282,6 +424,7 @@ function App() {
           setAnalysisRunning(false);
 
           try {
+            // The pipeline has rewritten the dataset the whole app reads.
             await loadDashboard();
           } catch (err) {
             console.error("Failed to refresh dashboard:", err);
@@ -290,7 +433,15 @@ function App() {
 
         if (status.status === "failed") {
           setAnalysisRunning(false);
-          setAnalysisError(status.error || "Repository analysis failed.");
+          setAnalysisError(status.error || "The repository scan failed.");
+        }
+
+        if (status.status === "completed" || status.status === "failed") {
+          try {
+            setScanHistory((await getScanHistory()).scans || []);
+          } catch (err) {
+            console.error("Failed to load scan history:", err);
+          }
         }
       } catch (err) {
         console.error("Analysis status error:", err);
@@ -299,6 +450,183 @@ function App() {
 
     return () => clearInterval(interval);
   }, [analysisRunning, loadDashboard]);
+
+  // Two already-existing bulk endpoints, joined by CBOM bom-ref -- the
+  // canonical per-finding identity the backend uses throughout (two
+  // distinct findings can legitimately share the same displayed
+  // algorithm name -- e.g. two separate "RSA-2048" occurrences in this
+  // dataset -- so name alone is never used as a selection key). Both
+  // GET /api/priority and GET /api/migration-report/assets now return
+  // a real bom_ref per finding, so this is a direct bom_ref join, not
+  // a name-based approximation.
+  //
+  // Memoized (and computed before the loading/error early returns) so
+  // the Security Map receives a stable finding list and does not rebuild
+  // its scene on unrelated re-renders.
+  const enrichedAssets = useMemo(() => {
+    const priorityByBomRef = {};
+    priorityAssets.forEach((item) => {
+      if (item.bom_ref) priorityByBomRef[item.bom_ref] = item;
+    });
+
+    return riskAssets.map((item) => {
+      const bomRef = item.bom_ref;
+      const name = item.asset || item.name || "Unknown";
+      const priorityInfo = priorityByBomRef[bomRef] || {};
+
+      return {
+        key: bomRef,
+        bomRef,
+        name,
+        type: item.asset_type || "Unknown",
+        primitive: item.primitive || "Unknown",
+        riskScore: item.risk_score,
+        riskSeverity: item.risk_severity || "UNKNOWN",
+        migrationType: item.migration_type || "",
+        pqcApplicable: Boolean(item.pqc_applicable),
+        pqcCandidate: item.candidate,
+        // Purpose-aware migration strategy decided by the backend
+        // (KEEP / DIRECT_PQC / HYBRID / NEEDS_REVIEW) and the PQC
+        // component it selected, if any.
+        migrationStrategy: item.migration_strategy || null,
+        strategyPqcComponent: item.strategy_pqc_component || null,
+        sourceImpact: item.source_impact || "UNKNOWN",
+        priorityLevel: priorityInfo?.migration_priority?.priority || "UNKNOWN",
+        priorityScore: priorityInfo?.migration_priority?.priority_score ?? null,
+        complexityLevel: priorityInfo?.migration_complexity?.level || "UNKNOWN",
+        blastSeverity: priorityInfo?.blast_radius?.severity || "UNKNOWN",
+      };
+    });
+  }, [riskAssets, priorityAssets]);
+
+  // The single way into the investigation workspace. bom_ref is the only
+  // identity; `surface` optionally names the analysis to bring forward.
+  const openFinding = useCallback((bomRef, surface = null) => {
+    if (!bomRef) return;
+    const current = selectedAssetRef.current;
+    if (current && current !== bomRef) {
+      setInvestigationTrail((trail) => [...trail, current]);
+    }
+    setActiveSurface(typeof surface === "string" ? surface : null);
+    setFocusedFinding(bomRef);
+    setSelectedAsset(bomRef);
+  }, []);
+
+  const closeInvestigation = useCallback(() => {
+    setSelectedAsset(null);
+    setAssetDetail(null);
+    setInvestigationTrail([]);
+    setActiveSurface(null);
+    // On the stage, leaving an investigation returns to the finding in the landscape.
+    if (isStageRef.current) setStageSection("landscape");
+  }, []);
+
+  const backInvestigation = useCallback(() => {
+    const previous = investigationTrail[investigationTrail.length - 1];
+    if (!previous) return;
+    setInvestigationTrail(investigationTrail.slice(0, -1));
+    setActiveSurface(null);
+    setFocusedFinding(previous);
+    setSelectedAsset(previous);
+  }, [investigationTrail]);
+
+  const scrollToMap = useCallback(() => {
+    document.getElementById("security-map-section")?.scrollIntoView({ behavior: scrollBehavior(), block: "start" });
+  }, []);
+
+  // Leave any open investigation and show a stage dock section.
+  const goSection = useCallback((section) => {
+    setSelectedAsset(null);
+    setAssetDetail(null);
+    setInvestigationTrail([]);
+    setActiveSurface(null);
+    setStageSection(section);
+  }, []);
+
+  // Hero metrics open the Security Map pre-filtered to what they count.
+  const investigateInMap = useCallback(
+    (filters) => {
+      setSecurityMapFilters({ ...DEFAULT_MAP_FILTERS, ...filters });
+      if (isStageRef.current) goSection("landscape");
+      else scrollToMap();
+    },
+    [scrollToMap, goSection],
+  );
+
+  // Command search / focus bar: focus a finding and centre it in the map.
+  const locateInMap = useCallback(
+    (bomRef) => {
+      setFocusedFinding(bomRef);
+      setLocateRequest({ bomRef, at: Date.now() });
+      if (isStageRef.current) {
+        goSection("landscape");
+        requestAnimationFrame(() => stageRef.current?.focusSelected(bomRef));
+      } else {
+        scrollToMap();
+      }
+    },
+    [scrollToMap, goSection],
+  );
+
+  const clearFocus = useCallback(() => setFocusedFinding(null), []);
+
+  // "Open in Security Space" after a scan: the landscape, freshly rebuilt.
+  const showSecuritySpace = useCallback(() => {
+    setFocusedFinding(null);
+    setSecurityMapFilters(DEFAULT_MAP_FILTERS);
+    if (isStageRef.current) goSection("landscape");
+    else scrollToMap();
+  }, [goSection, scrollToMap]);
+  const publishSimulation = useCallback((bomRef, summary) => {
+    setSimulation((current) => {
+      if (summary) return summary;
+      return current?.bomRef === bomRef ? null : current;
+    });
+    // A simulation result on screen puts the investigation into its simulation state.
+    if (summary) setActiveSurface("whatif");
+  }, []);
+  const publishEvidence = useCallback((bomRef, steps) => setEvidenceChain({ bomRef, steps }), []);
+
+  // Security Map data + display state, shared by the stage and the map panel.
+  const mapData = useSecurityMapModel(enrichedAssets);
+  const landscapeState = useLandscapeState(mapData.model, securityMapFilters, focusedFinding, mapQuery);
+  const posture = useMemo(() => postureFromSummary(summary), [summary]);
+  const cameraApi = useMemo(
+    () => ({
+      resetView: () => stageRef.current?.resetView(),
+      fitAll: () => stageRef.current?.fitAll(),
+      focusSelected: (bomRef) => stageRef.current?.focusSelected(bomRef),
+      focusRegion: (key) => stageRef.current?.focusRegion(key),
+    }),
+    [],
+  );
+
+  // A pick in the 3D world resolves through the same selection flow.
+  const selectFromStage = useCallback(
+    (bomRef) => {
+      if (!bomRef) {
+        if (!selectedAssetRef.current) setFocusedFinding(null);
+        return;
+      }
+      if (selectedAssetRef.current) {
+        openFinding(bomRef);
+        return;
+      }
+      setFocusedFinding(bomRef);
+      setStageSection("landscape");
+    },
+    [openFinding],
+  );
+
+  const selectMetric = useCallback(
+    (key) => {
+      if (METRIC_FILTERS[key]) investigateInMap(METRIC_FILTERS[key]);
+    },
+    [investigateInMap],
+  );
+  const spatialContext = useMemo(() => ({ publishSimulation }), [publishSimulation]);
+
+  const activeSection = useScrollSpy(SECTION_SPY_TARGETS, { enabled: !isStage && !loading && !error && Boolean(summary) });
 
   // ==========================================================
   // LOADING / ERROR (full page)
@@ -363,48 +691,6 @@ function App() {
     { name: "LOW", value: sourceImpactDistribution.LOW || 0 },
   ];
 
-  // Two already-existing bulk endpoints, joined by CBOM bom-ref -- the
-  // canonical per-finding identity the backend uses throughout (two
-  // distinct findings can legitimately share the same displayed
-  // algorithm name -- e.g. two separate "RSA-2048" occurrences in this
-  // dataset -- so name alone is never used as a selection key). Both
-  // GET /api/priority and GET /api/migration-report/assets now return
-  // a real bom_ref per finding, so this is a direct bom_ref join, not
-  // a name-based approximation.
-  const priorityByBomRef = {};
-  priorityAssets.forEach((item) => {
-    if (item.bom_ref) priorityByBomRef[item.bom_ref] = item;
-  });
-
-  const enrichedAssets = riskAssets.map((item) => {
-    const bomRef = item.bom_ref;
-    const name = item.asset || item.name || "Unknown";
-    const priorityInfo = priorityByBomRef[bomRef] || {};
-
-    return {
-      key: bomRef,
-      bomRef,
-      name,
-      type: item.asset_type || "Unknown",
-      primitive: item.primitive || "Unknown",
-      riskScore: item.risk_score,
-      riskSeverity: item.risk_severity || "UNKNOWN",
-      migrationType: item.migration_type || "",
-      pqcApplicable: Boolean(item.pqc_applicable),
-      pqcCandidate: item.candidate,
-      // Purpose-aware migration strategy decided by the backend
-      // (KEEP / DIRECT_PQC / HYBRID / NEEDS_REVIEW) and the PQC
-      // component it selected, if any.
-      migrationStrategy: item.migration_strategy || null,
-      strategyPqcComponent: item.strategy_pqc_component || null,
-      sourceImpact: item.source_impact || "UNKNOWN",
-      priorityLevel: priorityInfo?.migration_priority?.priority || "UNKNOWN",
-      priorityScore: priorityInfo?.migration_priority?.priority_score ?? null,
-      complexityLevel: priorityInfo?.migration_complexity?.level || "UNKNOWN",
-      blastSeverity: priorityInfo?.blast_radius?.severity || "UNKNOWN",
-    };
-  });
-
   // Top 5 HIGH/CRITICAL-risk assets, surfaced on the dashboard's first
   // viewport next to the repository-analysis panel -- a client-side
   // sort of already-fetched data, not a new backend call or metric.
@@ -454,165 +740,400 @@ function App() {
     return matchesSearch && matchesRisk && matchesMigration && matchesPqc && matchesSourceImpact;
   });
 
+  const focusedAsset = focusedFinding ? enrichedAssets.find((asset) => asset.bomRef === focusedFinding) || null : null;
+  const selectedName = selectedAsset
+    ? assetDetail?.bom_ref === selectedAsset
+      ? assetDetail.asset
+      : enrichedAssets.find((asset) => asset.bomRef === selectedAsset)?.name || selectedAsset
+    : null;
+  // Only hand the workspace the record for the finding it is showing, so
+  // navigating between findings never flashes the previous one's data.
+  const selectedDetail = assetDetail?.bom_ref === selectedAsset ? assetDetail : null;
+  const previousRef = investigationTrail[investigationTrail.length - 1] || null;
+  const previousFinding = previousRef
+    ? { bomRef: previousRef, name: enrichedAssets.find((asset) => asset.bomRef === previousRef)?.name || previousRef }
+    : null;
+
+  // Which hero metric the map's current filters correspond to (the card
+  // shows it as active); derived from the one filter state, never stored.
+  const onlyFilter = (key) =>
+    ["severities", "strategies", "priorities"].every((other) => other === key || securityMapFilters[other].length === 0) &&
+    securityMapFilters.family === "ALL";
+  const activeMetric =
+    onlyFilter("priorities") && sameSet(securityMapFilters.priorities, ["CRITICAL", "HIGH"])
+      ? "priority"
+      : onlyFilter("strategies") && sameSet(securityMapFilters.strategies, ["DIRECT_PQC", "HYBRID"])
+      ? "pqc"
+      : null;
+
+  const spatialMode = selectedAsset
+    ? simulation?.bomRef === selectedAsset
+      ? "simulation"
+      : "investigation"
+    : focusedFinding
+    ? "finding"
+    : activeSection === "security-map"
+    ? "map"
+    : "global";
+
+  // ---- stage view: derived from the existing selection + navigation state
+  const simulationActive = Boolean(selectedAsset && simulation?.bomRef === selectedAsset && activeSurface === "whatif");
+  const stageView = selectedAsset
+    ? simulationActive
+      ? "simulation"
+      : "investigation"
+    : stageSection === "landscape"
+    ? focusedFinding
+      ? "finding"
+      : "map"
+    : "global";
+
+  const investigationData = selectedDetail
+    ? {
+        summaries: branchSummaries(selectedDetail, aiStatus),
+        stages: migrationStages(selectedDetail.migration_strategy, selectedDetail.ranked_candidates?.[0]),
+        evidenceSteps: evidenceChain?.bomRef === selectedAsset ? evidenceChain.steps : [],
+      }
+    : null;
+
+  function stageEscape() {
+    if (activeSurface) setActiveSurface(null);
+    else if (selectedAsset) closeInvestigation();
+    else if (focusedFinding) setFocusedFinding(null);
+    else if (stageSection !== "posture") setStageSection("posture");
+  }
+
+  function stageNavigate(key) {
+    if (key === "ai") {
+      if (focusedFinding) openFinding(focusedFinding, "ai");
+      else goSection("findings");
+      return;
+    }
+    goSection(NAV_TO_SECTION[key] || "posture");
+  }
+
   // ==========================================================
-  // MAIN UI
+  // SHARED PANELS (rendered by both layouts)
+  // ==========================================================
+
+  const topbarElement = (
+    <Topbar
+      search={search}
+      onSearchChange={setSearch}
+      backendConnected={backendConnected}
+      findings={enrichedAssets}
+      onLocateFinding={locateInMap}
+    />
+  );
+
+  const contextBarElement = (
+    <FindingContextBar
+      finding={selectedAsset ? null : focusedAsset}
+      onLocate={locateInMap}
+      onInvestigate={openFinding}
+      onClear={clearFocus}
+    />
+  );
+
+  const heroElement = (variant) => (
+    <HeroOverview
+      summary={summary}
+      totalAssetsScanned={assets.length}
+      onInvestigate={investigateInMap}
+      activeMetric={activeMetric}
+      variant={variant}
+    />
+  );
+
+  const operationsElement = (
+    <div className="dashboard-row dashboard-row-primary">
+      <RepositoryAnalysisPanel
+        repository={repository}
+        branch={branch}
+        status={analysisStatus}
+        message={analysisMessage}
+        error={analysisError}
+        errorCode={scanStartErrorCode || scanStatus?.error_code || null}
+        running={analysisRunning}
+        stages={scanStatus?.stages || []}
+        pipelineStages={scanStatus?.pipeline_stages || []}
+        currentStage={scanStatus?.current_stage || null}
+        validation={scanStatus?.validation || null}
+        result={scanStatus?.result || null}
+        duration={scanStatus?.duration_seconds ?? null}
+        capabilities={scanCapabilities}
+        history={scanHistory}
+        onRepositoryChange={setRepository}
+        onBranchChange={setBranch}
+        onSubmit={handleAnalyzeRepository}
+        onViewResults={showSecuritySpace}
+      />
+
+      <CriticalFindingsPanel assets={criticalFindings} onSelectAsset={openFinding} focusedRef={focusedFinding} />
+    </div>
+  );
+
+  const mapElement = (docked) => (
+    <CryptographicSecurityMap
+      assets={enrichedAssets}
+      focusedRef={focusedFinding}
+      onFocus={setFocusedFinding}
+      onOpen={openFinding}
+      filters={securityMapFilters}
+      onFiltersChange={setSecurityMapFilters}
+      locateRequest={locateRequest}
+      mapData={mapData}
+      query={mapQuery}
+      onQueryChange={setMapQuery}
+      cameraApi={docked ? cameraApi : null}
+      webglLost={contextLost}
+    />
+  );
+
+  const intelligenceElement = (
+    <section className={`migration-intelligence-section${focusedAsset ? " has-focus" : ""}`}>
+      <div className="section-heading">
+        <span className="section-eyebrow">Migration Intelligence</span>
+        <h2>How risk, migration strategy and source impact are distributed</h2>
+      </div>
+
+      <div className="analytics-grid">
+        <DonutPanel
+          id="risk-analysis-section"
+          icon={ShieldAlert}
+          title="Risk Distribution"
+          description="Current migration risk severity"
+          data={riskChartData}
+          colors={RISK_DONUT_COLORS}
+          centerValue={atRiskCount}
+          centerLabel="at risk"
+          onSliceClick={(name) => name && setRiskFilter(String(name).toUpperCase())}
+          activeName={focusedAsset?.riskSeverity || null}
+          activeCaption={focusedAsset ? `${focusedAsset.name} is ${focusedAsset.riskSeverity} risk` : null}
+        />
+
+        <DonutPanel
+          id="pqc-migration-section"
+          icon={Zap}
+          title="Migration Distribution"
+          description="Recommended migration strategy"
+          data={migrationChartData}
+          colors={MIGRATION_DONUT_COLORS}
+          onSliceClick={(name) => {
+            const migrationMap = {
+              "PQC Candidate": "pqc-candidate",
+              Architectural: "architectural-migration",
+              "No Direct Replacement": "no-direct-pqc-replacement",
+              "Not Applicable": "not-applicable",
+            };
+            const value = migrationMap[name];
+            if (value) setMigrationFilter(value);
+          }}
+          activeName={focusedAsset ? MIGRATION_TYPE_CHART_NAMES[focusedAsset.migrationType] || null : null}
+          activeCaption={
+            focusedAsset && MIGRATION_TYPE_CHART_NAMES[focusedAsset.migrationType]
+              ? `${focusedAsset.name} is in ${MIGRATION_TYPE_CHART_NAMES[focusedAsset.migrationType]}`
+              : null
+          }
+        />
+
+        <DonutPanel
+          id="global-source-impact-section"
+          icon={FileWarning}
+          title="Source Impact"
+          description="Estimated source-code migration impact"
+          data={sourceImpactChartData}
+          colors={IMPACT_DONUT_COLORS}
+          onSliceClick={(name) => name && setSourceImpactFilter(String(name).toUpperCase())}
+          activeName={focusedAsset?.sourceImpact || null}
+          activeCaption={focusedAsset ? `${focusedAsset.name} has ${focusedAsset.sourceImpact} source impact` : null}
+        />
+      </div>
+    </section>
+  );
+
+  const explorerElement = (
+    <section className="panel asset-explorer">
+      <div className="panel-header">
+        <div className="section-heading">
+          <span className="section-eyebrow">Findings</span>
+          <h2>Cryptographic Asset Explorer</h2>
+          <p>Every analyzed asset, as a full security assessment.</p>
+        </div>
+
+        <div className="asset-count">
+          {filteredAssets.length} / {enrichedAssets.length}
+        </div>
+      </div>
+
+      <AssetFilters
+        search={search}
+        onSearchChange={setSearch}
+        riskFilter={riskFilter}
+        onRiskFilterChange={setRiskFilter}
+        migrationFilter={migrationFilter}
+        onMigrationFilterChange={setMigrationFilter}
+        pqcFilter={pqcFilter}
+        onPqcFilterChange={setPqcFilter}
+        sourceImpactFilter={sourceImpactFilter}
+        onSourceImpactFilterChange={setSourceImpactFilter}
+      />
+
+      <AssetExplorer
+        assets={filteredAssets}
+        totalCount={enrichedAssets.length}
+        selectedAsset={selectedAsset || focusedFinding}
+        onSelectAsset={openFinding}
+      />
+    </section>
+  );
+
+  const workspaceElement = (layout) =>
+    selectedAsset ? (
+      <AssetDetailPanel
+        key={selectedAsset}
+        layout={layout}
+        assetName={selectedName}
+        assetDetail={selectedDetail}
+        loading={assetDetailLoading || (!selectedDetail && !assetDetailError)}
+        error={assetDetailError}
+        onRetry={loadAssetDetail}
+        onClose={closeInvestigation}
+        aiStatus={aiStatus}
+        aiAdvice={aiAdvice}
+        aiError={aiError}
+        onGenerateAdvice={handleGenerateAIAdvice}
+        activeSurface={activeSurface}
+        onSurfaceChange={setActiveSurface}
+        previousFinding={previousFinding}
+        onBack={backInvestigation}
+        onInvestigate={(bomRef) => openFinding(bomRef, "blast")}
+        onEvidence={publishEvidence}
+      />
+    ) : null;
+
+  const sidebarInvestigation = focusedAsset
+    ? { name: focusedAsset.name, bomRef: focusedAsset.bomRef, open: Boolean(selectedAsset) }
+    : null;
+
+  // ==========================================================
+  // STAGE LAYOUT (desktop ≥1025px, tablet 601–1024px, WebGL)
+  // ==========================================================
+
+  if (isStage) {
+    return (
+      <SpatialContext.Provider value={spatialContext}>
+        <StageLayout
+          tier={stageTier}
+          view={stageView}
+          section={stageSection}
+          onSection={goSection}
+          stageRef={stageRef}
+          stageProps={{
+            model: mapData.model,
+            visibleRefs: landscapeState.visibleRefs,
+            searchRefs: landscapeState.searchRefs,
+            relatedRefs: landscapeState.relatedRefs,
+            focusedRef: focusedFinding,
+            activeSurface,
+            simulation,
+            investigation: investigationData,
+            posture,
+            activeMetric,
+            reducedMotion,
+            onSelectFinding: selectFromStage,
+            onSurface: setActiveSurface,
+            onMetric: selectMetric,
+            onContextLost: () => setContextLost(true),
+          }}
+          sidebar={
+            <Sidebar
+              backendConnected={backendConnected}
+              activeKey={selectedAsset ? "security-map" : SECTION_TO_NAV[stageSection]}
+              investigation={sidebarInvestigation}
+              onNavigate={stageNavigate}
+            />
+          }
+          topbar={topbarElement}
+          contextBar={contextBarElement}
+          docks={{
+            posture: heroElement("stage"),
+            operations: operationsElement,
+            landscape: mapElement(true),
+            intelligence: intelligenceElement,
+            findings: explorerElement,
+          }}
+          inspector={workspaceElement("inspector")}
+          focusedName={focusedAsset?.name || null}
+          activeSurface={activeSurface}
+          onEscape={stageEscape}
+          onGoGlobal={() => goSection("posture")}
+          onGoLandscape={() => {
+            setFocusedFinding(null);
+            goSection("landscape");
+          }}
+          onGoFinding={() => goSection("landscape")}
+          onGoInvestigation={() => setActiveSurface(null)}
+        />
+      </SpatialContext.Provider>
+    );
+  }
+
+  // ==========================================================
+  // SCROLL LAYOUT (≤600px, no WebGL, or WebGL context lost)
   // ==========================================================
 
   return (
-    <div className="app-shell">
-      <Sidebar backendConnected={backendConnected} />
+    <SpatialContext.Provider value={spatialContext}>
+      <div className="app-shell is-spatial" data-spatial-mode={spatialMode}>
+        <SpatialEnvironment mode={spatialMode} />
 
-      <main className="main-content">
-        <Topbar search={search} onSearchChange={setSearch} backendConnected={backendConnected} />
+        <Sidebar
+          backendConnected={backendConnected}
+          activeKey={activeSection || "overview"}
+          inert={Boolean(selectedAsset)}
+          investigation={sidebarInvestigation}
+        />
 
-        <HeroOverview summary={summary} totalAssetsScanned={assets.length} />
+        <main className={`main-content${selectedAsset ? " is-backgrounded" : ""}`} inert={selectedAsset ? true : undefined}>
+          {topbarElement}
 
-        {/* ================================================
-            FIRST VIEWPORT: repository analysis + security
-            posture, side by side rather than stacked -- an
-            asymmetric two-column row instead of another full-
-            width card.
-        ================================================ */}
+          {contextBarElement}
 
-        <div className="dashboard-row dashboard-row-primary">
-          <RepositoryAnalysisPanel
-            repository={repository}
-            branch={branch}
-            status={analysisStatus}
-            message={analysisMessage}
-            error={analysisError}
-            running={analysisRunning}
-            onRepositoryChange={setRepository}
-            onBranchChange={setBranch}
-            onSubmit={handleAnalyzeRepository}
-          />
+          <SpaceLayer index="01" label="Security posture" tier="primary" active={activeSection === "overview"}>
+            {heroElement("page")}
+          </SpaceLayer>
 
-          <CriticalFindingsPanel assets={criticalFindings} onSelectAsset={setSelectedAsset} />
-        </div>
+          <SpaceLayer index="02" label="Operations" tier="secondary" active={activeSection === "repository"}>
+            {operationsElement}
+          </SpaceLayer>
 
-        {/* ================================================
-            MIGRATION INTELLIGENCE
-        ================================================ */}
+          <SpaceLayer index="03" label="Cryptographic landscape" tier="primary" active={activeSection === "security-map"}>
+            {mapElement(false)}
+          </SpaceLayer>
 
-        <section className="migration-intelligence-section">
-          <div className="section-heading">
-            <span className="section-eyebrow">Migration Intelligence</span>
-            <h2>How risk, migration strategy and source impact are distributed</h2>
-          </div>
+          <SpaceLayer index="04" label="Migration intelligence" tier="secondary" active={activeSection === "risk"}>
+            {intelligenceElement}
+          </SpaceLayer>
 
-          <div className="analytics-grid">
-            <DonutPanel
-              id="risk-analysis-section"
-              icon={ShieldAlert}
-              title="Risk Distribution"
-              description="Current migration risk severity"
-              data={riskChartData}
-              colors={RISK_DONUT_COLORS}
-              centerValue={atRiskCount}
-              centerLabel="at risk"
-              onSliceClick={(name) => name && setRiskFilter(String(name).toUpperCase())}
-            />
+          <SpaceLayer index="05" label="Findings" tier="secondary" active={activeSection === "assets"}>
+            {explorerElement}
+          </SpaceLayer>
 
-            <DonutPanel
-              id="pqc-migration-section"
-              icon={Zap}
-              title="Migration Distribution"
-              description="Recommended migration strategy"
-              data={migrationChartData}
-              colors={MIGRATION_DONUT_COLORS}
-              onSliceClick={(name) => {
-                const migrationMap = {
-                  "PQC Candidate": "pqc-candidate",
-                  Architectural: "architectural-migration",
-                  "No Direct Replacement": "no-direct-pqc-replacement",
-                  "Not Applicable": "not-applicable",
-                };
-                const value = migrationMap[name];
-                if (value) setMigrationFilter(value);
-              }}
-            />
+          <footer className="dashboard-footer">
+            <span>ECDAT Quantum Migration Intelligence</span>
+            <span>
+              Backend API • {summary?.total_assets ?? 0} Assets • {summary?.total_migration_actions ?? 0}{" "}
+              Actions
+            </span>
+          </footer>
+        </main>
 
-            <DonutPanel
-              id="global-source-impact-section"
-              icon={FileWarning}
-              title="Source Impact"
-              description="Estimated source-code migration impact"
-              data={sourceImpactChartData}
-              colors={IMPACT_DONUT_COLORS}
-              onSliceClick={(name) => name && setSourceImpactFilter(String(name).toUpperCase())}
-            />
-          </div>
-        </section>
-
-        {/* ================================================
-            ASSET EXPLORER
-        ================================================ */}
-
-        <section className="panel asset-explorer">
-          <div className="panel-header">
-            <div className="section-heading">
-              <span className="section-eyebrow">Findings</span>
-              <h2>Cryptographic Asset Explorer</h2>
-              <p>Every analyzed asset, as a full security assessment.</p>
-            </div>
-
-            <div className="asset-count">
-              {filteredAssets.length} / {enrichedAssets.length}
-            </div>
-          </div>
-
-          <AssetFilters
-            search={search}
-            onSearchChange={setSearch}
-            riskFilter={riskFilter}
-            onRiskFilterChange={setRiskFilter}
-            migrationFilter={migrationFilter}
-            onMigrationFilterChange={setMigrationFilter}
-            pqcFilter={pqcFilter}
-            onPqcFilterChange={setPqcFilter}
-            sourceImpactFilter={sourceImpactFilter}
-            onSourceImpactFilterChange={setSourceImpactFilter}
-          />
-
-          <AssetExplorer
-            assets={filteredAssets}
-            totalCount={enrichedAssets.length}
-            selectedAsset={selectedAsset}
-            onSelectAsset={setSelectedAsset}
-          />
-
-          {selectedAsset && (
-            <AssetDetailPanel
-              assetName={
-                assetDetail?.asset ||
-                enrichedAssets.find((asset) => asset.bomRef === selectedAsset)?.name ||
-                selectedAsset
-              }
-              assetDetail={assetDetail}
-              loading={assetDetailLoading}
-              error={assetDetailError}
-              onRetry={loadAssetDetail}
-              onClose={() => {
-                setSelectedAsset(null);
-                setAssetDetail(null);
-              }}
-              aiStatus={aiStatus}
-              aiAdvice={aiAdvice}
-              aiError={aiError}
-              onGenerateAdvice={handleGenerateAIAdvice}
-            />
-          )}
-        </section>
-
-        <footer className="dashboard-footer">
-          <span>ECDAT Quantum Migration Intelligence</span>
-          <span>
-            Backend API • {summary?.total_assets ?? 0} Assets • {summary?.total_migration_actions ?? 0}{" "}
-            Actions
-          </span>
-        </footer>
-      </main>
-    </div>
+        {/* The investigation workspace renders at the document root so the
+            dashboard behind it can recede as the background layer. */}
+        {selectedAsset && createPortal(workspaceElement("overlay"), document.body)}
+      </div>
+    </SpatialContext.Provider>
   );
 }
 

@@ -1,6 +1,6 @@
 # ECDAT — Architecture
 
-This document describes the ECDAT implementation **as it currently exists** (branch `ecdat-1`, 2026-09-17), traced through the code. It is descriptive, not aspirational: anything not implemented is listed as a limitation or extension area (§20), not as a capability. The dated history of how the system reached this state — including the bugs found and fixed along the way — is in `CHANGELOG.md`.
+This document describes the ECDAT implementation **as it currently exists** (branch `ecdat-1`, 2026-09-18), traced through the code. It is descriptive, not aspirational: anything not implemented is listed as a limitation or extension area (§20), not as a capability. The dated history of how the system reached this state — including the bugs found and fixed along the way — is in `CHANGELOG.md`.
 
 ECDAT is a working **prototype**: one repository/CBOM at a time, flat JSON files instead of a database, no authentication, and locally run services.
 
@@ -10,7 +10,7 @@ ECDAT is a working **prototype**: one repository/CBOM at a time, flat JSON files
 
 ### Implemented
 
-- **Source-repository discovery through CBOMKit.** A Git repository URL + branch is sent to a separately running CBOMKit instance, which scans the repository's source code and returns a CycloneDX CBOM. ECDAT does not scan source code itself; what can be discovered (languages, crypto libraries, API patterns) is whatever CBOMKit supports.
+- **GitHub repository scanning (§2.1).** A validated GitHub URL + branch is dispatched through a scanner registry to the CBOMKit adapter; the returned CycloneDX CBOM is validated and normalized before the pipeline runs. ECDAT does not scan source code itself; what can be discovered (languages, crypto libraries, API patterns) is whatever CBOMKit supports. The scan reports real per-stage status.
 - **CBOM analysis.** A 13-stage Python pipeline turns that CBOM into per-finding classification, explainable quantum risk, blast radius, migration complexity, migration priority, PQC candidate ranking, a purpose-aware migration strategy, migration actions and a unified migration report.
 - **FastAPI backend** serving the generated JSON, plus read-only analysis endpoints (What-If Simulator, Evidence Explorer, blast-radius relationship view).
 - **React/Vite dashboard** for exploring findings and their evidence.
@@ -18,7 +18,19 @@ ECDAT is a working **prototype**: one repository/CBOM at a time, flat JSON files
 
 ### Not implemented
 
-ECDAT does **not** currently scan compiled binaries or firmware, container images, cloud infrastructure or cloud key-management configuration, live network traffic or TLS endpoints, or running processes. It has no multi-repository history, no user accounts, no database, and no per-stage progress telemetry. Organizational business context (business criticality, data lifetime) is **not** discovered automatically; it is only used if an organization supplies it in a configuration file (§7.3), and no such file ships with the repository.
+**Scanner coverage.** Only **Git / GitHub source repositories** have a working scanner, and only while a CBOMKit instance is reachable. ECDAT does **not** scan:
+
+| Target | Status |
+|---|---|
+| Compiled binaries and firmware | **Not implemented** — declared as a planned target (`status: "not-implemented"`), no scanner exists |
+| Dependency / library inventories | **Not implemented** — declared as a planned target, no scanner exists |
+| Container images | **Not implemented** — declared as a planned target, no scanner exists |
+| Hardware and cloud infrastructure / cloud KMS / TLS inventory | **Not implemented**, and not declared as a planned target |
+| Live network traffic, TLS endpoints, running processes | **Not implemented** |
+
+The planned targets are advertised through `GET /api/scan/capabilities` and rendered in the UI as not implemented. No scanner is stubbed, and no capability is simulated: a target with no scanner is rejected with `unsupported-target`.
+
+ECDAT also has no multi-repository history, no user accounts and no database. Organizational business context (business criticality, data lifetime) is **not** discovered automatically; it is only used if an organization supplies it in a configuration file (§7.3), and no such file ships with the repository.
 
 ---
 
@@ -26,18 +38,22 @@ ECDAT does **not** currently scan compiled binaries or firmware, container image
 
 ```
  React dashboard (Vite, :5173)
-   │  GET /api/*                  POST /api/analyze {repository, branch}
+   │  GET /api/*                  POST /api/scan {repository, branch}
    │  POST /api/what-if/*         POST /api/ai/advice {asset: <bom_ref>}
    ▼
  FastAPI backend  backend/main.py (:8000)
    │
    ├─ reads data/*.json on every request (no cache, no database)
    │
-   ├─ /api/analyze ──► background thread ──► analyze_repository.py (subprocess)
-   │                                           ├─ cbomkit_client.py ──► CBOMKit (:8081, external)
-   │                                           │     POST /api/v1/scan, poll /api/v1/cbom/last/5
-   │                                           │     └─► data/keycloak-cbom.json
-   │                                           └─ run_pipeline.py ──► 13 stages ──► data/ecdat-*.json
+   ├─ /api/scan ──► services/scanning/ScanService (background thread)
+   │                  ├─ targets.py     validate the GitHub URL + branch
+   │                  ├─ registry.py    pick a scanner for the target kind
+   │                  ├─ cbomkit.py ──► CBOMKit (:8081, external)
+   │                  │                   POST /api/v1/scan, poll /api/v1/cbom/last/N
+   │                  ├─ validation.py  validate + normalize the CBOM
+   │                  │                   └─► data/keycloak-cbom.json
+   │                  ├─ pipeline.py ──► run_pipeline.py's 13 stages ──► data/ecdat-*.json
+   │                  └─ publish        data/ecdat-scan.json, data/ecdat-scan-history.json
    │
    ├─ read-only services: evidence_explorer.py, blast_radius_view.py, migration_scenario.py
    │
@@ -45,6 +61,75 @@ ECDAT does **not** currently scan compiled binaries or firmware, container image
 ```
 
 `backend/main.py` is the single FastAPI application (`uvicorn main:app --reload` from `backend/`). `backend/api/main.py` is a compatibility shim that re-exports the same `app`.
+
+---
+
+## 2.1 The repository scan workflow
+
+`backend/services/scanning/` owns everything between a URL and a finished analysis. The whole flow:
+
+```
+GitHub URL → target validation → scanner registry → CBOMKit adapter
+  → CBOM validation / normalization → existing 13-stage pipeline → publish → 3D Security Space
+```
+
+### 2.1.1 Modules
+
+| Module | Responsibility |
+|---|---|
+| `targets.py` | Parses and canonicalises a GitHub URL (https/http/`www.`/`.git`/ssh forms) into a `ScanTarget` (kind, owner, repository, branch, slug). Raises `TargetError(code, message)`. |
+| `base.py` | The scanner seam: `Scanner` ABC (`key`, `title`, `target_kind`, `requires`, `supports()`, `check_availability()`, `scan()`), plus `Availability`, `ScanArtifact` and `ScannerError(code, message)`. |
+| `cbomkit.py` | `CBOMKitClient` (`POST /api/v1/scan`, `GET /api/v1/cbom/last/{n}`) and `CBOMKitRepositoryScanner`, which probes availability, starts the scan, polls for the CBOM of that repository, and returns it with source metadata. |
+| `validation.py` | `validate_cbom()` → `{ok, errors, warnings, stats}`; `normalize_cbom()` → `(normalized, notes)`. |
+| `registry.py` | `ScannerRegistry.for_target()` selects a scanner; `capabilities()` returns supported targets with live availability plus `PLANNED_TARGETS` (binary, library, container — all `status: "not-implemented"`). |
+| `pipeline.py` | Imports `PIPELINE` from `run_pipeline.py` — the single source of truth for the 13 stages — and runs each as a subprocess, reporting start and end per stage and keeping the output tail of a failure. |
+| `service.py` | `ScanService`: the lifecycle, thread-safe state, the record and the history. |
+
+### 2.1.2 Lifecycle and status
+
+`STAGE_DEFINITIONS` in `service.py` defines the seven reported stages:
+
+| Key | Stage | Fails with |
+|---|---|---|
+| `target` | Validate repository target | `empty-url`, `unsupported-host`, `malformed-url`, `invalid-branch` |
+| `scanner` | Select scanner | `unsupported-target` |
+| `availability` | Check scanner availability | `cbomkit-unavailable` |
+| `scan` | Scan repository (CBOMKit) | `cbomkit-scan-rejected`, `cbomkit-timeout`, `cbomkit-unavailable` |
+| `validation` | Validate & normalize CBOM | `invalid-cbom` (carrying the specific validation codes) |
+| `pipeline` | ECDAT analysis pipeline | `pipeline-failed`, naming the stage script that failed |
+| `publish` | Publish scan results | — |
+
+Each stage carries `pending / running / done / failed`, a human detail line and its own timing; the `pipeline` stage additionally reports the 13 real substage names and which one is running. **Nothing is advanced on a timer.** One scan runs at a time: a second request returns `409` while one is in flight.
+
+State is published three ways: `GET /api/scan/status` (live snapshot), `data/ecdat-scan.json` (the last scan record) and `data/ecdat-scan-history.json` (the last 20 scans). Both files are runtime artifacts, regenerated by every scan and git-ignored.
+
+### 2.1.3 CBOM validation and normalization
+
+Validation runs **before** the pipeline, so a bad scan cannot overwrite a good analysis.
+
+| Errors (scan stops) | Meaning |
+|---|---|
+| `not-an-object`, `unsupported-bom-format` | Not a CycloneDX CBOM document |
+| `missing-components`, `invalid-components`, `invalid-component` | No usable component list |
+| `missing-bom-ref` | A component without a `bom-ref` — ECDAT could not identify it |
+| `conflicting-bom-ref` | Two **different** components share one `bom-ref` — identity would be ambiguous |
+| `invalid-dependencies` | The `dependencies` entry is not a list of objects |
+| `no-crypto-components` | Nothing cryptographic was found, so there is nothing to analyse |
+
+| Warnings (scan continues) | Meaning |
+|---|---|
+| `missing-bom-format`, `missing-spec-version` | Metadata absent; the document is still usable |
+| `repeated-component-entry` | The same component appears more than once, byte-identical. CBOMKit does this routinely — the current CBOM has 27 — and `cbom_parser.py` merges them by `bom_ref` (§5), so each is analysed once |
+| `missing-dependencies` | No `dependencies` list; blast radius will find no edges |
+| `dangling-dependency-ref` | A dependency references a `bom-ref` that has no component |
+
+`stats` reports `components`, `crypto_components`, `findings` (unique cryptographic `bom_ref`s — the number the dashboard shows), `dependency_entries`, `dependency_edges`, `unique_bom_refs` and `asset_types`.
+
+`normalize_cbom()` only adds missing `components` / `dependencies` containers, returns a copy, and never mutates the input or edits a value. ECDAT does not repair, infer or invent CBOM content.
+
+### 2.1.4 Adding a scanner
+
+A new target kind needs one class implementing `Scanner` — `check_availability()` and `scan(target, progress)` returning a `ScanArtifact` — registered in the registry, plus a target parser if its identifier is not a Git URL. The service, the API, the status payload and the UI need no change. Until such a scanner exists, the target stays in `PLANNED_TARGETS` and is reported as not implemented; it is never stubbed.
 
 ---
 
@@ -81,7 +166,9 @@ This is enforced by tests. `test_finding_identity.py` checks that all generated 
 | 12 | `generate_migration_report.py` | risk, blast, complexity, priority, plan, actions | `ecdat-migration-report.json` (unified per-finding record) |
 | 13 | `check_risk_consistency.py` | explainable risk, risk-assessed assets, report | none — exits non-zero if any risk figure disagrees |
 
-**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned; the current file comes from a CBOMKit scan of `pyca/cryptography`. `data/pqc-algorithms.json` is the PQC registry.
+**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned — the scan service writes every new CBOM there, which is why no analysis module had to change — and the current file comes from a CBOMKit scan of `pyca/cryptography`. `data/pqc-algorithms.json` is the PQC registry.
+
+**Scan runtime artifacts:** `data/ecdat-scan.json` and `data/ecdat-scan-history.json` are written by the scan service (§2.1.2), not by the pipeline. They are machine-generated per scan and git-ignored; no pipeline stage reads them.
 
 **Not produced by the active pipeline:** these files are left over from earlier development and no current reader depends on them:
 - `ecdat-contextual-risk-assets.json`, from the deprecated `score_contextual_cbom.py`
@@ -401,25 +488,28 @@ Every route reads the generated JSON at request time. Per-finding path parameter
 | Evidence | `GET /api/evidence/{bom_ref}` |
 | Blast radius view | `GET /api/blast-radius/{bom_ref}/graph` |
 | What-If | `GET /api/what-if/findings/{bom_ref}`, `POST /api/what-if/simulate {bom_ref, pqc_option}` (422 with `reason_code` on rejection), `POST /api/what-if/portfolio {replacements}` (API only; not used by the UI) |
-| Analysis | `POST /api/analyze {repository, branch}`, `GET /api/analyze/status` (idle/running/completed/failed; no per-stage progress) |
+| Scanning | `POST /api/scan {repository, branch}` (400 `{reason_code, reason}` on an invalid target, 409 while a scan is running), `GET /api/scan/status` (real per-stage progress, §2.1.2), `GET /api/scan/capabilities` (supported targets with live availability + not-implemented targets), `GET /api/scan/history` (last 20 scans) |
+| Analysis (aliases) | `POST /api/analyze {repository, branch}`, `GET /api/analyze/status` — the original routes, kept with their original response keys (`status`, `repository`, `branch`, `message`, `error`) and extended with the scan payload |
 | AI | `POST /api/ai/advice {asset}`; legacy `POST /api/ai/advisor {asset_name}` |
 
 ---
 
 ## 18. Frontend architecture
 
-- **Stack:** React 19 + Vite 8, Recharts (donuts) and lucide-react (icons), with a single tokenized stylesheet (`App.css`). No router, no global state library, no frontend test runner.
+- **Stack:** React 19 + Vite 8, Recharts (donuts), lucide-react (icons) and three.js for the shared 3D security space (lazily loaded, so the dashboard's first paint does not wait on it). One tokenized stylesheet (`App.css`) plus the spatial stylesheets. No router, no global state library, no frontend test runner.
+- **Layout modes (`spatial/stage/useLayoutMode.js`):** the shared `SpatialStage` at ≥1025px (desktop) and 601–1024px (a simpler tablet stage); the scrolling layout at ≤600px, when WebGL is unavailable, and if the WebGL context is lost. All content stays in accessible HTML outside the canvas in every mode.
+- **3D engine (`spatial/engine/`):** exactly **one** `WebGLRenderer`, canvas, camera and control set, rendered on demand. Environment, posture, landscape, investigation and simulation layers plug into it; nothing is drawn that is not backed by a record from the API.
 - **`App.jsx`:** owns all dashboard state and effects:
   - initial load of summary, assets, report list and priority
   - loading the selected finding's detail by `bom_ref`
-  - analysis-status polling
+  - scan status polling, plus scan capabilities and history, and adoption of a scan already running when the page loads
   - backend health polling
   - AI request state, with a stale-response guard
 - **`api.js`:** wraps every endpoint used.
 - **Dashboard components:**
   - `Topbar`, `Sidebar`
   - `HeroOverview`: readiness plus stat cards, including "PQC Candidates — Direct PQC or hybrid path selected"
-  - `RepositoryAnalysisPanel` with `PipelineStepper` (7 narrative stages; only coarse status is shown)
+  - `RepositoryAnalysisPanel` — the **Scan a Repository** workflow (§2.1): the scanner-capability line including the not-implemented targets, the URL/branch form, `PipelineStepper` rendering the backend's **real** seven stages with their details and the live pipeline substage, the failure reason code, the completed scan's counts and source, validation warnings, an **Open in Security Space** action that focuses the freshly analysed dataset, and recent scan history. Every value shown comes from `/api/scan/status` or `/api/scan/capabilities`; none is simulated client-side.
   - `CriticalFindingsPanel`
   - `DonutPanel` (risk, migration type, source impact)
   - `AssetFilters` and `AssetExplorer` (cards keyed by `bom_ref`)
@@ -448,7 +538,8 @@ Every route reads the generated JSON at request time. Per-finding path parameter
 
 ## 19. Testing and validation
 
-- **Backend tests:** 32 `backend/test_*.py` scripts, each runnable as `python test_x.py` from `backend/` (no pytest dependency). `test_api_validation.py` and `test_api_integration.py` need the backend running on `:8000`. The suite covers:
+- **Backend tests:** 35 `backend/test_*.py` scripts, each runnable as `python test_x.py` from `backend/` (no pytest dependency). `test_api_validation.py` and `test_api_integration.py` need the backend running on `:8000`. The suite covers:
+  - scan targets and the scanner registry (`test_scan_targets.py`), CBOM validation and normalization against the real CBOM (`test_cbom_validation.py`), and the scan lifecycle against fake scanners and a fake pipeline runner (`test_scan_service.py`)
   - classification and purpose resolution, risk context and business context, contextual risk and explanations
   - blast radius, complexity, priority, PQC mapping and ranking, strategy
   - recommendation state
@@ -462,16 +553,17 @@ Every route reads the generated JSON at request time. Per-finding path parameter
 ## 20. Known limitations and extension areas
 
 **Current limitations**
-- One CBOM at a time, in a fixed file (`data/keycloak-cbom.json`); each analysis overwrites `data/`. The generated `ecdat-*.json` files don't record which repository they came from; only the raw CBOM keeps CBOMKit's metadata (repository URL, commit).
-- Discovery depends entirely on CBOMKit and the repository's source. No binary, container, cloud, network or runtime discovery exists.
+- One CBOM at a time, in a fixed file (`data/keycloak-cbom.json`); each scan overwrites `data/`. The generated `ecdat-*.json` files don't record which repository they came from; the raw CBOM keeps CBOMKit's metadata and `data/ecdat-scan.json` records the target of the last scan.
+- Discovery depends entirely on CBOMKit and the repository's source. No binary, library, container, hardware, cloud, network or runtime scanner exists; those targets are declared not implemented (§1).
+- A scan needs a reachable CBOMKit instance. There is no bundled CBOMKit deployment in this repository, and the scan fails at the availability stage when none is running.
 - Business criticality and data lifetime are UNKNOWN unless configured, so Mosca urgency is currently not computed for any finding.
 - The risk context's criticality and exposure are heuristics from paths and API contexts; the specific matching signal is not recorded.
 - The What-If model distinguishes PQC families, not parameter sets.
-- `/api/analyze/status` has no per-stage progress. There is no authentication, no persistence beyond JSON files, and no frontend unit tests.
+- There is no authentication, no persistence beyond JSON files, and no frontend unit tests.
 - Legacy and duplicate files remain: `main_backup*.py`, `cbom_parser_backup.py`, `score_contextual_cbom.py`, `data-backup/`, stale JSON files, and a stray `h origin ecdat-1` file at the repository root.
 
 **Possible extensions (not implemented)**
-- Additional discovery sources: binary or container scanning, cloud KMS/TLS inventory.
+- Additional discovery sources — binary, library, container, hardware or cloud KMS/TLS scanners — added behind the `Scanner` interface (§2.1.4).
 - Multi-repository storage and history.
 - An editor for organizational business context.
-- Per-stage pipeline progress, authentication, and parameter-set-aware risk modelling.
+- Authentication, and parameter-set-aware risk modelling.

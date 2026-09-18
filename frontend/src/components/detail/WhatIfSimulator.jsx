@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { FlaskConical } from "lucide-react";
+import { ArrowRight, FlaskConical, Lock } from "lucide-react";
 
 import { getWhatIfFinding, simulateWhatIf } from "../../api";
+import { useSpatial } from "../../spatial/SpatialContext";
 import { SeverityBadge, TagBadge } from "../Badge";
 
 function formatScore(value) {
@@ -65,6 +66,59 @@ function WhatIfResult({ result }) {
       <div className="what-if-result-banner">
         <TagBadge tone="simulation">Simulation result</TagBadge>
         <span>{result.notice}</span>
+      </div>
+
+      {/* Before / after as two separated states. Every value is the
+          backend's own before/after figure from the same result. */}
+      <div className="simulation-split" aria-label="Current state compared with simulated state">
+        <div className="simulation-state simulation-state-real">
+          <span className="simulation-state-label">
+            <Lock size={12} aria-hidden="true" /> Current state · real
+          </span>
+          {readiness && (
+            <div className="simulation-state-metric">
+              <strong>{readiness.before}%</strong>
+              <span>portfolio readiness</span>
+            </div>
+          )}
+          <div className="simulation-state-metric">
+            <strong>{formatScore(finding.risk.before.score)}</strong>
+            <span>
+              quantum risk <SeverityBadge value={finding.risk.before.severity} />
+            </span>
+          </div>
+          <span className="simulation-state-algo">{finding.current_algorithm}</span>
+        </div>
+
+        <div className="simulation-bridge" aria-hidden="true">
+          <ArrowRight size={18} />
+          <span>simulate</span>
+        </div>
+
+        <div className="simulation-state simulation-state-simulated">
+          <span className="simulation-state-label">
+            <FlaskConical size={12} aria-hidden="true" /> Simulated state · hypothetical
+          </span>
+          {readiness && (
+            <div className="simulation-state-metric">
+              <strong>{readiness.after}%</strong>
+              <span>
+                portfolio readiness{" "}
+                <em className={`what-if-delta what-if-delta-${deltaTone(readiness.delta, true)}`}>
+                  {formatDelta(readiness.delta, " pts")}
+                </em>
+              </span>
+            </div>
+          )}
+          <div className="simulation-state-metric">
+            <strong>{formatScore(finding.risk.after.score)}</strong>
+            <span>
+              quantum risk <SeverityBadge value={finding.risk.after.severity} />{" "}
+              <em className={`what-if-delta what-if-delta-${deltaTone(finding.risk.delta)}`}>{formatDelta(finding.risk.delta)}</em>
+            </span>
+          </div>
+          <span className="simulation-state-algo">{finding.pqc_component}</span>
+        </div>
       </div>
 
       <p className="what-if-scenario">
@@ -167,6 +221,27 @@ export function WhatIfSimulator({ bomRef }) {
   const [status, setStatus] = useState("idle");
   const [result, setResult] = useState(null);
   const [runError, setRunError] = useState("");
+  const { publishSimulation } = useSpatial();
+
+  // Tell the spatial environment which simulation result is on screen.
+  // Every value is copied from the backend response; nothing is computed.
+  useEffect(() => {
+    if (!result) {
+      publishSimulation(bomRef, null);
+      return undefined;
+    }
+    const simulated = result.finding;
+    publishSimulation(bomRef, {
+      bomRef,
+      currentAlgorithm: simulated.current_algorithm,
+      pqcComponent: simulated.pqc_component,
+      strategy: simulated.strategy,
+      risk: simulated.risk,
+      priority: simulated.priority,
+      readiness: result.portfolio?.readiness_percent || null,
+    });
+    return () => publishSimulation(bomRef, null);
+  }, [result, bomRef, publishSimulation]);
 
   useEffect(() => {
     let cancelled = false;
@@ -217,7 +292,7 @@ export function WhatIfSimulator({ bomRef }) {
   const strategy = finding?.strategy;
 
   return (
-    <div className="what-if" data-bom-ref={bomRef}>
+    <div className={`what-if${result ? " is-simulating" : ""}`} data-bom-ref={bomRef}>
       <div className="what-if-head">
         <FlaskConical size={14} aria-hidden="true" />
         <span>What-If Simulator</span>
@@ -233,6 +308,11 @@ export function WhatIfSimulator({ bomRef }) {
 
       {finding && (
         <>
+          {result && (
+            <p className="what-if-frozen">
+              <Lock size={12} aria-hidden="true" /> Real finding frozen — the simulation below does not change it.
+            </p>
+          )}
           <dl className="migration-strategy-grid what-if-current">
             <div>
               <dt>Finding</dt>

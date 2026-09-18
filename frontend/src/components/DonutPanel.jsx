@@ -8,7 +8,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
  * data/interaction contract is unchanged (same `data` shape, same
  * click-to-filter behavior, now `onSliceClick`).
  */
-export function DonutPanel({ id, icon: Icon, title, description, data, colors, onSliceClick, centerValue, centerLabel }) {
+export function DonutPanel({ id, icon: Icon, title, description, data, colors, onSliceClick, centerValue, centerLabel, activeName = null, activeCaption = null }) {
   const total = data.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
   // Most charts show the total; a chart can instead highlight a
@@ -20,7 +20,7 @@ export function DonutPanel({ id, icon: Icon, title, description, data, colors, o
   const displayLabel = centerLabel ?? "total";
 
   return (
-    <div className="panel analytics-panel" id={id}>
+    <div className={`panel analytics-panel${activeName ? " has-focus" : ""}`} id={id}>
       <div className="panel-header">
         <div>
           <h2>{title}</h2>
@@ -45,7 +45,11 @@ export function DonutPanel({ id, icon: Icon, title, description, data, colors, o
                 onClick={(entry) => onSliceClick?.(entry?.name)}
               >
                 {data.map((entry, index) => (
-                  <Cell key={entry.name} fill={colors[index % colors.length]} />
+                  <Cell
+                    key={entry.name}
+                    fill={colors[index % colors.length]}
+                    fillOpacity={activeName && activeName !== entry.name ? 0.28 : 1}
+                  />
                 ))}
               </Pie>
               <Tooltip
@@ -66,10 +70,16 @@ export function DonutPanel({ id, icon: Icon, title, description, data, colors, o
           </div>
         </div>
 
+        {activeName && activeCaption && <p className="donut-focus-caption">{activeCaption}</p>}
+
         <ul className="donut-legend">
           {data.map((entry, index) => (
             <li key={entry.name}>
-              <button type="button" onClick={() => onSliceClick?.(entry.name)}>
+              <button
+                type="button"
+                className={activeName === entry.name ? "is-focused" : undefined}
+                onClick={() => onSliceClick?.(entry.name)}
+              >
                 <span className="donut-legend-dot" style={{ background: colors[index % colors.length] }} />
                 <span className="donut-legend-name">{entry.name}</span>
                 <span className="donut-legend-value">{entry.value}</span>

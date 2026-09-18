@@ -58,7 +58,18 @@ export function AIAdvisorPanel({
   const pqcNone = strategyPath ? strategyPath.none : !assetDetail?.recommendation?.candidate;
 
   return (
-    <section className="workspace-panel panel-ai" aria-labelledby="ai-advisor-heading">
+    <section
+      className={`workspace-panel panel-ai${status !== "idle" ? " ai-layer-active" : ""}`}
+      aria-labelledby="ai-advisor-heading"
+      data-ai-status={status}
+    >
+      {/* Keeps the selected finding visible inside the analysis layer. */}
+      <div className="ai-context-pin">
+        <span>Contextual intelligence layer</span>
+        <strong>{assetName}</strong>
+        {assetDetail?.bom_ref && <code title={assetDetail.bom_ref}>{assetDetail.bom_ref}</code>}
+      </div>
+
       <div className="ai-advisor-header">
         <div className="ai-advisor-heading-group">
           <div className="ai-advisor-icon">

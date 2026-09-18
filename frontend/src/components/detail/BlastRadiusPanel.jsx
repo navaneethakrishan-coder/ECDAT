@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Network } from "lucide-react";
+import { ListTree, Network, Orbit } from "lucide-react";
 
 import { getBlastRadiusGraph } from "../../api";
 import { SeverityBadge } from "../Badge";
+import { BlastSpatialView } from "./BlastSpatialView";
 
 const MAX_FAN_OUT = 5;
 
@@ -130,8 +131,13 @@ function BlastDiagram({ view }) {
  * recorded blast radius plus the CycloneDX dependsOn edges it was built
  * from. No edge is drawn that the CBOM does not record.
  */
-export function BlastRadiusPanel({ bomRef }) {
+export function BlastRadiusPanel({ bomRef, onInvestigate }) {
   const [view, setView] = useState(null);
+  // Spatial view by default; phones start on the tree, which reads
+  // better at a narrow width. Both render the same recorded graph.
+  const [layout, setLayout] = useState(() =>
+    typeof window !== "undefined" && window.matchMedia && !window.matchMedia("(min-width: 600px)").matches ? "tree" : "spatial",
+  );
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -218,7 +224,27 @@ export function BlastRadiusPanel({ bomRef }) {
           </div>
 
           {view.has_relationships ? (
-            <BlastDiagram view={view} />
+            <>
+              <div className="blast-view-toggle map-segmented" role="group" aria-label="Dependency view">
+                <button
+                  type="button"
+                  className={layout === "spatial" ? "is-active" : ""}
+                  aria-pressed={layout === "spatial"}
+                  onClick={() => setLayout("spatial")}
+                >
+                  <Orbit size={14} aria-hidden="true" /> Spatial
+                </button>
+                <button
+                  type="button"
+                  className={layout === "tree" ? "is-active" : ""}
+                  aria-pressed={layout === "tree"}
+                  onClick={() => setLayout("tree")}
+                >
+                  <ListTree size={14} aria-hidden="true" /> Tree
+                </button>
+              </div>
+              {layout === "spatial" ? <BlastSpatialView view={view} onInvestigate={onInvestigate} /> : <BlastDiagram view={view} />}
+            </>
           ) : (
             <div className="blast-empty" data-state="no-relationships">
               <strong>No dependency relationships recorded</strong>

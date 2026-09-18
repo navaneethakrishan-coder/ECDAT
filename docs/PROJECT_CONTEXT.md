@@ -2,7 +2,7 @@
 
 > ECDAT's name is never expanded in the code. The API title is "ECDAT API", described as "ECDAT Cryptographic Discovery and Post-Quantum Migration API".
 
-This document summarizes what the ECDAT codebase does **today** (branch `ecdat-1`, 2026-09-17). It is descriptive, not aspirational. `ARCHITECTURE.md` has the technical detail, `CHANGELOG.md` the dated history, and `TODO.md` open issues.
+This document summarizes what the ECDAT codebase does **today** (branch `ecdat-1`, 2026-09-18). It is descriptive, not aspirational. `ARCHITECTURE.md` has the technical detail, `CHANGELOG.md` the dated history, and `TODO.md` open issues.
 
 ECDAT is a **prototype**. It analyzes one repository's cryptography at a time, stores results as flat JSON files, and runs entirely on local services.
 
@@ -12,7 +12,7 @@ ECDAT is a **prototype**. It analyzes one repository's cryptography at a time, s
 
 ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code repository into an explainable post-quantum migration analysis. Concretely:
 
-1. **Discovery (via CBOMKit).** The dashboard sends a Git repository URL + branch to the backend, which asks a separately running **CBOMKit** instance to scan the repository and return a CycloneDX CBOM. What can be discovered depends on CBOMKit's source-code analysis; ECDAT itself does not parse source code.
+1. **Discovery (via CBOMKit).** The dashboard sends a GitHub repository URL + branch to the backend's scan service, which validates the target, selects a scanner from the scanner registry, and asks a separately running **CBOMKit** instance to scan the repository and return a CycloneDX CBOM. ECDAT then validates and normalizes that CBOM before analysing it. What can be discovered depends on CBOMKit's source-code analysis; ECDAT itself does not parse source code. The full flow is in §3.1.
 2. **Analysis.** A 13-stage Python pipeline produces, per finding:
    - classification and evidence-based purpose
    - explainable quantum risk
@@ -24,11 +24,23 @@ ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code reposi
 
    A final consistency check verifies that every risk figure agrees.
 3. **Serving.** A FastAPI backend exposes the results, plus read-only What-If, Evidence Explorer and blast-radius relationship endpoints.
-4. **Exploration.** A React dashboard shows the portfolio and a per-finding investigation workspace.
+4. **Exploration.** A React dashboard shows the portfolio and a per-finding investigation workspace, rendered on desktop and tablet widths as a shared 3D security space.
 5. **Explanation.** An AI Advisor sends one finding's computed results to a locally hosted **Ollama** model (`qwen3:14b`) and displays a plain-language analysis.
 
-**Not implemented:**
-- scanning of binaries, container images, cloud infrastructure, network traffic or running systems
+### Scanner coverage — what is and is not implemented
+
+| Target | Status |
+|---|---|
+| **Git / GitHub source repositories** | **Implemented**, through the CBOMKit adapter (`cbomkit-repository`). Requires a reachable CBOMKit instance; when CBOMKit is unreachable the scan fails at the availability stage and says so. |
+| Compiled binaries and firmware | **Not implemented.** Declared as a planned target; no scanner exists. |
+| Dependency / library inventories | **Not implemented.** Declared as a planned target; no scanner exists. |
+| Container images | **Not implemented.** Declared as a planned target; no scanner exists. |
+| Hardware, cloud infrastructure, cloud KMS/TLS inventory | **Not implemented**, and not declared as a planned target. |
+| Live network traffic, TLS endpoints, running processes | **Not implemented.** |
+
+The three planned targets are returned by `GET /api/scan/capabilities` with `status: "not-implemented"` and shown in the UI as *"Not implemented: compiled binaries, dependency / library inventories, container images."* Nothing in the product implies coverage that does not exist.
+
+**Also not implemented:**
 - multi-repository history
 - a database or authentication
 - automatic discovery of business context: business criticality and data lifetime come only from an optional, organization-supplied config file, and none ships with the repository
@@ -56,7 +68,7 @@ ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code reposi
 ## 3. Core features (as implemented)
 
 **Discovery and identity**
-- **Automated repository analysis.** `POST /api/analyze` runs `analyze_repository.py` in the background: a CBOMKit scan followed by the pipeline. Status is polled via `/api/analyze/status` (idle/running/completed/failed only; no per-stage progress).
+- **GitHub repository scanning.** A first-class scan workflow with real per-stage status (§3.1).
 - **CBOM parsing.** Components and dependency relationships are extracted. Duplicate component records are merged **only** when their `bom_ref` is identical, keeping every evidence occurrence; findings are never merged by name.
 
 **Classification and risk**
@@ -97,6 +109,30 @@ ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code reposi
 
 ---
 
+## 3.1 The repository scan workflow
+
+```
+GitHub URL
+  → target validation      parse/canonicalise owner, repository, branch
+  → scanner registry       select a scanner that supports the target kind
+  → CBOMKit adapter        POST /api/v1/scan, poll /api/v1/cbom/last/N
+  → CBOM validation /      reject unusable CBOMs; add missing containers only
+    normalization
+  → 13-stage pipeline      the existing, unchanged ECDAT analysis
+  → publish                write the scan record and history
+  → 3D Security Space      "Open in Security Space" focuses the new dataset
+```
+
+Implemented by `backend/services/scanning/` and exposed as `POST /api/scan` (alias `POST /api/analyze`), `GET /api/scan/status`, `GET /api/scan/capabilities` and `GET /api/scan/history`.
+
+- **Real progress.** The status payload reports the seven stages above with `pending / running / done / failed` and a per-stage detail line, plus the 13 pipeline substages and the stage currently executing. No stage advances on a timer; every transition is a real completion.
+- **Validation before analysis.** A CBOM that is not a CycloneDX object, has no components, has components without a `bom-ref`, has two *different* components sharing one `bom-ref`, or contains no cryptographic components is **rejected before the pipeline runs**, so a bad scan cannot overwrite a good analysis. Repeated *identical* component entries are a warning, not an error — CBOMKit emits them routinely (the current CBOM has 27) and ECDAT keys findings by `bom_ref`, so each is analysed once.
+- **Normalization is minimal.** Only missing `components` / `dependencies` containers are added. No value is invented, corrected or inferred.
+- **Honest failures.** Every failure carries a reason code — `empty-url`, `unsupported-host`, `malformed-url`, `invalid-branch`, `cbomkit-unavailable`, `cbomkit-scan-rejected`, `cbomkit-timeout`, `unsupported-target`, a validation code, or the name of the pipeline stage that failed — and names the stage it failed at.
+- **Extensible by design.** Scanners implement one `Scanner` interface (`check_availability`, `scan`) and are added to the registry; binary, library and container scanners can be added without touching the service, the API or the UI, and are currently declared as not implemented rather than stubbed.
+
+---
+
 ## 4. Current dataset snapshot
 
 `data/keycloak-cbom.json` currently holds a CBOMKit scan of `pyca/cryptography` (commit `a825ca0`). The filename is fixed and historical. From it:
@@ -120,7 +156,7 @@ ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code reposi
 - **Dependencies:** no committed `requirements.txt` or `pyproject.toml`; they are only visible in the venv
 
 ### Frontend
-- **React 19** + **Vite 8**; **Recharts** (donut charts); **lucide-react** (icons)
+- **React 19** + **Vite 8**; **Recharts** (donut charts); **lucide-react** (icons); **three.js** (the 3D security space, lazily loaded)
 - **oxlint** (`npm run lint`)
 - **Styling:** one tokenized stylesheet (`App.css`), with Inter and Space Grotesk loaded from Google Fonts, which requires network access
 - **Structure:** no router, no global state library, no frontend test runner
@@ -137,8 +173,8 @@ ECDAT turns a **Cryptography Bill of Materials (CBOM)** for a source-code reposi
 backend/
   main.py                      The FastAPI application (all routes)
   api/main.py                  Compatibility shim re-exporting main.app
-  analyze_repository.py        CBOMKit scan + pipeline orchestration (subprocess)
-  cbomkit_client.py            CBOMKit client; writes data/keycloak-cbom.json
+  analyze_repository.py        CLI over the scan service (one scan, printed stages)
+  cbomkit_client.py            CLI over the CBOMKit adapter + CBOM validation
   run_pipeline.py              Runs the 13 stages below in order
   cbom_parser.py → classify_cbom.py → explain_cbom.py → score_cbom.py →
   generate_blast_radius.py → generate_migration_complexity.py →
@@ -164,9 +200,17 @@ backend/
     evidence_explorer.py                                Evidence Explorer
     blast_radius_view.py                                blast-radius relationship view
     ai_advisor.py                                       AI Advisor context + Ollama call
+    scanning/                                           the scan workflow (§3.1)
+      targets.py      GitHub URL/branch validation → ScanTarget
+      base.py         Scanner interface, Availability, ScanArtifact, ScannerError
+      cbomkit.py      CBOMKit HTTP client + repository scanner adapter
+      validation.py   CBOM validation and minimal normalization
+      registry.py     scanner registry + declared not-implemented targets
+      pipeline.py     runs the existing 13 stages, reporting each one
+      service.py      scan lifecycle, state, records and history
   knowledge/crypto_knowledge.py, knowledge/migration_strategy_policy.py
   models/risk_factors.py       RiskContext
-  test_*.py                    32 test scripts (run individually with python)
+  test_*.py                    35 test scripts (run individually with python)
   Legacy/unused: main_backup*.py, cbom_parser_backup.py, score_contextual_cbom.py,
                  generate_summary.py, inspect_dependencies.py
 frontend/src/
@@ -176,8 +220,16 @@ frontend/src/
                AssetExplorer, AssetDetailPanel, AIAdvisorPanel, Badge, States,
                DistributionBar (unused)
   components/detail/  AssetHeaderBand, EvidencePanel, RiskImpactPanel, MigrationFlow,
-                      WhatIfSimulator, BlastRadiusPanel, EvidenceExplorer
-data/        Raw CBOM, PQC registry, generated ecdat-*.json (plus some stale files; see ARCHITECTURE.md §4)
+                      WhatIfSimulator, BlastRadiusPanel, BlastSpatialView,
+                      MigrationTransition, EvidenceExplorer
+  components/visualization/  the cryptographic security map (3D scene, 2D fallback,
+                             legend, focus panel, model)
+  spatial/     the shared 3D security space: engine/ (one renderer, one canvas, one
+               camera; environment, posture, landscape, investigation and simulation
+               layers), stage/ (SpatialStage, StageLayout, useLayoutMode) and the
+               docked React surfaces
+data/        Raw CBOM, PQC registry, generated ecdat-*.json, scan runtime records
+             (plus some stale files; see ARCHITECTURE.md §4)
 data-backup/, demo/   Manual snapshots / sample CBOMs
 docs/        ARCHITECTURE.md, PROJECT_CONTEXT.md, AI_ADVISOR.md, CHANGELOG.md, TODO.md
 ```
@@ -189,6 +241,7 @@ docs/        ARCHITECTURE.md, PROJECT_CONTEXT.md, AI_ADVISOR.md, CHANGELOG.md, T
 - **Backend:** `cd backend && uvicorn main:app --reload` (port 8000).
 - **Frontend:** `cd frontend && npm run dev` (port 5173); `npm run build`, `npm run lint`.
 - **Pipeline** (overwrites `data/`): `cd backend && python run_pipeline.py`.
+- **Scan from the CLI** (needs CBOMKit): `cd backend && python analyze_repository.py https://github.com/owner/repo main`. `python cbomkit_client.py <url> [branch]` fetches and validates a CBOM only.
 - **Tests:** from `backend/`, run each `python test_<name>.py`. `test_api_validation.py` and `test_api_integration.py` require the backend running on `:8000`.
 - **Consistency check:** `python check_risk_consistency.py`.
 
@@ -197,17 +250,16 @@ docs/        ARCHITECTURE.md, PROJECT_CONTEXT.md, AI_ADVISOR.md, CHANGELOG.md, T
 ## 8. Prototype boundaries and extension areas
 
 **Current boundaries**
-- One repository/CBOM at a time, in a fixed file; generated JSON does not record its source repository.
-- Discovery is limited to what CBOMKit finds in source code.
+- One repository/CBOM at a time, in a fixed file; generated JSON does not record its source repository. The scan record (`data/ecdat-scan.json`) and history do record the target.
+- Discovery is limited to what CBOMKit finds in source code. Only Git repository targets have a scanner; binaries, libraries and containers are declared not implemented.
 - Organizational context must be configured manually.
 - The What-If model is family-level, not parameter-set-level.
 - There is no authentication, persistence layer or frontend unit testing.
 
 **Possible future extensions (not implemented)**
-- Binary, container-image or cloud/KMS/TLS discovery sources.
+- Binary, library, container-image, hardware or cloud/KMS/TLS discovery sources, added as scanners behind the existing registry.
 - Multi-repository history.
 - A business-context editor.
-- Per-stage analysis progress.
 - Parameter-set-aware risk modelling.
 - Deployment hardening.
 

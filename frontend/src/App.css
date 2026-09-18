@@ -1345,6 +1345,25 @@ button {
   border-color: var(--border-strong);
 }
 
+/* Metrics that open the Security Map pre-filtered. */
+.stat-card-interactive {
+  display: block;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stat-card-interactive:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+.stat-card-interactive:active {
+  transform: translateY(0);
+}
+
 /* Thin top accent bar -- a quick, consistent way to give each tone
    its own identity without repainting the whole card. */
 .stat-card::before {
@@ -5489,4 +5508,222 @@ button {
     align-items: flex-start;
     gap: 5px;
   }
+}
+
+/* ============================================================
+   REPOSITORY SCAN WORKFLOW
+   Stage telemetry, validation warnings, results and history now
+   come from the scan service, so these render real reported state.
+   ============================================================ */
+
+.scan-capability {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+
+  margin: var(--space-4) 0 0;
+  padding: var(--space-2) var(--space-3);
+
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--accent-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-inset);
+
+  color: var(--text-tertiary);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.scan-capability svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.scan-capability strong {
+  color: var(--text-secondary);
+}
+
+.scan-capability-ready {
+  border-left-color: var(--sev-low);
+}
+
+.scan-capability-unavailable {
+  border-left-color: var(--sev-medium);
+}
+
+/* The stepper's real per-stage detail line. */
+.pipeline-step-detail {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 9.5px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.pipeline-current {
+  grid-column: 1 / -1;
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px dashed var(--border-subtle);
+  color: var(--accent-cyan-strong);
+  font-size: 11.5px;
+  text-align: center;
+}
+
+.analysis-error-code {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--sev-high);
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 10px;
+}
+
+.scan-result {
+  margin-top: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+
+  border: 1px solid var(--sev-low-border);
+  border-radius: var(--radius-md);
+  background: var(--sev-low-bg);
+}
+
+.scan-result-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+}
+
+.scan-result-facts dt {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scan-result-facts dd {
+  margin: 2px 0 0;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 18px;
+}
+
+.scan-result-source {
+  margin: var(--space-3) 0 0;
+  color: var(--text-tertiary);
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 10.5px;
+  overflow-wrap: anywhere;
+}
+
+.scan-warnings {
+  margin: var(--space-2) 0 0;
+  padding-left: 18px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.scan-view-results {
+  margin-top: var(--space-3);
+}
+
+.scan-history {
+  margin-top: var(--space-3);
+}
+
+.scan-history summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-tertiary);
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.scan-history ul {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scan-history li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+
+  font-size: 11px;
+}
+
+.scan-history li:last-child {
+  border-bottom: 0;
+}
+
+.scan-history-target {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.scan-history-branch,
+.scan-history-time {
+  color: var(--text-muted);
+}
+
+.scan-history-status {
+  color: var(--text-secondary);
+}
+
+.scan-history li[data-status="failed"] .scan-history-status {
+  color: var(--sev-high);
+}
+
+.scan-history li[data-status="completed"] .scan-history-status {
+  color: var(--sev-low);
+}
+
+/* In the stage's narrow Operations dock the stepper reads better as a
+   vertical list: each stage keeps its own label and detail line. */
+.stage-dock .pipeline-stepper {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: var(--space-3);
+}
+
+.stage-dock .pipeline-step {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 0 10px;
+  padding: 4px 0;
+  text-align: left;
+}
+
+.stage-dock .pipeline-step-icon {
+  grid-row: 1 / span 2;
+}
+
+.stage-dock .pipeline-step-detail {
+  -webkit-line-clamp: 2;
+  font-size: 10px;
+}
+
+/* The horizontal connector belongs to the row layout only. */
+.stage-dock .pipeline-step + .pipeline-step::before {
+  top: -2px;
+  left: 15px;
+  width: 1px;
+  height: 6px;
 }

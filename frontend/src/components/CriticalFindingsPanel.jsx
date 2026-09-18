@@ -19,7 +19,7 @@ import { EmptyState } from "./States";
  * when present (e.g. "Needs review" for a finding whose evidence
  * leaves its cryptographic role unresolved).
  */
-export function CriticalFindingsPanel({ assets, onSelectAsset }) {
+export function CriticalFindingsPanel({ assets, onSelectAsset, focusedRef = null }) {
   return (
     <section className="workspace-panel critical-findings-panel" aria-labelledby="critical-findings-heading">
       <div className="section-heading">
@@ -53,7 +53,8 @@ export function CriticalFindingsPanel({ assets, onSelectAsset }) {
                   type="button"
                   className={`critical-finding-row critical-finding-${String(
                     asset.riskSeverity || "unknown"
-                  ).toLowerCase()}`}
+                  ).toLowerCase()}${focusedRef === asset.bomRef ? " is-focused" : ""}`}
+                  aria-current={focusedRef === asset.bomRef ? "true" : undefined}
                   onClick={() => onSelectAsset(asset.bomRef)}
                 >
                   <span className="critical-finding-rank">{index + 1}</span>

@@ -1,0 +1,674 @@
+/* ============================================================
+   SPATIAL STAGE LAYOUT (desktop ≥1025px, tablet 601–1024px)
+   One fixed WebGL world, a HUD above it, and docked HTML panels
+   that scroll internally. The page itself does not scroll.
+   ============================================================ */
+
+html.is-stage-layout,
+html.is-stage-layout body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.stage-shell {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 700px at 50% 110%, rgba(59, 130, 246, 0.1), transparent 60%),
+    radial-gradient(900px 600px at 10% -10%, rgba(34, 211, 238, 0.08), transparent 60%),
+    #04060d;
+}
+
+/* ---- the world ---- */
+
+.spatial-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.spatial-stage-host {
+  position: absolute;
+  inset: 0;
+}
+
+.spatial-stage-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.spatial-stage-canvas:active {
+  cursor: grabbing;
+}
+
+.spatial-stage-labels {
+  z-index: 1;
+}
+
+.spatial-stage-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* ---- navigation rail: always the compact icon rail on the stage ---- */
+
+.stage-shell .sidebar {
+  z-index: 30;
+  width: 76px;
+  padding: var(--space-5) var(--space-2);
+}
+
+.stage-shell .brand {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.stage-shell .brand > div:last-child,
+.stage-shell .nav-section,
+.stage-shell .sidebar-footer,
+.stage-shell .sidebar-investigation {
+  display: none;
+}
+
+.stage-shell .nav-item {
+  justify-content: center;
+  padding: 0;
+  font-size: 0;
+}
+
+/* ---- HUD grid ---- */
+
+.stage-hud {
+  --dock-w: min(460px, 36vw);
+  --inspector-w: min(640px, 46vw);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 76px;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: var(--dock-w) minmax(0, 1fr) var(--inspector-w);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 12px 16px;
+  pointer-events: none;
+}
+
+.stage-hud[data-dock="closed"] {
+  --dock-w: 0px;
+}
+
+.stage-hud[data-inspector="closed"] {
+  --inspector-w: 0px;
+}
+
+.stage-top {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stage-top > * {
+  pointer-events: auto;
+}
+
+.stage-top .topbar {
+  margin-bottom: 0;
+}
+
+.stage-top .finding-context-bar {
+  position: relative;
+  top: auto;
+  align-self: flex-start;
+  max-width: min(1060px, 100%);
+  margin-bottom: 0;
+}
+
+.stage-dock {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(91, 156, 246, 0.22);
+  border-radius: 16px;
+  background: rgba(7, 10, 20, 0.94);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 34px 70px -34px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(34, 211, 238, 0.04);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+  animation: stage-dock-in var(--motion-medium, 320ms) var(--ease-spatial, ease) backwards;
+}
+
+.stage-dock-left {
+  grid-column: 1;
+}
+
+.stage-dock-right {
+  grid-column: 3;
+}
+
+@keyframes stage-dock-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+.stage-dock-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-subtle);
+  scrollbar-width: none;
+}
+
+.stage-dock-tabs button {
+  flex: 0 0 auto;
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background var(--motion-fast, 150ms), color var(--motion-fast, 150ms), border-color var(--motion-fast, 150ms);
+}
+
+.stage-dock-tabs button:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-raised);
+}
+
+.stage-dock-tabs button.is-active {
+  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent-cyan-strong);
+}
+
+.stage-dock-body {
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.stage-dock-toggle {
+  position: absolute;
+  left: 16px;
+  bottom: 18px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: rgba(7, 10, 20, 0.9);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+.stage-dock-toggle:hover {
+  border-color: var(--accent-cyan);
+  color: var(--text-primary);
+}
+
+/* ---- bottom HUD: spatial path + camera ---- */
+
+.stage-controls {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-width: 0;
+  margin-left: 128px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: rgba(7, 10, 20, 0.9);
+  pointer-events: auto;
+}
+
+.stage-hud[data-inspector="open"] .stage-controls {
+  margin-left: 0;
+}
+
+.stage-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  color: var(--text-muted);
+}
+
+.stage-path-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.stage-path button {
+  max-width: 260px;
+  overflow: hidden;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage-path button:hover:not(:disabled) {
+  background: var(--bg-surface-raised);
+  color: var(--text-primary);
+}
+
+.stage-path button:disabled {
+  cursor: default;
+}
+
+.stage-path button.is-current {
+  color: var(--accent-cyan-strong);
+}
+
+.stage-camera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- existing panels, adapted to a narrow dock ---- */
+
+.stage-dock .panel,
+.stage-dock .workspace-panel,
+.stage-dock .repository-analysis-panel {
+  animation: none;
+}
+
+.stage-dock .hero {
+  margin-bottom: 0;
+}
+
+.hero-stage-intro {
+  margin-bottom: var(--space-4);
+}
+
+.hero-stage-intro h1 {
+  margin: 6px 0 4px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.hero-stage-intro p {
+  margin: 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.stage-dock .hero-metrics-grid,
+.stage-dock .dashboard-row-primary,
+.stage-dock .analytics-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.stage-dock .hero-stat-tiles {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stage-dock .dashboard-row,
+.stage-dock .migration-intelligence-section {
+  margin-bottom: 0;
+}
+
+.stage-dock .donut-panel-body {
+  flex-direction: row;
+  gap: var(--space-4);
+}
+
+.stage-dock .donut-chart-wrap {
+  flex: 0 0 132px;
+  width: 132px;
+}
+
+.stage-dock .donut-legend {
+  margin-top: 0;
+}
+
+.stage-dock .asset-card-headline,
+.stage-dock .asset-card-subline,
+.stage-dock .asset-card-footer {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.stage-dock .security-map-panel.is-dock {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.stage-dock .security-map-panel.is-dock::before {
+  display: none;
+}
+
+.security-map-panel.is-dock .security-map-body {
+  display: block;
+  margin-top: var(--space-3);
+}
+
+.security-map-panel.is-dock .security-map-side {
+  max-height: none;
+  border-radius: var(--radius-md);
+}
+
+.security-map-panel.is-dock .map-search {
+  flex-basis: 100%;
+  max-width: none;
+}
+
+.security-map-dock-camera:empty {
+  display: none;
+}
+
+.security-map-dock-status {
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+/* ---- investigation inspector ---- */
+
+.stage-inspector {
+  height: 100%;
+  padding: 14px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.stage-inspector .workspace-header {
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--space-4);
+}
+
+.stage-inspector .workspace-identity {
+  flex: 0 0 auto;
+}
+
+.stage-inspector .workspace-risk-hero {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-left: 0;
+  border-left: 0;
+}
+
+.stage-inspector .investigation-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* The 3D anchors are the spatial hub; the inspector keeps an accessible,
+   compact row of the same branches. */
+.stage-inspector .investigation-hub-column {
+  position: sticky;
+  top: -14px;
+  z-index: 6;
+  margin: 0 -14px;
+  padding: 8px 14px;
+  background: rgba(7, 10, 20, 0.97);
+}
+
+.stage-inspector .hub-plane {
+  display: flex;
+  gap: var(--space-2);
+  aspect-ratio: auto;
+  padding: var(--space-2);
+  overflow-x: auto;
+  transform: none;
+  scrollbar-width: thin;
+}
+
+.stage-inspector .hub-connectors {
+  display: none !important;
+}
+
+.stage-inspector .hub-core,
+.stage-inspector .hub-branch {
+  position: static;
+  flex: 0 0 auto;
+  transform: none;
+}
+
+.stage-inspector .hub-branch:hover,
+.stage-inspector .hub-branch.is-active {
+  transform: none;
+}
+
+.stage-inspector .hub-core {
+  align-items: flex-start;
+  width: auto;
+  min-width: 120px;
+  aspect-ratio: auto;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.stage-inspector .hub-core-ring,
+.stage-inspector .hub-hint {
+  display: none;
+}
+
+.stage-inspector .investigation-surface,
+.stage-inspector .what-if {
+  scroll-margin-top: 118px;
+}
+
+.stage-inspector .investigation-surface:focus {
+  outline: none;
+}
+
+.stage-inspector .investigation-surface:focus-visible > .workspace-panel {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+/* ---- projected 3D labels ---- */
+
+.stage-posture-label,
+.stage-anchor-label,
+.stage-path-label,
+.stage-sim-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 8px;
+  border: 1px solid rgba(148, 178, 220, 0.2);
+  border-radius: 7px;
+  background: rgba(6, 9, 20, 0.84);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.stage-posture-readiness {
+  font-family: var(--font-display);
+  font-size: 15px;
+  border-color: rgba(34, 211, 238, 0.35);
+}
+
+.stage-posture-severity {
+  color: var(--text-secondary);
+  font-size: 10.5px;
+}
+
+.stage-posture-label.is-emphasis {
+  border-color: rgba(34, 211, 238, 0.7);
+  color: var(--accent-cyan-strong);
+}
+
+.stage-anchor-label {
+  min-width: 110px;
+  padding: 5px 10px;
+  border-color: rgba(91, 156, 246, 0.35);
+  background: rgba(8, 14, 30, 0.92);
+  font-size: 11.5px;
+}
+
+.stage-anchor-label.is-emphasis,
+.stage-anchor-label.is-active {
+  border-color: rgba(34, 211, 238, 0.75);
+  color: var(--accent-cyan-strong);
+  box-shadow: 0 0 18px -6px rgba(34, 211, 238, 0.6);
+}
+
+.stage-anchor-value {
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
+.stage-anchor-value.tone-critical { color: #fca5a5; }
+.stage-anchor-value.tone-high,
+.stage-anchor-value.tone-review { color: var(--sev-high); }
+.stage-anchor-value.tone-medium { color: var(--sev-medium); }
+.stage-anchor-value.tone-low { color: var(--sev-low); }
+.stage-anchor-value.tone-pqc { color: var(--accent-cyan-strong); }
+
+.stage-path-label {
+  align-items: flex-start;
+  max-width: 280px;
+  white-space: normal;
+}
+
+.stage-path-note {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.stage-path-pqc { border-color: rgba(34, 211, 238, 0.5); color: var(--accent-cyan-strong); }
+.stage-path-hybrid { border-color: rgba(167, 139, 250, 0.5); color: var(--accent-violet-strong); }
+.stage-path-review { border-color: var(--sev-high-border); color: var(--sev-high); }
+.stage-path-retain { border-style: dashed; color: var(--text-secondary); }
+.stage-evidence-established { border-color: rgba(34, 211, 238, 0.35); }
+.stage-evidence-low-confidence { border-color: var(--sev-medium-border); }
+.stage-evidence-unresolved { border-color: var(--sev-high-border); }
+
+.stage-sim-label {
+  align-items: flex-start;
+}
+
+.stage-sim-real {
+  border-color: rgba(226, 232, 240, 0.35);
+}
+
+.stage-sim-hypothetical {
+  border: 1px dashed rgba(167, 139, 250, 0.75);
+  color: var(--accent-violet-strong);
+}
+
+.stage-sim-detail {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   TABLET (601–1024px): reduced scene, docks as bottom sheets
+   ============================================================ */
+
+.stage-shell[data-tier="tablet"] .stage-hud {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 46vh) auto;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.stage-shell[data-tier="tablet"] .stage-hud[data-inspector="open"] {
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 58vh) auto;
+}
+
+.stage-shell[data-tier="tablet"] .stage-hud[data-dock="closed"][data-inspector="closed"] {
+  grid-template-rows: auto minmax(0, 1fr) 0 auto;
+}
+
+.stage-shell[data-tier="tablet"] .stage-dock {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+.stage-shell[data-tier="tablet"] .stage-controls {
+  grid-row: 4;
+  margin-left: 118px;
+}
+
+.stage-shell[data-tier="tablet"] .stage-hud[data-inspector="open"] .stage-controls {
+  margin-left: 0;
+}
+
+.stage-shell[data-tier="tablet"] .stage-dock-toggle {
+  left: 10px;
+  bottom: 12px;
+}
+
+.stage-shell[data-tier="tablet"] .map-icon-button span {
+  display: none;
+}
+
+.stage-shell[data-tier="tablet"] .topbar-status {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage-dock {
+    animation: none;
+  }
+}

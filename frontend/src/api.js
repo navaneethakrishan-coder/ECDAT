@@ -196,19 +196,26 @@ export async function startAnalysis(repository, branch = "main") {
   });
 
   if (!response.ok) {
-    let detail = `Analysis request failed: ${response.status}`;
+    let detail = `Scan request failed: ${response.status}`;
+    let reasonCode = null;
 
     try {
       const error = await response.json();
 
-      if (error.detail) {
+      // Target validation rejections carry {reason_code, reason}.
+      if (error.detail?.reason) {
+        detail = error.detail.reason;
+        reasonCode = error.detail.reason_code || null;
+      } else if (typeof error.detail === "string") {
         detail = error.detail;
       }
     } catch {
       // Keep default error message.
     }
 
-    throw new Error(detail);
+    const failure = new Error(detail);
+    failure.reasonCode = reasonCode;
+    throw failure;
   }
 
   return response.json();
@@ -216,6 +223,18 @@ export async function startAnalysis(repository, branch = "main") {
 
 export function getAnalysisStatus() {
   return request("/api/analyze/status");
+}
+
+// ------------------------------------------------------------
+// Repository scanning (scan lifecycle, capabilities, history)
+// ------------------------------------------------------------
+
+export function getScanCapabilities() {
+  return request("/api/scan/capabilities");
+}
+
+export function getScanHistory() {
+  return request("/api/scan/history");
 }
 // ------------------------------------------------------------
 // AI Migration Advisor
@@ -253,6 +272,14 @@ export async function getAIAdvice(assetName) {
 // ------------------------------------------------------------
 // AI Migration Advisor
 // ------------------------------------------------------------
+
+// ------------------------------------------------------------
+// PQC migration plan (per-finding strategy, classification, evidence)
+// ------------------------------------------------------------
+
+export function getPQCMigrationPlan() {
+  return request("/api/pqc-migration-plan");
+}
 
 // ------------------------------------------------------------
 // Blast-radius relationships (findings addressed by bom_ref only)

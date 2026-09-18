@@ -1,66 +1,80 @@
 import {
-  Binary,
   Brain,
   CheckCircle2,
-  Gauge,
+  CircleDashed,
+  Database,
   GitBranch,
-  ListChecks,
+  Loader2,
   ScanLine,
-  ShieldAlert,
+  ShieldCheck,
+  Workflow,
   XCircle,
 } from "lucide-react";
 
-// The real backend runs 13 granular pipeline stages (see
-// docs/ARCHITECTURE.md), but /api/analyze/status only ever reports
-// one of idle/starting/running/completed/failed with a free-text
-// message -- there is no per-stage telemetry to display honestly.
-// This illustrates the conceptual pipeline shape rather than claiming
-// to track real-time progress through it. While the analysis is
-// running, every stage after "Repository" is shown as in-progress
-// together -- never a specific one -- so nothing here overstates
-// what the backend actually knows.
-const STAGES = [
-  { key: "repository", label: "Repository", icon: GitBranch },
-  { key: "scan", label: "CBOMKit Scan", icon: ScanLine },
-  { key: "discovery", label: "Crypto Discovery", icon: Binary },
-  { key: "risk", label: "Risk Assessment", icon: ShieldAlert },
-  { key: "pqc", label: "PQC Mapping", icon: Gauge },
-  { key: "plan", label: "Migration Plan", icon: ListChecks },
-  // "AI Ready", not "AI Guidance": the pipeline only prepares data for the on-demand advisor; it never runs the model.
-  { key: "ai", label: "AI Ready", icon: Brain },
-];
+// The backend now reports the scan's real stages (GET /api/scan/status →
+// `stages`), so this renders exactly what the scan service did: each stage's
+// own status and its own detail line. Nothing is inferred or animated ahead
+// of the backend -- a stage only shows as running once it is running.
+const STAGE_ICONS = {
+  target: GitBranch,
+  scanner: ScanLine,
+  availability: ShieldCheck,
+  scan: ScanLine,
+  validation: Database,
+  pipeline: Workflow,
+  publish: Brain,
+};
 
-export function PipelineStepper({ status }) {
-  // status: "idle" | "starting" | "running" | "completed" | "failed"
+const STATE_ICONS = {
+  done: CheckCircle2,
+  failed: XCircle,
+  running: Loader2,
+  skipped: CircleDashed,
+};
+
+export function PipelineStepper({ status, stages = [], pipelineStages = [], currentStage = null }) {
+  if (!stages.length) {
+    return null;
+  }
+
+  const pipelineDone = pipelineStages.filter((stage) => stage.status === "done").length;
+  const pipelineFailed = pipelineStages.find((stage) => stage.status === "failed");
+
   return (
-    <div className={`pipeline-stepper pipeline-${status}`} role="list" aria-label="Repository analysis pipeline">
-      {STAGES.map((stage, index) => {
-        const isFirst = index === 0;
-
-        let state = "pending";
-
-        if (status === "completed") {
-          state = "done";
-        } else if (status === "failed") {
-          state = isFirst ? "done" : index === 1 ? "failed" : "pending";
-        } else if (status === "starting") {
-          state = isFirst ? "done" : index === 1 ? "active" : "pending";
-        } else if (status === "running") {
-          state = isFirst ? "done" : "active";
-        }
-
-        const Icon =
-          state === "done" ? CheckCircle2 : state === "failed" ? XCircle : stage.icon;
+    <div className={`pipeline-stepper pipeline-${status}`} role="list" aria-label="Repository scan stages">
+      {stages.map((stage) => {
+        const state = stage.status === "pending" ? "pending" : stage.status;
+        const Icon = STATE_ICONS[state] || STAGE_ICONS[stage.key] || CircleDashed;
+        const isPipeline = stage.key === "pipeline";
+        const detail = isPipeline && pipelineStages.length
+          ? pipelineFailed
+            ? `Failed at ${pipelineFailed.label}`
+            : `${pipelineDone} / ${pipelineStages.length} stages`
+          : stage.detail;
 
         return (
-          <div className={`pipeline-step pipeline-step-${state} pipeline-stage-${stage.key}`} key={stage.key} role="listitem">
+          <div
+            className={`pipeline-step pipeline-step-${state} pipeline-stage-${stage.key}`}
+            key={stage.key}
+            role="listitem"
+            data-stage={stage.key}
+            data-status={state}
+            title={stage.detail || stage.label}
+          >
             <div className="pipeline-step-icon">
-              <Icon size={15} />
+              <Icon size={15} className={state === "running" ? "spin-icon" : undefined} />
             </div>
             <span className="pipeline-step-label">{stage.label}</span>
+            {detail && <span className="pipeline-step-detail">{detail}</span>}
           </div>
         );
       })}
+
+      {currentStage && (
+        <p className="pipeline-current" aria-live="polite">
+          {currentStage}
+        </p>
+      )}
     </div>
   );
 }

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Dict
 from pydantic import BaseModel, ConfigDict, Field
 from services.ai_advisor import generate_advice
+from services.scanning import ScanService, TargetError
 from services.blast_radius_view import build_blast_radius_view, load_blast_radius_records
 from services.evidence_explorer import build_finding_evidence, load_evidence_records
 from services.recommendation_state import has_selected_pqc_path, reconcile_recommendation
@@ -44,62 +45,62 @@ class AnalyzeRequest(BaseModel):
     branch: str = "main"
 
 
-analysis_state = {
-    "status": "idle",
-    "repository": None,
-    "branch": None,
-    "message": "No analysis running.",
-    "error": None
-}
 class AIAdvisorRequest(BaseModel):
     asset_name: str
 
 
-def run_repository_analysis(repository: str, branch: str):
-    global analysis_state
+# The scan lifecycle lives in services/scanning: target validation →
+# scanner selection → CBOMKit → CBOM validation/normalization → the
+# existing ECDAT pipeline. The API only starts scans and reports the
+# service's real state.
+scan_service = ScanService()
 
-    analysis_state.update({
-        "status": "running",
-        "repository": repository,
-        "branch": branch,
-        "message": "CBOMKit scan and ECDAT analysis are running.",
-        "error": None
-    })
 
+def analysis_status_payload():
+    """Scan state, including the keys the original /api/analyze/status returned."""
+    state = scan_service.snapshot()
+    return {
+        # Original contract (unchanged keys and values).
+        "status": state["status"],
+        "repository": state["repository"],
+        "branch": state["branch"],
+        "message": state["message"],
+        "error": state["error"],
+        # Real scan telemetry.
+        "scan_id": state["scan_id"],
+        "error_code": state["error_code"],
+        "target": state["target"],
+        "scanner": state["scanner"],
+        "stages": state["stages"],
+        "pipeline_stages": state["pipeline_stages"],
+        "current_stage": state["current_stage"],
+        "started_at": state["started_at"],
+        "finished_at": state["finished_at"],
+        "duration_seconds": state["duration_seconds"],
+        "validation": state["validation"],
+        "result": state["result"],
+    }
+
+
+def start_scan_request(request: AnalyzeRequest):
     try:
-        backend_dir = Path(__file__).resolve().parent
-        script = backend_dir / "analyze_repository.py"
+        state = scan_service.start(request.repository, request.branch)
+    except TargetError as error:
+        raise HTTPException(
+            status_code=400,
+            detail={"reason_code": error.code, "reason": error.message},
+        )
+    except RuntimeError as error:
+        raise HTTPException(status_code=409, detail=str(error))
 
-        result = subprocess.run(
-    [
-        sys.executable,
-        str(script),
-        repository,
-        branch
-    ],
-    cwd=str(backend_dir)
-)
+    return {
+        "status": "started",
+        "scan_id": state["scan_id"],
+        "repository": state["repository"],
+        "branch": state["branch"],
+        "message": state["message"],
+    }
 
-        if result.returncode != 0:
-            analysis_state.update({
-                 "status": "failed",
-        "message": "Analysis failed. Check the backend terminal for details.",
-        "error": f"analyze_repository.py exited with code {result.returncode}"
-            })
-            return
-
-        analysis_state.update({
-            "status": "completed",
-            "message": "CBOMKit scan and ECDAT analysis completed successfully.",
-            "error": None
-        })
-
-    except Exception as exc:
-        analysis_state.update({
-            "status": "failed",
-            "message": "Analysis failed unexpectedly.",
-            "error": str(exc)
-        })
 
 app.add_middleware(
     CORSMiddleware,
@@ -1550,31 +1551,38 @@ def get_asset(asset_name: str):
     }
 @app.post("/api/analyze")
 def start_analysis(request: AnalyzeRequest):
-    if analysis_state["status"] == "running":
-        raise HTTPException(
-            status_code=409,
-            detail="An analysis is already running."
-        )
-
-    thread = threading.Thread(
-        target=run_repository_analysis,
-        args=(request.repository, request.branch),
-        daemon=True
-    )
-
-    thread.start()
-
-    return {
-        "status": "started",
-        "repository": request.repository,
-        "branch": request.branch,
-        "message": "Analysis started successfully."
-    }
+    return start_scan_request(request)
 
 
 @app.get("/api/analyze/status")
 def get_analysis_status():
-    return analysis_state
+    return analysis_status_payload()
+
+
+# ------------------------------------------------------------
+# Repository scanning (same service, scan-oriented names)
+# ------------------------------------------------------------
+
+
+@app.post("/api/scan")
+def start_scan(request: AnalyzeRequest):
+    return start_scan_request(request)
+
+
+@app.get("/api/scan/status")
+def get_scan_status():
+    return analysis_status_payload()
+
+
+@app.get("/api/scan/capabilities")
+def get_scan_capabilities():
+    """What ECDAT can scan today, and what is explicitly not implemented."""
+    return scan_service.capabilities()
+
+
+@app.get("/api/scan/history")
+def get_scan_history():
+    return {"scans": scan_service.history()}
 @app.post("/api/ai/advisor")
 def ai_advisor(request: AIAdvisorRequest):
 

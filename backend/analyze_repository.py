@@ -1,24 +1,21 @@
-import subprocess
+"""Scan a GitHub repository from the command line.
+
+Runs exactly the same scan the API runs (services/scanning): target
+validation → CBOMKit → CBOM validation/normalization → the ECDAT pipeline.
+There is no second implementation of the workflow.
+
+Usage:
+    python analyze_repository.py "<github_url>" [branch]
+"""
+
 import sys
-from pathlib import Path
+
+from services.scanning import ScanService, TargetError
 
 
-BASE_DIR = Path(__file__).resolve().parent
-
-
-def run_command(command):
-    print("\n" + "=" * 70)
-    print("RUNNING:", " ".join(command))
-    print("=" * 70)
-
-    result = subprocess.run(
-        command,
-        cwd=BASE_DIR
-    )
-
-    if result.returncode != 0:
-        print("\nERROR: Command failed.")
-        sys.exit(result.returncode)
+def describe_stage(stage):
+    detail = f" — {stage['detail']}" if stage.get("detail") else ""
+    return f"[{stage['status'].upper():>7}] {stage['label']}{detail}"
 
 
 def main():
@@ -27,51 +24,44 @@ def main():
             "Usage:\n"
             '  python analyze_repository.py "<github_url>" [branch]\n\n'
             "Example:\n"
-            '  python analyze_repository.py '
-            '"https://github.com/keycloak/keycloak" main'
+            '  python analyze_repository.py "https://github.com/keycloak/keycloak" main'
         )
         sys.exit(1)
 
     github_url = sys.argv[1]
     branch = sys.argv[2] if len(sys.argv) > 2 else "main"
 
-    python = sys.executable
-
     print("=" * 70)
-    print("ECDAT AUTOMATED REPOSITORY ANALYSIS")
+    print("ECDAT REPOSITORY SCAN")
     print("=" * 70)
     print("Repository:", github_url)
-    print("Branch:", branch)
+    print("Branch    :", branch)
 
-    # ---------------------------------------------------------
-    # STEP 1: CBOMKit scan + CBOM retrieval
-    # ---------------------------------------------------------
-    run_command([
-        python,
-        str(BASE_DIR / "cbomkit_client.py"),
-        github_url,
-        branch
-    ])
+    service = ScanService()
 
-    # ---------------------------------------------------------
-    # STEP 2: Complete ECDAT analysis pipeline
-    # ---------------------------------------------------------
-    run_command([
-        python,
-        str(BASE_DIR / "run_pipeline.py")
-    ])
+    try:
+        state = service.run_sync(github_url, branch)
+    except TargetError as error:
+        print(f"\nERROR [{error.code}]: {error.message}")
+        sys.exit(1)
 
+    print("\nStages:")
+    for stage in state["stages"]:
+        print("  " + describe_stage(stage))
+
+    if state["status"] != "completed":
+        print(f"\nSCAN FAILED [{state['error_code']}]: {state['error']}")
+        sys.exit(1)
+
+    result = state["result"]
     print("\n" + "=" * 70)
-    print("ECDAT ANALYSIS COMPLETE")
+    print("ECDAT SCAN COMPLETE")
     print("=" * 70)
-
-    print("\nRepository:")
-    print(github_url)
-
-    print("\nThe CBOM was scanned and the complete ECDAT")
-    print("migration analysis pipeline has finished successfully.")
-
-    print("\nOpen the ECDAT dashboard to view the results.")
+    print(f"Cryptographic findings : {result['crypto_components']}")
+    print(f"CBOM components        : {result['components']}")
+    print(f"Recorded dependencies  : {result['dependency_edges']}")
+    print(f"Duration               : {state['duration_seconds']}s")
+    print("\nOpen the ECDAT dashboard to explore the results.")
 
 
 if __name__ == "__main__":

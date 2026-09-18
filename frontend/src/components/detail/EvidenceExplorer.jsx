@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScanSearch } from "lucide-react";
 
 import { getFindingEvidence } from "../../api";
@@ -650,9 +650,14 @@ function MigrationSection({ bomRef, migration }) {
  * pipeline outputs. Mounted with key={bomRef}, so switching findings
  * never shows the previous finding's evidence.
  */
-export function EvidenceExplorer({ bomRef }) {
+export function EvidenceExplorer({ bomRef, onEvidence }) {
   const [evidence, setEvidence] = useState(null);
   const [error, setError] = useState("");
+  const onEvidenceRef = useRef(onEvidence);
+
+  useEffect(() => {
+    onEvidenceRef.current = onEvidence;
+  }, [onEvidence]);
 
   useEffect(() => {
     let cancelled = false;
@@ -661,6 +666,11 @@ export function EvidenceExplorer({ bomRef }) {
       .then((data) => {
         if (!cancelled) {
           setEvidence(data);
+          // Let the spatial workspace mirror the chain's step statuses.
+          onEvidenceRef.current?.(
+            bomRef,
+            (data.chain || []).map((step) => ({ key: step.key, label: step.label, status: step.status })),
+          );
         }
       })
       .catch((failure) => {
