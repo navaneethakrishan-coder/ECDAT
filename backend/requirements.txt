@@ -1,0 +1,27 @@
+# ECDAT backend dependencies.
+#
+# These are the four packages the repository actually imports, plus nothing
+# else: transitive dependencies (starlette, anyio, h11, click, certifi,
+# urllib3, …) are resolved by pip and deliberately not pinned here.
+#
+# Verified against Python 3.14.6, the environment the committed dataset and
+# the 36-test suite were produced with. Lower bounds are the working
+# versions; upper bounds stop the next major from breaking the app silently.
+#
+#   python -m venv venv
+#   venv/Scripts/activate        (Windows)   |   source venv/bin/activate  (POSIX)
+#   pip install -r requirements.txt
+#
+# CBOMKit (repository scanning) and Ollama (AI Advisor) are separate
+# services, not Python packages -- see README.md.
+
+# API framework and the ASGI server that runs it. uvicorn is also launched
+# as a module by the API tests, which start their own isolated server.
+fastapi>=0.141,<1.0
+uvicorn>=0.52,<1.0
+
+# Request/response models used by the scan and What-If endpoints.
+pydantic>=2.13,<3.0
+
+# HTTP client for the CBOMKit adapter and the Ollama AI Advisor call.
+requests>=2.32,<3.0

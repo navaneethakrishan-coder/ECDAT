@@ -159,7 +159,7 @@ Earlier revisions of these documents describe a 30-finding scan of the same repo
 - **FastAPI** + **Uvicorn**, **Pydantic** request models
 - **requests**, for the CBOMKit and Ollama HTTP calls
 - **Persistence:** flat JSON files in `data/`, with no database
-- **Dependencies:** no committed `requirements.txt` or `pyproject.toml`; they are only visible in the venv
+- **Dependencies:** `backend/requirements.txt` lists the four packages the code imports (FastAPI, Uvicorn, Pydantic, requests); transitive packages are left to pip
 
 ### Frontend
 - **React 19** + **Vite 8**; **Recharts** (donut charts); **lucide-react** (icons); **three.js** (the 3D security space, lazily loaded)
@@ -249,7 +249,7 @@ docs/        ARCHITECTURE.md, PROJECT_CONTEXT.md, AI_ADVISOR.md, CHANGELOG.md, T
 - **Frontend:** `cd frontend && npm run dev` (port 5173); `npm run build`, `npm run lint`.
 - **Pipeline** (overwrites `data/`): `cd backend && python run_pipeline.py`.
 - **Scan from the CLI** (needs CBOMKit): `cd backend && python analyze_repository.py https://github.com/owner/repo main`. `python cbomkit_client.py <url> [branch]` fetches and validates a CBOM only.
-- **Tests:** from `backend/`, run each `python test_<name>.py`. `test_api_validation.py` and `test_api_integration.py` require the backend running on `:8000`.
+- **Tests:** from `backend/`, run each `python test_<name>.py`. No test needs the development server or a particular scan: the analysis tests read the fixture dataset (`backend/fixture_dataset.py`), and `test_api_validation.py` and `test_api_integration.py` start their own FastAPI server on a free port over that same fixture dataset.
 - **Consistency check:** `python check_risk_consistency.py`.
 
 ---
