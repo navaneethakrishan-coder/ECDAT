@@ -4,6 +4,94 @@ Dated log of meaningful changes to the codebase and to this documentation set. N
 
 ---
 
+## 2026-09-20 — Drafting Table light UI, dataset-independent tests, Keycloak as the canonical demo
+
+**Date:** 2026-09-20
+
+### Light mode redesigned: "Drafting Table"
+
+The light theme shipped the day before was a token remap, so it inherited dark mode's spatial logic — where depth comes from luminance — and read as "dark mode but white": four identical cards floating on a white page. Light now builds hierarchy from three other things, and **shadow is demoted to confirming which plane something sits on**:
+
+- **Tone.** Five planes, each a readable step apart: rail `#d6deec` → table `#e0e7f1` → workspace `#e8edf5` → well `#eef2f8` → sheet `#ffffff`.
+- **Rule.** Hairlines do the dividing that borders-around-cards used to.
+- **Alignment.** A shared grid, so density reads as order.
+
+The signature inversion: **a data readout is cut *into* the sheet.** In dark an input is lighter than its panel; here it is darker. That single change is what stops the theme reading as a conversion.
+
+Applied as: the four dashboard metric cards became one **ruled register** (so emphasis could be spent once, on the critical reading, marked by a red rule under its label rather than a red box around it); the eyebrow pill became a ruled drawing label; pill tabs became blueprint underlines; the readiness card became a recessed well with its frosted glass, drifting halo and orbiting dashed ring removed; the investigation workspace became the table so its panels could be the only white on it; the assistant became a ruled instrument with a recessed transcript, its sender carried by structure rather than bubble colour; findings lost a severity gradient that duplicated the severity rail already beside it.
+
+Every rule is scoped to `[data-theme="light"]`, so **dark is unchanged by construction** — verified byte-identical afterwards (fog `#05070f` @ 0.016, all eleven `--env-*` role values at their original literals, stat cards at 16px gap on `--bg-surface`).
+
+The semantic token layer the redesign is written against (`--bg-page/workspace/sheet/well`, `--text-blueprint`, `--border-hairline/default/strong/focus`, `--accent-primary/secondary/soft/ink`, `--shadow-recessed`, `--rule-hairline/strong`) is defined for both themes; in dark it aliases the existing values.
+
+**3D:** fog density is now themed (`--env-fog-density`). Light fog pulls geometry toward its *own* colour, which drained the severity colours to pastel, so daylight uses 0.005 against dark's unchanged 0.016. Still one renderer, one canvas, one scene graph.
+
+### Tests no longer read `data/`
+
+`test_finding_identity`, `test_what_if_api`, `test_blast_radius_view` and `test_evidence_explorer` read `data/` directly and asserted on shapes that only some scans happen to produce — chiefly two findings sharing an algorithm name. A real scan of a repository without repeated names left them asserting nothing, and they failed the moment `data/` changed. All four now run on the deterministic fixture (`fixture_dataset.py`): the real 13-stage pipeline over a hand-written CBOM in an isolated temp directory. No mocks, no hard-coded counts, no weakened assertions.
+
+Two production helpers (`load_evidence_records`, `load_finding_snapshots`) take their data directory as a **default argument**, bound at import, so redirecting the module attribute cannot reach them; the tests name the dataset explicitly instead of changing production signatures.
+
+**The fixture gained the shapes those tests actually need**, which it had been missing — meaning they had been passing on luck:
+
+- each `RSA-2048` finding now owns its own key material with its own `dependsOn` edge, so two same-named findings have genuinely *different* dependents;
+- an isolated `AES-256-GCM` finding, so "report no relationships rather than invent an edge" is testable;
+- placed in the key-exchange file, giving two findings that share a source file with no edge between them — co-location is not a relationship.
+
+The fixture is now 11 findings; every consumer derives counts from `expected_assets()`.
+
+### Canonical demo dataset: keycloak/keycloak
+
+`data/` now holds a real CBOMKit scan of **`keycloak/keycloak`, branch `main`, commit `dd4ae31`** — 59 findings, 37 dependency edges, 388 migration actions, against the previous pyca/cryptography snapshot's 25 / 15 / 172. It is kept exactly as the scanner produced it, and all 12 generated stages agree on the finding set.
+
+The one thing pyca uniquely demonstrated was duplicate algorithm names proving `bom_ref` is canonical identity. That contract now lives in the fixture, where it is guaranteed permanently and is stronger than pyca's version — so it no longer depends on what `data/` happens to contain. `data/` is a demo artifact; the fixture is the test contract, and they are no longer the same thing.
+
+Mosca urgency and business criticality are UNKNOWN across all 59 findings: no `data/business-context.json` is configured, so those factors are excluded from priority rather than guessed.
+
+`README.md`, `docs/ARCHITECTURE.md` and `docs/PROJECT_CONTEXT.md` were updated to describe this dataset. Earlier entries in this changelog still describe the pyca snapshot and are left as the historical record they are.
+
+---
+
+## 2026-09-19 — Light theme, and ECDAT AI (chat assistant)
+
+**Date:** 2026-09-19
+
+Two additions. Neither touches risk, classification, priority, strategy, PQC ranking, What-If, Evidence Explorer, blast radius, `bom_ref` identity, CBOMKit scanning or the 13-stage pipeline.
+
+### Theme system
+
+- **`frontend/src/theme/`** — `ThemeProvider` owns one piece of state, persisted in `localStorage` (`ecdat.theme`) and written to `document.documentElement` as `data-theme` + `colorScheme`. `ThemeToggle` sits in the topbar and names both the current mode and the one it switches to. Dark is the default and remains the product's identity; an unreadable or missing stored value falls back to dark rather than to the OS preference.
+- **`theme/theme.css`** defines semantic tokens (page/panel/elevated surfaces, borders, primary/secondary/muted text, accent and glow, success/warning/danger/info, input surfaces, shadow, and the 3D environment) and redefines them under `:root[data-theme="light"]`. The dark values are the existing ones, so dark renders as before; light is a daylight security console, not a white admin panel.
+- **The 3D scene follows the theme through the same tokens.** `spatial/engine/themePalette.js` reads the `--env-*` properties; layers tag environment materials with `themed(material, role)` and `SpatialEngine.applyTheme()` repaints fog, lighting and every tagged material by walking the scene. **One renderer, one canvas, one scene graph** — only colours change. Severity and strategy colours are not themed: they encode meaning.
+- Dark-only literals that made whole layers untintable were replaced with tokens: the stage/dock chrome, the map surfaces, the scene's region and band labels, and the environment, landscape, posture and investigation layers' chrome.
+
+**Three bugs found and fixed while verifying this against the browser**, all of which made light mode render the *dark* scene:
+- `EnvironmentLayer` builds its content in its constructor, before `attach(engine)` — so an engine-held registry never saw its materials and the grid, walls and frames stayed dark. The tag now travels on the material, so construction order no longer matters.
+- `ThemeProvider` wrote `data-theme` only in an effect. React runs a child's effects before its parent's, so the scene's repaint read the theme being *left behind* and painted the previous theme on every toggle. The attribute is now written in the setter.
+- `GridHelper` bakes its two colours into a vertex-colour attribute, not its material, so setting `material.color` multiplied against them instead of replacing them. The attribute is now rewritten directly.
+
+Verified with a pixel diff against a pristine `HEAD` checkout: in dark mode every environment material, light colour and intensity, and the fog, are identical to before; the only intended differences are the new theme toggle and the ECDAT AI launcher.
+
+### ECDAT AI
+
+- **`POST /api/chat {message, bom_ref?, conversation[]}` → `{response, model, context}`**, in `backend/services/chat_assistant.py`. Same local `qwen3:14b` on `localhost:11434` as the AI Advisor — no second model or provider. Failures return `{reason_code, reason}` (`empty-message`, `message-too-long`, `model-unavailable`, `model-timeout`, `model-error`, `malformed-response`, `empty-response`), never a stack trace.
+- **`backend/services/chat_context.py`** assembles the context from the generated artifacts only — no environment, no credentials, no arbitrary files. Repository + portfolio + top findings by migration priority when nothing is selected; the full finding record plus the Evidence Explorer's observations when a `bom_ref` is. Occurrences and captured source lines are capped. An unknown `bom_ref` is reported, not answered about.
+- **System prompt** requires answering only from that context, forbids inventing a finding, dependency, score or `bom_ref`, forbids claiming a migration was performed, and requires explaining `NEEDS_REVIEW` as a deliberate absence of a recommendation and What-If results as simulations.
+- **`frontend/src/components/chat/`** — launcher plus panel, present in both layout modes. Markdown answers, timestamps, copy, clear, auto-scroll, quick prompts, Enter to send / Shift+Enter for a newline, a disabled composer and loading state while generating, and a retry that re-asks the failed question without retyping it. Conversation state is in-memory for the session: there is no database, and nothing about it is persisted.
+- **"Ask ECDAT AI"** in the investigation workspace's topbar opens the assistant with the open finding attached, from any surface (risk, migration, blast radius, evidence, What-If, AI Analysis).
+- **The existing AI Analysis feature is unchanged** — same endpoint, prompt, context and panel.
+
+### Tests
+
+- **`backend/test_chat_assistant.py`** — 20 tests over context construction (repository, selected finding, `NEEDS_REVIEW`, inherited key material, evidence, bounds, unknown `bom_ref`, secret/filesystem exclusion), prompt discipline and every model failure mode, against the fixture dataset and a fake HTTP client. No Ollama, no network.
+- **A frontend test runner, which the project did not have** — Vitest + Testing Library (jsdom), `npm test`. 38 tests: the theme system (`src/theme/theme.test.jsx`), the assistant panel (`src/components/chat/chat.test.jsx`) and the 3D environment palette (`src/spatial/engine/themePalette.test.js`).
+
+### Verification
+
+37/37 backend test scripts pass; 38/38 frontend tests pass; `npm run lint` shows only the two pre-existing `set-state-in-effect` warnings in `App.jsx`; `npm run build` succeeds; `git diff --check` is clean. Browser QA at 1440/1280/1024/900/768/400 in both themes: 0 console errors, 0 failed requests, one canvas at every size, no horizontal overflow. A live `/api/chat` call against the real model returned the correct repository, `bom_ref`s, risks and strategies from the current dataset.
+
+---
+
 ## 2026-09-17 — Final cleanup: AI button wording and current-state docs
 
 **Date:** 2026-09-17

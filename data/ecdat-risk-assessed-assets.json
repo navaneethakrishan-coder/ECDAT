@@ -1,423 +1,27 @@
 {
   "source": "keycloak-cbom.json",
   "format": "CycloneDX",
-  "asset_count": 25,
+  "asset_count": 59,
   "assets": [
     {
-      "bom_ref": "428c2f31-dde3-45d3-97bd-9733ca00ba78",
-      "name": "RSA-OAEP",
+      "bom_ref": "7c63a6dd-bca9-49ed-b9be-99bccda698a2",
+      "name": "ECDH",
       "type": "cryptographic-asset",
       "asset_type": "algorithm",
-      "primitive": "pke",
-      "oid": "1.2.840.113549.1.1.7",
+      "primitive": "key-agree",
+      "oid": "1.3.132.1.12",
       "occurrences": [
         {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 265,
-          "offset": 21,
-          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 183,
+          "offset": 36,
+          "context": "javax.crypto.KeyAgreement#getInstance(Ljava/lang/String;)Ljavax/crypto/KeyAgreement;"
         },
         {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 269,
-          "offset": 21,
-          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
-        },
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 273,
-          "offset": 21,
-          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
-        },
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 277,
-          "offset": 21,
-          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
-        },
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 281,
-          "offset": 21,
-          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": "encryption",
-        "purpose_confidence": "MEDIUM",
-        "purpose_evidence_source": "source-context",
-        "purpose_evidence_reason": "Source occurrence(s) call a encryption-specific API, which disambiguates this finding's purpose where the CBOM primitive ('pke') alone does not.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "pke",
-          "source_contexts": [
-            "javax.crypto.Cipher#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljavax/crypto/Cipher;"
-          ],
-          "family_fallback_purpose": [
-            "encryption",
-            "digital-signature"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "3ac50882-8fb6-4930-a649-3afff7f22144",
-      "name": "private-key@3ac50882-8fb6-4930-a649-3afff7f22144",
-      "type": "cryptographic-asset",
-      "asset_type": "related-crypto-material",
-      "primitive": null,
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 347,
-          "offset": 24,
-          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
-        }
-      ],
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": null,
-          "source_contexts": [
-            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
-          ],
-          "family_fallback_purpose": [
-            "private-key"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
-        "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
-        ]
-      }
-    },
-    {
-      "bom_ref": "afc4f1a7-ddbd-4fd7-b8fd-225a3399834e",
-      "name": "RSA-2048",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "pke",
-      "oid": "1.2.840.113549.1.1.1",
-      "occurrences": [
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java",
-          "line": 347,
-          "offset": 24,
-          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": null,
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "pke",
-          "source_contexts": [
-            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
-          ],
-          "family_fallback_purpose": [
-            "encryption",
-            "digital-signature"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "db980426-8ba2-415b-9d01-eabc2186b8af",
-      "name": "RSA",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "pke",
-      "oid": "1.2.840.113549.1.1.1",
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 317,
-          "offset": 25,
-          "context": "RSAPublicNumbers"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 336,
-          "offset": 25,
-          "context": "RSAPublicNumbers"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 337,
-          "offset": 26,
-          "context": "RSAPrivateNumbers"
-        },
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 53,
-          "offset": 20,
-          "context": "RSAPrivateNumbers"
-        },
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 60,
-          "offset": 27,
-          "context": "RSAPublicNumbers"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": null,
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "pke",
-          "source_contexts": [
-            "RSAPublicNumbers",
-            "RSAPrivateNumbers"
-          ],
-          "family_fallback_purpose": [
-            "encryption",
-            "digital-signature"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "81df709d-e95a-4349-82c5-840cde0e4d5a",
-      "name": "Ed448",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "signature",
-      "oid": "1.3.101.113",
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "Elliptic-curve digital signatures rely on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": "digital-signature",
-        "purpose_confidence": "HIGH",
-        "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "signature",
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "digital-signature"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "bfbeb98a-6b34-4120-b7b4-688d7cb9786b",
-      "name": "SHAKE256",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "xof",
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "risk_reason": "SHA-3/SHAKE family functions remain useful with a reduced theoretical security margin against quantum search (Grover's algorithm).",
-        "usage": "hash",
-        "purpose_confidence": "HIGH",
-        "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'xof'.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "xof",
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "hash"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 25,
-        "severity": "LOW",
-        "quantum_status": "quantum-aware",
-        "category": "hash",
-        "evidence": [
-          "Quantum status: quantum-aware",
-          "Cryptographic category: hash"
-        ]
-      }
-    },
-    {
-      "bom_ref": "afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "name": "private-key@afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "type": "cryptographic-asset",
-      "asset_type": "related-crypto-material",
-      "primitive": null,
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": null,
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "private-key"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
-        "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
-        ]
-      }
-    },
-    {
-      "bom_ref": "6fa569d1-b8b9-4b6c-9515-a8e3d54d699b",
-      "name": "DH",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "pke",
-      "oid": "1.2.840.113549.1.3.1",
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/asymmetric/dsa.py",
-          "line": 185,
-          "offset": 11,
-          "context": "generate_private_key"
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 208,
+          "offset": 36,
+          "context": "javax.crypto.KeyAgreement#getInstance(Ljava/lang/String;)Ljavax/crypto/KeyAgreement;"
         }
       ],
       "classification": {
@@ -426,16 +30,16 @@
           "key-agreement"
         ],
         "quantum_status": "vulnerable",
-        "risk_reason": "Diffie-Hellman key agreement relies on the discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "risk_reason": "Elliptic-curve key agreement relies on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
         "usage": "key-agreement",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'key-agree'.",
         "purpose_needs_review": false,
         "purpose_evidence": {
-          "cbom_primitive": "pke",
+          "cbom_primitive": "key-agree",
           "source_contexts": [
-            "generate_private_key"
+            "javax.crypto.KeyAgreement#getInstance(Ljava/lang/String;)Ljavax/crypto/KeyAgreement;"
           ],
           "family_fallback_purpose": [
             "key-agreement"
@@ -454,18 +58,358 @@
       }
     },
     {
-      "bom_ref": "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "name": "public-key@2c2fdf1d-d974-4544-bc74-19210f7f5fba",
+      "bom_ref": "dbfad652-42e1-4511-8294-0401d441b6cb",
+      "name": "SHA1",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "hash",
+      "oid": "1.3.14.3.2.26",
+      "occurrences": [
+        {
+          "location": "server-spi-private/src/main/java/org/keycloak/protocol/saml/util/ArtifactBindingUtils.java",
+          "line": 48,
+          "offset": 41,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "distribution/downloads/src/main/java/CopyDependencies.java",
+          "line": 93,
+          "offset": 33,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+          "line": 212,
+          "offset": 18,
+          "context": "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+        },
+        {
+          "location": "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+          "line": 214,
+          "offset": 18,
+          "context": "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+        }
+      ],
+      "classification": {
+        "category": "hash",
+        "purpose": [
+          "digital-signature",
+          "hash"
+        ],
+        "quantum_status": "weak",
+        "risk_reason": "SHA-1 is already considered cryptographically weak for modern security applications, independent of quantum considerations.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "conflicting",
+        "purpose_evidence_reason": "The CBOM records this finding's primitive as 'hash' (implying ['hash']), but its source usage indicates ['digital-signature'] -- flagged for manual review rather than resolved automatically.",
+        "purpose_needs_review": true,
+        "purpose_evidence": {
+          "cbom_primitive": "hash",
+          "source_contexts": [
+            "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;",
+            "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+          ],
+          "family_fallback_purpose": [
+            "hash"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 85,
+        "severity": "CRITICAL",
+        "quantum_status": "weak",
+        "category": "hash",
+        "evidence": [
+          "Quantum status: weak",
+          "Cryptographic category: hash"
+        ]
+      }
+    },
+    {
+      "bom_ref": "6b94b3a1-c0d0-4d3b-bf0e-19de944e35b9",
+      "name": "SHA256withRSAandMGF1",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 45,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "42ce2f6b-b085-453d-8be6-559341543325",
+      "name": "RAW",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java",
+          "line": 161,
+          "offset": 39,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "cryptographic-format",
+        "purpose": [
+          "raw-cryptographic-representation"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "RAW describes a cryptographic representation or format rather than identifying a specific primitive. Quantum risk must be determined from the underlying cryptographic operation.",
+        "usage": "raw-cryptographic-representation",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'cryptographic-format' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "raw-cryptographic-representation"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 40,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "cryptographic-format",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: cryptographic-format"
+        ]
+      }
+    },
+    {
+      "bom_ref": "92e6922e-ffc9-43a8-9812-65595cc8c9fe",
+      "name": "EdDSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java",
+          "line": 135,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java",
+          "line": 51,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "Elliptic-curve digital signatures rely on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "1f71d646-e037-4079-ba74-e166f4a44e28",
+      "name": "HMAC-SHA256",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "mac",
+      "oid": "1.2.840.113549.2.9",
+      "occurrences": [
+        {
+          "location": "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java",
+          "line": 228,
+          "offset": 36,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 40,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware",
+        "risk_reason": "MAC security depends on the underlying primitive and key size and should be assessed in context.",
+        "usage": "message-authentication",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'mac'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "mac",
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "message-authentication"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 25,
+        "severity": "LOW",
+        "quantum_status": "quantum-aware",
+        "category": "mac",
+        "evidence": [
+          "Quantum status: quantum-aware",
+          "Cryptographic category: mac"
+        ]
+      }
+    },
+    {
+      "bom_ref": "b38c6aaa-046b-4dab-aa2e-fb24108b70f5",
+      "name": "RSA-2048",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "pke",
+      "oid": "1.2.840.113549.1.1.1",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java",
+          "line": 140,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+          "line": 70,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java",
+          "line": 103,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java",
+          "line": 122,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "pke",
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "8186590c-749c-43b6-954e-8c17501c1b00",
+      "name": "public-key@8186590c-749c-43b6-954e-8c17501c1b00",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 336,
-          "offset": 25,
-          "context": "RSAPublicNumbers"
+          "location": "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java",
+          "line": 117,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
         }
       ],
       "classification": {
@@ -483,7 +427,7 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "RSAPublicNumbers"
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
           ],
           "family_fallback_purpose": [
             "public-key"
@@ -502,66 +446,333 @@
       }
     },
     {
-      "bom_ref": "6454dc8f-4970-4835-9427-fbf9c9964969",
-      "name": "private-key@6454dc8f-4970-4835-9427-fbf9c9964969",
+      "bom_ref": "5f639943-f38f-41c6-9fcc-c0d5303cd169",
+      "name": "SHA384withRSAandMGF1",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 47,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "c26a4f73-8626-416b-b143-c8c9d42eaa97",
+      "name": "DSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.10040.4.1",
+      "occurrences": [
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java",
+          "line": 211,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java",
+          "line": 234,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "DSA relies on the discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "97b429c2-cf5b-4bb3-83f2-276002528a2e",
+      "name": "secret-key@97b429c2-cf5b-4bb3-83f2-276002528a2e",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 25,
+          "location": "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java",
+          "line": 228,
+          "offset": 36,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "secret-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "secret-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "481d3a6b-6359-49da-8629-3791a86dd25d",
+      "name": "EC",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "pke",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 125,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 137,
           "offset": 15,
-          "context": "generate_private_key"
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java",
+          "line": 86,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+          "line": 142,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        },
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+          "line": 205,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java",
+          "line": 81,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 132,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 199,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+          "line": 88,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java",
+          "line": 58,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java",
+          "line": 117,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java",
+          "line": 58,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
         }
       ],
       "classification": {
-        "category": "crypto-material",
+        "category": "asymmetric",
         "purpose": [
-          "private-key"
+          "public-key-cryptography"
         ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
+        "quantum_status": "vulnerable",
+        "risk_reason": "Elliptic-curve cryptography is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "public-key-cryptography",
         "purpose_confidence": "LOW",
         "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
         "purpose_needs_review": false,
         "purpose_evidence": {
-          "cbom_primitive": null,
+          "cbom_primitive": "pke",
           "source_contexts": [
-            "generate_private_key"
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;",
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;",
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyPairGenerator;",
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyFactory;"
           ],
           "family_fallback_purpose": [
-            "private-key"
+            "public-key-cryptography"
           ]
         }
       },
       "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
         "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
         ]
       }
     },
     {
-      "bom_ref": "5859aebf-30aa-452c-ba11-76ca15c700f5",
-      "name": "private-key@5859aebf-30aa-452c-ba11-76ca15c700f5",
+      "bom_ref": "4973477b-3b5c-42f4-a048-4240fd8d82b1",
+      "name": "public-key@4973477b-3b5c-42f4-a048-4240fd8d82b1",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/asymmetric/dsa.py",
-          "line": 185,
-          "offset": 11,
-          "context": "generate_private_key"
+          "location": "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java",
+          "line": 140,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "23739819-92fd-497f-9a33-247b7c69fe2d",
+      "name": "private-key@23739819-92fd-497f-9a33-247b7c69fe2d",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java",
+          "line": 58,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
         }
       ],
       "classification": {
@@ -579,7 +790,7 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "generate_private_key"
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
           ],
           "family_fallback_purpose": [
             "private-key"
@@ -598,36 +809,1829 @@
       }
     },
     {
-      "bom_ref": "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f",
-      "name": "HKDF-SHA256",
+      "bom_ref": "f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "name": "public-key@f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+          "line": 70,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "name": "public-key@13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java",
+          "line": 103,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "name": "secret-key@928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+          "line": 169,
+          "offset": 36,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "secret-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "secret-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "373228b0-400b-4dea-99f5-7ff524837e59",
+      "name": "key@373228b0-400b-4dea-99f5-7ff524837e59",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 132,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+          ],
+          "family_fallback_purpose": [
+            "key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "5773be2c-3270-41ec-8bb4-09d321b6cac7",
+      "name": "AES",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": "2.16.840.1.101.3.4.1",
+      "occurrences": [
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/AesKeyWrapAlgorithmProvider.java",
+          "line": 39,
+          "offset": 32,
+          "context": "org.bouncycastle.crypto.engines.AESWrapEngine#<init>()V"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/AesKeyWrapAlgorithmProvider.java",
+          "line": 46,
+          "offset": 32,
+          "context": "org.bouncycastle.crypto.engines.AESWrapEngine#<init>()V"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 86,
+          "offset": 36,
+          "context": "org.bouncycastle.crypto.engines.AESWrapEngine#<init>()V"
+        },
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 119,
+          "offset": 36,
+          "context": "org.bouncycastle.crypto.engines.AESWrapEngine#<init>()V"
+        }
+      ],
+      "classification": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "risk_reason": "AES key size could not be determined from the available CBOM evidence; assessed conservatively pending confirmation of the key size.",
+        "usage": "encryption",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'symmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [
+            "org.bouncycastle.crypto.engines.AESWrapEngine#<init>()V"
+          ],
+          "family_fallback_purpose": [
+            "encryption"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 50,
+        "severity": "MEDIUM",
+        "quantum_status": "reduced-security-margin",
+        "category": "symmetric",
+        "evidence": [
+          "Quantum status: reduced-security-margin",
+          "Cryptographic category: symmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "name": "secret-key@d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 113,
+          "offset": 46,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "secret-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "secret-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "name": "public-key@dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java",
+          "line": 81,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "name": "key@1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+          "line": 142,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+          ],
+          "family_fallback_purpose": [
+            "key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "2074f7d3-9d6f-4e79-8867-f149d7796deb",
+      "name": "SHA256withRSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.113549.1.1.11",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 39,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "name": "private-key@f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java",
+          "line": 58,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "private-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "private-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "1e2783d3-5a56-4b27-b30c-79544b2a3893",
+      "name": "SHA512",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "hash",
+      "oid": "2.16.840.1.101.3.4.2.3",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 43,
+          "offset": 23,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 44,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware",
+        "risk_reason": "SHA-2 family hashes remain useful with a reduced theoretical security margin against quantum search (Grover's algorithm).",
+        "usage": "hash",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'hash'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "hash",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "hash"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 25,
+        "severity": "LOW",
+        "quantum_status": "quantum-aware",
+        "category": "hash",
+        "evidence": [
+          "Quantum status: quantum-aware",
+          "Cryptographic category: hash"
+        ]
+      }
+    },
+    {
+      "bom_ref": "58597792-d5c4-471b-a5a6-b373ce5a00da",
+      "name": "SHA512withRSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.113549.1.1.13",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 43,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "name": "private-key@2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java",
+          "line": 122,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "private-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "private-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "name": "private-key@2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java",
+          "line": 51,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "private-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "private-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "d5462ad2-0736-442a-8852-76673c086a85",
+      "name": "SHA384withRSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.113549.1.1.12",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 41,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "name": "secret-key@282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 80,
+          "offset": 48,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "secret-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "secret-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "5f262f45-1562-4ade-9d04-3ecb65fdb866",
+      "name": "SHA1withDSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.10040.4.3",
+      "occurrences": [
+        {
+          "location": "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+          "line": 212,
+          "offset": 18,
+          "context": "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "DSA relies on the discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [
+            "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+          ],
+          "family_fallback_purpose": [
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "c064caf6-27d4-4758-891c-7c237a9132cb",
+      "name": "SHA384",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "hash",
+      "oid": "2.16.840.1.101.3.4.2.2",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+          "line": 86,
+          "offset": 35,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 41,
+          "offset": 23,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 42,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "quantum-aware",
+        "risk_reason": "SHA-2 family hashes remain useful with a reduced theoretical security margin against quantum search (Grover's algorithm).",
+        "usage": "hash",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'hash'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "hash",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "hash"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 25,
+        "severity": "LOW",
+        "quantum_status": "quantum-aware",
+        "category": "hash",
+        "evidence": [
+          "Quantum status: quantum-aware",
+          "Cryptographic category: hash"
+        ]
+      }
+    },
+    {
+      "bom_ref": "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "name": "public-key@5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java",
+          "line": 211,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "71245f75-2d4e-4769-81a1-280815e98d9b",
+      "name": "private-key@71245f75-2d4e-4769-81a1-280815e98d9b",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java",
+          "line": 234,
+          "offset": 39,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "private-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "private-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "private-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "b1538b37-efb3-464e-8e65-5a0f7bea9eba",
+      "name": "HMAC-SHA512",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "mac",
+      "oid": "1.2.840.113549.2.11",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 44,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware",
+        "risk_reason": "MAC security depends on the underlying primitive and key size and should be assessed in context.",
+        "usage": "message-authentication",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'mac'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "mac",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "message-authentication"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 25,
+        "severity": "LOW",
+        "quantum_status": "quantum-aware",
+        "category": "mac",
+        "evidence": [
+          "Quantum status: quantum-aware",
+          "Cryptographic category: mac"
+        ]
+      }
+    },
+    {
+      "bom_ref": "69623150-209c-4c00-aa67-e61d252caecb",
+      "name": "SHA1withRSA",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "signature",
+      "oid": "1.2.840.113549.1.1.5",
+      "occurrences": [
+        {
+          "location": "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+          "line": 214,
+          "offset": 18,
+          "context": "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": "digital-signature",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'signature'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "signature",
+          "source_contexts": [
+            "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
+          ],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "04cf407f-0274-4fa6-acaa-d1fb398db750",
+      "name": "TLS",
+      "type": "cryptographic-asset",
+      "asset_type": "protocol",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "operator/src/main/java/org/keycloak/operator/controllers/KeycloakClientBaseController.java",
+          "line": 368,
+          "offset": 36,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "adapters/saml/core/src/main/java/org/keycloak/adapters/cloned/HttpClientBuilder.java",
+          "line": 263,
+          "offset": 29,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "test-framework/core/src/main/java/org/keycloak/testframework/server/DistributionKeycloakServer.java",
+          "line": 296,
+          "offset": 40,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "test-framework/core/src/main/java/org/keycloak/testframework/server/ReadinessProbe.java",
+          "line": 88,
+          "offset": 29,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "test-framework/conformance-runner/src/main/java/org/keycloak/testframework/conformance/OpenIdConformanceServer.java",
+          "line": 190,
+          "offset": 33,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "util/embedded-ldap/src/main/java/org/keycloak/util/ldap/TLS13StartTlsHandler.java",
+          "line": 68,
+          "offset": 21,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/embedded/JGroupsConfigurator.java",
+          "line": 227,
+          "offset": 29,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/remote/DefaultCacheRemoteConfigProviderFactory.java",
+          "line": 237,
+          "offset": 29,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "testsuite/utils/src/main/java/org/keycloak/testsuite/KeycloakServer.java",
+          "line": 537,
+          "offset": 32,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "testsuite/integration-arquillian/util/src/main/java/org/keycloak/testsuite/utils/tls/TLSUtils.java",
+          "line": 66,
+          "offset": 22,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java",
+          "line": 103,
+          "offset": 36,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/InfinispanServerDeployableContainer.java",
+          "line": 175,
+          "offset": 28,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/AbstractQuarkusDeployableContainer.java",
+          "line": 415,
+          "offset": 25,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/connections/httpclient/HttpClientBuilder.java",
+          "line": 271,
+          "offset": 29,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/connections/httpclient/HttpClientBuilder.java",
+          "line": 282,
+          "offset": 46,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/truststore/JSSETruststoreConfigurator.java",
+          "line": 59,
+          "offset": 44,
+          "context": "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+        }
+      ],
+      "classification": {
+        "category": "protocol",
+        "purpose": [
+          "secure-communication"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "Protocol quantum safety depends on the cryptographic algorithms and key-exchange mechanisms actually negotiated by the protocol.",
+        "usage": "secure-communication",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'protocol' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.net.ssl.SSLContext#getInstance(Ljava/lang/String;)Ljavax/net/ssl/SSLContext;"
+          ],
+          "family_fallback_purpose": [
+            "secure-communication"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 43,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "protocol",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: protocol"
+        ]
+      }
+    },
+    {
+      "bom_ref": "d5acc08f-8928-4d9b-9ab3-ea2b598ae4f9",
+      "name": "SHA512withRSAandMGF1",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 49,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "asymmetric",
+        "purpose": [
+          "encryption",
+          "digital-signature"
+        ],
+        "quantum_status": "vulnerable",
+        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "encryption",
+            "digital-signature"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 100,
+        "severity": "CRITICAL",
+        "quantum_status": "vulnerable",
+        "category": "asymmetric",
+        "evidence": [
+          "Quantum status: vulnerable",
+          "Cryptographic category: asymmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "9eb6c5a5-0d82-48f9-a9f5-b6e69ed3617b",
+      "name": "HMACSHA2",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+          "line": 169,
+          "offset": 36,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "unknown",
+        "purpose": [],
+        "quantum_status": "unknown",
+        "risk_reason": "No classification rule currently matches this asset from the evidence available in the CBOM.",
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "insufficient-evidence",
+        "purpose_evidence_reason": "No CBOM primitive, source-context, or algorithm-family evidence was available to determine this finding's cryptographic purpose.",
+        "purpose_needs_review": true,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": []
+        }
+      },
+      "risk_assessment": {
+        "score": 0,
+        "severity": "LOW",
+        "quantum_status": "unknown",
+        "category": "unknown",
+        "evidence": [
+          "Quantum status: unknown",
+          "Cryptographic category: unknown"
+        ]
+      }
+    },
+    {
+      "bom_ref": "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "name": "key@cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 137,
+          "offset": 15,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "name": "public-key@9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 199,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "name": "key@7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+          "line": 88,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+          ],
+          "family_fallback_purpose": [
+            "key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "f911a4d5-8952-4c75-a594-dd1ee4a5aabb",
+      "name": "MGF1",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "other",
+      "oid": "1.2.840.113549.1.1.8",
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 187,
+          "offset": 52,
+          "context": "java.security.spec.PSSParameterSpec#<init>(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;II)V"
+        }
+      ],
+      "classification": {
+        "category": "cryptographic-component",
+        "purpose": [
+          "mask-generation"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "MGF1 is a cryptographic construction component and should be assessed together with the construction in which it is used.",
+        "usage": "mask-generation",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('other') nor the source occurrence context identifies a specific usage for this finding, so the 'cryptographic-component' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "other",
+          "source_contexts": [
+            "java.security.spec.PSSParameterSpec#<init>(Ljava/lang/String;Ljava/lang/String;Ljava/security/spec/AlgorithmParameterSpec;II)V"
+          ],
+          "family_fallback_purpose": [
+            "mask-generation"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 40,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "cryptographic-component",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: cryptographic-component"
+        ]
+      }
+    },
+    {
+      "bom_ref": "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "name": "public-key@7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+          "line": 205,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "ba577d59-2ca8-47a7-a399-f74305d4f08b",
+      "name": "AES128-CBC-PKCS5",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "block-cipher",
+      "oid": "2.16.840.1.101.3.4.1",
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 142,
+          "offset": 15,
+          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        }
+      ],
+      "classification": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "risk_reason": "AES-128 retains a reduced security margin against quantum search (Grover's algorithm) attacks compared with larger key sizes.",
+        "usage": "encryption",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'block-cipher'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "block-cipher",
+          "source_contexts": [
+            "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+          ],
+          "family_fallback_purpose": [
+            "encryption"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 50,
+        "severity": "MEDIUM",
+        "quantum_status": "reduced-security-margin",
+        "category": "symmetric",
+        "evidence": [
+          "Quantum status: reduced-security-margin",
+          "Cryptographic category: symmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "e33e61d3-db2f-4203-bc9a-2c73d4f54186",
+      "name": "AES128-GCM",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "ae",
+      "oid": "2.16.840.1.101.3.4.1",
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 147,
+          "offset": 15,
+          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        }
+      ],
+      "classification": {
+        "category": "symmetric",
+        "purpose": [
+          "encryption"
+        ],
+        "quantum_status": "reduced-security-margin",
+        "risk_reason": "AES-128 retains a reduced security margin against quantum search (Grover's algorithm) attacks compared with larger key sizes.",
+        "usage": "encryption",
+        "purpose_confidence": "MEDIUM",
+        "purpose_evidence_source": "source-context",
+        "purpose_evidence_reason": "Source occurrence(s) call a encryption-specific API, which disambiguates this finding's purpose where the CBOM primitive ('ae') alone does not.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "ae",
+          "source_contexts": [
+            "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+          ],
+          "family_fallback_purpose": [
+            "encryption"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 50,
+        "severity": "MEDIUM",
+        "quantum_status": "reduced-security-margin",
+        "category": "symmetric",
+        "evidence": [
+          "Quantum status: reduced-security-margin",
+          "Cryptographic category: symmetric"
+        ]
+      }
+    },
+    {
+      "bom_ref": "ef788906-6b16-4394-9ee4-18876c5e926e",
+      "name": "HMAC-SHA384",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "mac",
+      "oid": "1.2.840.113549.2.10",
+      "occurrences": [
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 42,
+          "offset": 23,
+          "context": null
+        }
+      ],
+      "classification": {
+        "category": "mac",
+        "purpose": [
+          "message-authentication"
+        ],
+        "quantum_status": "quantum-aware",
+        "risk_reason": "MAC security depends on the underlying primitive and key size and should be assessed in context.",
+        "usage": "message-authentication",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'mac'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "mac",
+          "source_contexts": [],
+          "family_fallback_purpose": [
+            "message-authentication"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 25,
+        "severity": "LOW",
+        "quantum_status": "quantum-aware",
+        "category": "mac",
+        "evidence": [
+          "Quantum status: quantum-aware",
+          "Cryptographic category: mac"
+        ]
+      }
+    },
+    {
+      "bom_ref": "b2ff856e-c435-408e-aa88-10078ba0637f",
+      "name": "key@b2ff856e-c435-408e-aa88-10078ba0637f",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 125,
+          "offset": 38,
+          "context": "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyPairGenerator#getInstance(Ljava/lang/String;)Ljava/security/KeyPairGenerator;"
+          ],
+          "family_fallback_purpose": [
+            "key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "61019a43-fb99-4b0a-b919-045a17ef0954",
+      "name": "public-key@61019a43-fb99-4b0a-b919-045a17ef0954",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java",
+          "line": 86,
+          "offset": 36,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "public-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "public-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
+          ],
+          "family_fallback_purpose": [
+            "public-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "7b064d40-a822-4b28-9831-6f55b723c3de",
+      "name": "ConcatenationKDF",
       "type": "cryptographic-asset",
       "asset_type": "algorithm",
       "primitive": "kdf",
       "oid": null,
       "occurrences": [
         {
-          "location": "docs/development/custom-vectors/hkdf/generate_hkdf.py",
-          "line": 12,
-          "offset": 6,
-          "context": "HKDF"
+          "location": "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+          "line": 157,
+          "offset": 50,
+          "context": "org.bouncycastle.crypto.agreement.kdf.ConcatenationKDFGenerator#<init>(Lorg/bouncycastle/crypto/Digest;)V"
         }
       ],
       "classification": {
         "category": "key-derivation",
         "purpose": [
+          "hash",
           "key-derivation"
         ],
         "quantum_status": "contextual",
         "risk_reason": "Key-derivation security depends on the underlying primitive, parameters and application context rather than on a single quantum-vulnerability classification.",
-        "usage": "key-derivation",
-        "purpose_confidence": "HIGH",
-        "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'kdf'.",
-        "purpose_needs_review": false,
+        "usage": null,
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "conflicting",
+        "purpose_evidence_reason": "The CBOM records this finding's primitive as 'kdf' (implying ['key-derivation']), but its source usage indicates ['hash'] -- flagged for manual review rather than resolved automatically.",
+        "purpose_needs_review": true,
         "purpose_evidence": {
           "cbom_primitive": "kdf",
           "source_contexts": [
-            "HKDF"
+            "org.bouncycastle.crypto.agreement.kdf.ConcatenationKDFGenerator#<init>(Lorg/bouncycastle/crypto/Digest;)V"
           ],
           "family_fallback_purpose": [
             "key-derivation"
@@ -646,28 +2650,28 @@
       }
     },
     {
-      "bom_ref": "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-      "name": "private-key@0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
+      "bom_ref": "9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "name": "public-key@9d06d79e-2a80-4d34-98f3-6e88ffd03133",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
+          "location": "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java",
+          "line": 135,
+          "offset": 28,
+          "context": "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
         }
       ],
       "classification": {
         "category": "crypto-material",
         "purpose": [
-          "private-key"
+          "public-key"
         ],
         "quantum_status": "contextual",
         "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
+        "usage": "public-key",
         "purpose_confidence": "LOW",
         "purpose_evidence_source": "algorithm-family-fallback",
         "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
@@ -675,10 +2679,10 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "generate"
+            "java.security.KeyFactory#getInstance(Ljava/lang/String;)Ljava/security/KeyFactory;"
           ],
           "family_fallback_purpose": [
-            "private-key"
+            "public-key"
           ]
         }
       },
@@ -694,78 +2698,28 @@
       }
     },
     {
-      "bom_ref": "9eae7f2e-c9e7-44cb-9dbd-55281777e1bf",
-      "name": "RSA-2048",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "pke",
-      "oid": "1.2.840.113549.1.1.1",
-      "occurrences": [
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 25,
-          "offset": 15,
-          "context": "generate_private_key"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "encryption",
-          "digital-signature"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "RSA relies on integer factorization, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": null,
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('pke') nor the source occurrence context identifies a specific usage for this finding, so the 'asymmetric' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "pke",
-          "source_contexts": [
-            "generate_private_key"
-          ],
-          "family_fallback_purpose": [
-            "encryption",
-            "digital-signature"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "be91327c-581f-4059-b6df-63c324dac44b",
-      "name": "private-key@be91327c-581f-4059-b6df-63c324dac44b",
+      "bom_ref": "42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "name": "secret-key@42022578-f2fb-4884-9f39-f3547ada3bb4",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java",
+          "line": 151,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
         }
       ],
       "classification": {
         "category": "crypto-material",
         "purpose": [
-          "private-key"
+          "secret-key"
         ],
         "quantum_status": "contextual",
         "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
+        "usage": "secret-key",
         "purpose_confidence": "LOW",
         "purpose_evidence_source": "algorithm-family-fallback",
         "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
@@ -773,10 +2727,10 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "generate"
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
           ],
           "family_fallback_purpose": [
-            "private-key"
+            "secret-key"
           ]
         }
       },
@@ -792,55 +2746,7 @@
       }
     },
     {
-      "bom_ref": "a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "name": "private-key@a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "type": "cryptographic-asset",
-      "asset_type": "related-crypto-material",
-      "primitive": null,
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": null,
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "private-key"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
-        "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
-        ]
-      }
-    },
-    {
-      "bom_ref": "e5afc9a6-f754-4587-917e-02dfc9260c6d",
+      "bom_ref": "16ced5a8-1cd8-4758-9757-1a5cce734d60",
       "name": "SHA256",
       "type": "cryptographic-asset",
       "asset_type": "algorithm",
@@ -848,10 +2754,106 @@
       "oid": "2.16.840.1.101.3.4.2.1",
       "occurrences": [
         {
-          "location": "docs/development/custom-vectors/hkdf/generate_hkdf.py",
-          "line": 12,
-          "offset": 6,
-          "context": "HKDF"
+          "location": "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java",
+          "line": 228,
+          "offset": 36,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        },
+        {
+          "location": "server-spi-private/src/main/java/org/keycloak/broker/provider/AbstractIdentityProvider.java",
+          "line": 138,
+          "offset": 17,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "operator/src/main/java/org/keycloak/operator/Utils.java",
+          "line": 120,
+          "offset": 19,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/mdoc/MdocCredential.java",
+          "line": 243,
+          "offset": 30,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+          "line": 80,
+          "offset": 35,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+          "line": 39,
+          "offset": 23,
+          "context": null
+        },
+        {
+          "location": "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+          "line": 40,
+          "offset": 23,
+          "context": null
+        },
+        {
+          "location": "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+          "line": 100,
+          "offset": 36,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java",
+          "line": 143,
+          "offset": 31,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/utils/BrokerUtil.java",
+          "line": 44,
+          "offset": 31,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/services/util/MtlsHoKTokenUtil.java",
+          "line": 139,
+          "offset": 27,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/services/clientpolicy/executor/PKCEEnforcerExecutor.java",
+          "line": 230,
+          "offset": 27,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/services/resources/IdentityBrokerService.java",
+          "line": 282,
+          "offset": 25,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/protocol/oid4vc/issuance/signing/vcdm/Ed255192018Suite.java",
+          "line": 129,
+          "offset": 31,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/protocol/docker/DockerKeyIdentifier.java",
+          "line": 37,
+          "offset": 41,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/protocol/oidc/par/endpoints/AbstractParEndpoint.java",
+          "line": 88,
+          "offset": 19,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/protocol/oidc/mappers/SHA256PairwiseSubMapper.java",
+          "line": 90,
+          "offset": 21,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
         }
       ],
       "classification": {
@@ -869,7 +2871,8 @@
         "purpose_evidence": {
           "cbom_primitive": "hash",
           "source_contexts": [
-            "HKDF"
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V",
+            "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
           ],
           "family_fallback_purpose": [
             "hash"
@@ -888,28 +2891,28 @@
       }
     },
     {
-      "bom_ref": "fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
-      "name": "public-key@fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
+      "bom_ref": "aaba33db-779d-43bd-8968-67b097be6b30",
+      "name": "secret-key@aaba33db-779d-43bd-8968-67b097be6b30",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 317,
-          "offset": 25,
-          "context": "RSAPublicNumbers"
+          "location": "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java",
+          "line": 161,
+          "offset": 39,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
         }
       ],
       "classification": {
         "category": "crypto-material",
         "purpose": [
-          "public-key"
+          "secret-key"
         ],
         "quantum_status": "contextual",
         "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "public-key",
+        "usage": "secret-key",
         "purpose_confidence": "LOW",
         "purpose_evidence_source": "algorithm-family-fallback",
         "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
@@ -917,10 +2920,10 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "RSAPublicNumbers"
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
           ],
           "family_fallback_purpose": [
-            "public-key"
+            "secret-key"
           ]
         }
       },
@@ -936,183 +2939,160 @@
       }
     },
     {
-      "bom_ref": "35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "name": "private-key@35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "type": "cryptographic-asset",
-      "asset_type": "related-crypto-material",
-      "primitive": null,
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 53,
-          "offset": 20,
-          "context": "RSAPrivateNumbers"
-        }
-      ],
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "private-key"
-        ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": null,
-          "source_contexts": [
-            "RSAPrivateNumbers"
-          ],
-          "family_fallback_purpose": [
-            "private-key"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
-        "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
-        ]
-      }
-    },
-    {
-      "bom_ref": "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "name": "public-key@d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "type": "cryptographic-asset",
-      "asset_type": "related-crypto-material",
-      "primitive": null,
-      "oid": null,
-      "occurrences": [
-        {
-          "location": "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-          "line": 60,
-          "offset": 27,
-          "context": "RSAPublicNumbers"
-        }
-      ],
-      "classification": {
-        "category": "crypto-material",
-        "purpose": [
-          "public-key"
-        ],
-        "quantum_status": "contextual",
-        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "public-key",
-        "purpose_confidence": "LOW",
-        "purpose_evidence_source": "algorithm-family-fallback",
-        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": null,
-          "source_contexts": [
-            "RSAPublicNumbers"
-          ],
-          "family_fallback_purpose": [
-            "public-key"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 42,
-        "severity": "MEDIUM",
-        "quantum_status": "contextual",
-        "category": "crypto-material",
-        "evidence": [
-          "Quantum status: contextual",
-          "Cryptographic category: crypto-material"
-        ]
-      }
-    },
-    {
-      "bom_ref": "bf7dc611-6a26-49ae-9ee6-bcd98a0f36a7",
-      "name": "x448",
+      "bom_ref": "77f7d18d-6930-4123-b014-376fc3b9f123",
+      "name": "AES128",
       "type": "cryptographic-asset",
       "asset_type": "algorithm",
-      "primitive": "key-agree",
-      "oid": "1.3.101.111",
+      "primitive": "block-cipher",
+      "oid": "2.16.840.1.101.3.4.1",
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+          "line": 168,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
         },
         {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java",
+          "line": 151,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/AesKeyWrapAlgorithmProvider.java",
+          "line": 36,
+          "offset": 24,
+          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/AesKeyWrapAlgorithmProvider.java",
+          "line": 43,
+          "offset": 24,
+          "context": "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 80,
+          "offset": 48,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 113,
+          "offset": 46,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        },
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 115,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
         }
       ],
       "classification": {
-        "category": "asymmetric",
+        "category": "symmetric",
         "purpose": [
-          "key-agreement"
+          "encryption"
         ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "Elliptic-curve key agreement relies on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": "key-agreement",
+        "quantum_status": "reduced-security-margin",
+        "risk_reason": "AES-128 retains a reduced security margin against quantum search (Grover's algorithm) attacks compared with larger key sizes.",
+        "usage": "encryption",
         "purpose_confidence": "HIGH",
         "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'key-agree'.",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'block-cipher'.",
         "purpose_needs_review": false,
         "purpose_evidence": {
-          "cbom_primitive": "key-agree",
+          "cbom_primitive": "block-cipher",
           "source_contexts": [
-            "generate"
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V",
+            "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;"
           ],
           "family_fallback_purpose": [
-            "key-agreement"
+            "encryption"
           ]
         }
       },
       "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
+        "score": 50,
+        "severity": "MEDIUM",
+        "quantum_status": "reduced-security-margin",
+        "category": "symmetric",
         "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
+          "Quantum status: reduced-security-margin",
+          "Cryptographic category: symmetric"
         ]
       }
     },
     {
-      "bom_ref": "d1c8081c-05a5-4434-8b87-4107620e51d3",
-      "name": "Ed25519",
+      "bom_ref": "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "name": "secret-key@e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "type": "cryptographic-asset",
+      "asset_type": "related-crypto-material",
+      "primitive": null,
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+          "line": 115,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+        }
+      ],
+      "classification": {
+        "category": "crypto-material",
+        "purpose": [
+          "secret-key"
+        ],
+        "quantum_status": "contextual",
+        "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
+        "usage": "secret-key",
+        "purpose_confidence": "LOW",
+        "purpose_evidence_source": "algorithm-family-fallback",
+        "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": null,
+          "source_contexts": [
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
+          ],
+          "family_fallback_purpose": [
+            "secret-key"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 42,
+        "severity": "MEDIUM",
+        "quantum_status": "contextual",
+        "category": "crypto-material",
+        "evidence": [
+          "Quantum status: contextual",
+          "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "13c0e6f7-7546-4433-ac76-8e1862a48b79",
+      "name": "RSASSA-PSS",
       "type": "cryptographic-asset",
       "asset_type": "algorithm",
       "primitive": "signature",
-      "oid": "1.3.101.112",
+      "oid": "1.2.840.113549.1.1.10",
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
+          "location": "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+          "line": 183,
+          "offset": 32,
+          "context": "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
         }
       ],
       "classification": {
-        "category": "asymmetric",
+        "category": "unknown",
         "purpose": [
           "digital-signature"
         ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "Elliptic-curve digital signatures rely on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
+        "quantum_status": "unknown",
+        "risk_reason": "No classification rule currently matches this asset from the evidence available in the CBOM.",
         "usage": "digital-signature",
         "purpose_confidence": "HIGH",
         "purpose_evidence_source": "cbom-primitive",
@@ -1121,155 +3101,45 @@
         "purpose_evidence": {
           "cbom_primitive": "signature",
           "source_contexts": [
-            "generate"
+            "java.security.Signature#getInstance(Ljava/lang/String;)Ljava/security/Signature;"
           ],
-          "family_fallback_purpose": [
-            "digital-signature"
-          ]
+          "family_fallback_purpose": []
         }
       },
       "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "b4aaaa60-dc43-4098-9a96-7431561cb5de",
-      "name": "x25519",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "key-agree",
-      "oid": "1.3.101.110",
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "asymmetric",
-        "purpose": [
-          "key-agreement"
-        ],
-        "quantum_status": "vulnerable",
-        "risk_reason": "Elliptic-curve key agreement relies on the elliptic-curve discrete-logarithm problem, which is broken by Shor's algorithm on a sufficiently capable quantum computer.",
-        "usage": "key-agreement",
-        "purpose_confidence": "HIGH",
-        "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'key-agree'.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "key-agree",
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "key-agreement"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 100,
-        "severity": "CRITICAL",
-        "quantum_status": "vulnerable",
-        "category": "asymmetric",
-        "evidence": [
-          "Quantum status: vulnerable",
-          "Cryptographic category: asymmetric"
-        ]
-      }
-    },
-    {
-      "bom_ref": "02b2569f-a4d2-47af-a02b-6552739cbc92",
-      "name": "SHA512",
-      "type": "cryptographic-asset",
-      "asset_type": "algorithm",
-      "primitive": "hash",
-      "oid": "2.16.840.1.101.3.4.2.3",
-      "occurrences": [
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 41,
-          "offset": 15,
-          "context": "generate"
-        },
-        {
-          "location": "src/cryptography/hazmat/primitives/twofactor/totp.py",
-          "line": 44,
-          "offset": 38,
-          "context": "generate"
-        }
-      ],
-      "classification": {
-        "category": "hash",
-        "purpose": [
-          "hash"
-        ],
-        "quantum_status": "quantum-aware",
-        "risk_reason": "SHA-2 family hashes remain useful with a reduced theoretical security margin against quantum search (Grover's algorithm).",
-        "usage": "hash",
-        "purpose_confidence": "HIGH",
-        "purpose_evidence_source": "cbom-primitive",
-        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'hash'.",
-        "purpose_needs_review": false,
-        "purpose_evidence": {
-          "cbom_primitive": "hash",
-          "source_contexts": [
-            "generate"
-          ],
-          "family_fallback_purpose": [
-            "hash"
-          ]
-        }
-      },
-      "risk_assessment": {
-        "score": 25,
+        "score": 0,
         "severity": "LOW",
-        "quantum_status": "quantum-aware",
-        "category": "hash",
+        "quantum_status": "unknown",
+        "category": "unknown",
         "evidence": [
-          "Quantum status: quantum-aware",
-          "Cryptographic category: hash"
+          "Quantum status: unknown",
+          "Cryptographic category: unknown"
         ]
       }
     },
     {
-      "bom_ref": "337419e6-312c-4bbc-849e-350ec5d4d2b7",
-      "name": "private-key@337419e6-312c-4bbc-849e-350ec5d4d2b7",
+      "bom_ref": "6e958557-0942-4458-b38d-fcd13cb198bb",
+      "name": "secret-key@6e958557-0942-4458-b38d-fcd13cb198bb",
       "type": "cryptographic-asset",
       "asset_type": "related-crypto-material",
       "primitive": null,
       "oid": null,
       "occurrences": [
         {
-          "location": "src/cryptography/hazmat/primitives/serialization/ssh.py",
-          "line": 337,
-          "offset": 26,
-          "context": "RSAPrivateNumbers"
+          "location": "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+          "line": 168,
+          "offset": 35,
+          "context": "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
         }
       ],
       "classification": {
         "category": "crypto-material",
         "purpose": [
-          "private-key"
+          "secret-key"
         ],
         "quantum_status": "contextual",
         "risk_reason": "The cryptographic material must be associated with its governing algorithm before quantum risk can be determined.",
-        "usage": "private-key",
+        "usage": "secret-key",
         "purpose_confidence": "LOW",
         "purpose_evidence_source": "algorithm-family-fallback",
         "purpose_evidence_reason": "Neither the CBOM primitive ('unspecified') nor the source occurrence context identifies a specific usage for this finding, so the 'crypto-material' algorithm family's general-purpose knowledge is used as a documented, lower-confidence fallback -- not repository evidence.",
@@ -1277,10 +3147,10 @@
         "purpose_evidence": {
           "cbom_primitive": null,
           "source_contexts": [
-            "RSAPrivateNumbers"
+            "javax.crypto.spec.SecretKeySpec#<init>([BLjava/lang/String;)V"
           ],
           "family_fallback_purpose": [
-            "private-key"
+            "secret-key"
           ]
         }
       },
@@ -1292,6 +3162,60 @@
         "evidence": [
           "Quantum status: contextual",
           "Cryptographic category: crypto-material"
+        ]
+      }
+    },
+    {
+      "bom_ref": "c7dfefae-ca4b-49ba-9665-977396161939",
+      "name": "MD5",
+      "type": "cryptographic-asset",
+      "asset_type": "algorithm",
+      "primitive": "hash",
+      "oid": null,
+      "occurrences": [
+        {
+          "location": "distribution/downloads/src/main/java/CopyDependencies.java",
+          "line": 92,
+          "offset": 32,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        },
+        {
+          "location": "services/src/main/java/org/keycloak/cache/ComputedKey.java",
+          "line": 34,
+          "offset": 19,
+          "context": "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+        }
+      ],
+      "classification": {
+        "category": "hash",
+        "purpose": [
+          "hash"
+        ],
+        "quantum_status": "weak",
+        "risk_reason": "MD5 is already considered cryptographically weak for modern security applications, independent of quantum considerations.",
+        "usage": "hash",
+        "purpose_confidence": "HIGH",
+        "purpose_evidence_source": "cbom-primitive",
+        "purpose_evidence_reason": "The CBOM explicitly records this finding's cryptographic primitive as 'hash'.",
+        "purpose_needs_review": false,
+        "purpose_evidence": {
+          "cbom_primitive": "hash",
+          "source_contexts": [
+            "java.security.MessageDigest#getInstance(Ljava/lang/String;)Ljava/security/MessageDigest;"
+          ],
+          "family_fallback_purpose": [
+            "hash"
+          ]
+        }
+      },
+      "risk_assessment": {
+        "score": 85,
+        "severity": "CRITICAL",
+        "quantum_status": "weak",
+        "category": "hash",
+        "evidence": [
+          "Quantum status: weak",
+          "Cryptographic category: hash"
         ]
       }
     }

@@ -49,10 +49,19 @@ REFS = {
     "x25519_private_key": "fixture-x25519-private-key",
     "rsa2048_java": "fixture-rsa2048-java-keyfactory",
     "rsa2048_python": "fixture-rsa2048-python-generate",
+    # Key material governed by each RSA finding separately. Two findings can
+    # share a displayed algorithm name and still own entirely different
+    # relationships, and that is precisely what blast radius must not mix up.
+    "rsa2048_java_key": "fixture-rsa2048-java-private-key",
+    "rsa2048_python_key": "fixture-rsa2048-python-private-key",
     "dsa": "fixture-dsa-signature",
     "dsa_public_key": "fixture-dsa-public-key",
     "sha256": "fixture-sha256-digest",
     "hmac": "fixture-hmac-sha256",
+    # A finding with no recorded CBOM relationship at all. Real scans are
+    # full of these, and blast radius has to report "none" rather than
+    # inventing an edge, so the fixture keeps one deliberately isolated.
+    "aes256": "fixture-aes256-gcm",
 }
 
 # A ref that is well-formed but belongs to no finding, for 404 / lookup-miss
@@ -151,6 +160,40 @@ FIXTURE_CBOM = {
             primitive="pke",
             oid="1.2.840.113549.1.1.1",
         ),
+        # One piece of key material per RSA finding, in that finding's own
+        # file. Same-named findings therefore have *different* dependents,
+        # which is what lets a test prove the blast-radius view keeps their
+        # relationships apart instead of merging them by name.
+        _component(
+            REFS["rsa2048_java_key"],
+            "private-key@fixture-rsa2048-java",
+            "related-crypto-material",
+            [_occurrence("src/main/java/com/example/KeyLoader.java", 81, "java.security.PrivateKey")],
+        ),
+        _component(
+            REFS["rsa2048_python_key"],
+            "private-key@fixture-rsa2048-python",
+            "related-crypto-material",
+            [_occurrence("tools/generate_vectors.py", 19, "rsa.RSAPrivateKey")],
+        ),
+        # Symmetric encryption, standalone: no key material and no dependency
+        # entry, so it stays outside the dependency graph entirely. It sits in
+        # the key-exchange file on purpose, giving the suite two findings that
+        # share a source file with no edge between them -- co-location is not
+        # a relationship, and blast radius must not treat it as one.
+        _component(
+            REFS["aes256"],
+            "AES-256-GCM",
+            "algorithm",
+            [
+                _occurrence(
+                    "src/main/java/com/example/KeyExchange.java",
+                    96,
+                    "javax.crypto.Cipher#getInstance(Ljava/lang/String;)Ljavax/crypto/Cipher;",
+                )
+            ],
+            primitive="block-cipher",
+        ),
         # A signature used on a TLS path: externally exposed, so the strategy
         # engine has the evidence it needs for a hybrid transition.
         _component(
@@ -220,6 +263,8 @@ FIXTURE_CBOM = {
     ],
     "dependencies": [
         {"ref": REFS["x25519_private_key"], "dependsOn": [REFS["x25519"]]},
+        {"ref": REFS["rsa2048_java_key"], "dependsOn": [REFS["rsa2048_java"]]},
+        {"ref": REFS["rsa2048_python_key"], "dependsOn": [REFS["rsa2048_python"]]},
         {"ref": REFS["dsa_public_key"], "dependsOn": [REFS["dsa"]]},
         {"ref": REFS["dsa"], "dependsOn": [REFS["sha256"]]},
         {"ref": REFS["hmac"], "dependsOn": [REFS["sha256"]]},

@@ -15,6 +15,10 @@ __pycache__/
 backend/.scratch_backend.log
 *.scratch*
 
+# Browser-automation scratch from scripted UI checks: console logs, page
+# snapshots and screenshots from a QA session, regenerated every run.
+.playwright-mcp/
+
 # Scan runtime records: rewritten by every scan, carrying that run's id,
 # timestamps and durations. Only the scan service reads them, and it treats
 # them as absent on a fresh checkout. The pipeline's analysis outputs

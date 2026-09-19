@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Dict
 from pydantic import BaseModel, ConfigDict, Field
 from services.ai_advisor import generate_advice
+from services import chat_assistant
 from services.scanning import ScanService, TargetError
 from services.blast_radius_view import build_blast_radius_view, load_blast_radius_records
 from services.evidence_explorer import build_finding_evidence, load_evidence_records
@@ -48,6 +49,25 @@ class AnalyzeRequest(BaseModel):
 
 class AIAdvisorRequest(BaseModel):
     asset_name: str
+
+
+class ChatTurn(BaseModel):
+    """One earlier turn, as the browser kept it for this session."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    role: str
+    content: str
+
+
+class ChatRequest(BaseModel):
+    """A question for the ECDAT assistant, optionally about one finding."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    message: str
+    bom_ref: str | None = None
+    conversation: list[ChatTurn] = Field(default_factory=list)
 
 
 # The scan lifecycle lives in services/scanning: target validation →
@@ -1605,6 +1625,35 @@ def get_scan_capabilities():
 @app.get("/api/scan/history")
 def get_scan_history():
     return {"scans": scan_service.history()}
+
+
+# ------------------------------------------------------------
+# ECDAT chat assistant
+# ------------------------------------------------------------
+
+
+@app.post("/api/chat")
+def chat(request: ChatRequest):
+    """Answers a question about the current analysis.
+
+    The assistant only ever sees ECDAT's generated results (see
+    services/chat_context.py) -- never environment variables, credentials
+    or arbitrary files. Failures come back as a reason code and a sentence
+    the UI can show, never as a stack trace.
+    """
+    try:
+        return chat_assistant.ask(
+            message=request.message,
+            bom_ref=request.bom_ref,
+            conversation=[turn.model_dump() for turn in request.conversation],
+        )
+    except chat_assistant.ChatError as error:
+        raise HTTPException(
+            status_code=error.status_code,
+            detail={"reason_code": error.code, "reason": error.message},
+        )
+
+
 @app.post("/api/ai/advisor")
 def ai_advisor(request: AIAdvisorRequest):
 

@@ -18,6 +18,7 @@ import {
 } from "three";
 
 import { disposeObject } from "./SpatialEngine";
+import { themed, themedGrid } from "./themePalette.js";
 
 function seeded(seed) {
   let state = seed >>> 0;
@@ -57,6 +58,10 @@ export class EnvironmentLayer {
     grid.material.transparent = true;
     grid.material.opacity = 0.35;
     grid.material.depthWrite = false;
+    // The floor grid is environment, so it follows the theme. GridHelper
+    // bakes its colours into vertex colours, so it is tagged as a whole
+    // rather than through its material.
+    themedGrid(grid);
     this.group.add(grid);
 
     if (this.options.structures) {
@@ -67,14 +72,14 @@ export class EnvironmentLayer {
       ].forEach(({ x, z, rotation }) => {
         const plane = new Mesh(
           new PlaneGeometry(size * 0.28, size * 0.2),
-          new MeshBasicMaterial({ color: "#0d1d38", transparent: true, opacity: 0.18, depthWrite: false }),
+          themed(new MeshBasicMaterial({ transparent: true, opacity: 0.18, depthWrite: false }), "wall"),
         );
         plane.position.set(x, size * 0.1, z);
         plane.rotation.y = rotation;
         this.group.add(plane);
         const frame = new LineSegments(
           new EdgesGeometry(plane.geometry),
-          new LineBasicMaterial({ color: "#2e4a7a", transparent: true, opacity: 0.35 }),
+          themed(new LineBasicMaterial({ transparent: true, opacity: 0.35 }), "wall-edge"),
         );
         frame.position.copy(plane.position);
         frame.rotation.copy(plane.rotation);
@@ -93,7 +98,7 @@ export class EnvironmentLayer {
       this.group.add(
         new Points(
           geometry,
-          new PointsMaterial({ color: "#8fb3e6", size: 0.08, transparent: true, opacity: 0.35, depthWrite: false }),
+          themed(new PointsMaterial({ size: 0.08, transparent: true, opacity: 0.35, depthWrite: false }), "dust"),
         ),
       );
     }

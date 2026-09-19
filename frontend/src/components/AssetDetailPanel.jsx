@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 
 import { InvestigationHub } from "../spatial/InvestigationHub";
 import { scrollBehavior } from "../spatial/motion";
@@ -75,6 +75,7 @@ export function AssetDetailPanel({
   onBack,
   onInvestigate,
   onEvidence,
+  onAskAi,
   layout = "overlay",
 }) {
   // "overlay": the modal workspace of the scrolling layout.
@@ -150,9 +151,22 @@ export function AssetDetailPanel({
           )}
           <div className="breadcrumb">{inspector ? "Investigation space" : "Asset Investigation"} / {assetName}</div>
         </div>
-        <button type="button" className="asset-detail-close" onClick={onClose}>
-          Close
-        </button>
+        <div className="workspace-topbar-actions">
+          {onAskAi && (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm ask-ecdat-ai"
+              onClick={() => onAskAi(assetDetail?.bom_ref || null)}
+              title={`Ask ECDAT AI about ${assetName}`}
+            >
+              <Sparkles size={13} aria-hidden="true" />
+              Ask ECDAT AI
+            </button>
+          )}
+          <button type="button" className="asset-detail-close" onClick={onClose}>
+            Close
+          </button>
+        </div>
       </div>
 
       {loading ? (

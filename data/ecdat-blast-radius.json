@@ -1,92 +1,259 @@
 {
   "project": "ECDAT",
   "source": "keycloak-cbom.json",
-  "asset_count": 25,
-  "dependency_count": 29,
+  "asset_count": 59,
+  "dependency_count": 37,
   "risk_mapping": {
-    "total_assets": 25,
-    "mapped_assets": 25,
+    "total_assets": 59,
+    "mapped_assets": 59,
     "missing_assets": 0
   },
   "assets": [
     {
-      "asset": "RSA",
-      "asset_ref": "db980426-8ba2-415b-9d01-eabc2186b8af",
-      "bom_ref": "db980426-8ba2-415b-9d01-eabc2186b8af",
-      "blast_radius_score": 78.06,
+      "asset": "EC",
+      "asset_ref": "481d3a6b-6359-49da-8629-3791a86dd25d",
+      "bom_ref": "481d3a6b-6359-49da-8629-3791a86dd25d",
+      "blast_radius_score": 82.53,
       "severity": "CRITICAL",
       "direct_dependencies": {
         "count": 0,
         "refs": []
       },
       "direct_dependents": {
+        "count": 12,
+        "refs": [
+          "373228b0-400b-4dea-99f5-7ff524837e59",
+          "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+          "dd90195e-77f4-4306-a380-c2ba09846fe6",
+          "f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+          "1e97f45f-7326-475b-a2a6-bc159798d64f",
+          "23739819-92fd-497f-9a33-247b7c69fe2d",
+          "b2ff856e-c435-408e-aa88-10078ba0637f",
+          "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+          "61019a43-fb99-4b0a-b919-045a17ef0954",
+          "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+          "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+          "8186590c-749c-43b6-954e-8c17501c1b00"
+        ]
+      },
+      "transitive_dependents": {
+        "count": 12,
+        "refs": [
+          "1e97f45f-7326-475b-a2a6-bc159798d64f",
+          "23739819-92fd-497f-9a33-247b7c69fe2d",
+          "373228b0-400b-4dea-99f5-7ff524837e59",
+          "61019a43-fb99-4b0a-b919-045a17ef0954",
+          "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+          "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+          "8186590c-749c-43b6-954e-8c17501c1b00",
+          "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+          "b2ff856e-c435-408e-aa88-10078ba0637f",
+          "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+          "dd90195e-77f4-4306-a380-c2ba09846fe6",
+          "f3be4c41-32fc-4fdc-bc73-0d826a53ef03"
+        ]
+      },
+      "evidence": {
+        "count": 12
+      },
+      "risk": {
+        "score": 83.53
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 30,
+        "transitive_score": 30,
+        "evidence_score": 10,
+        "risk_contribution": 12.53
+      },
+      "explanation": {
+        "summary": "EC has a potential migration blast-radius score of 82.53/100 and a severity of CRITICAL.",
+        "reasons": [
+          "12 direct dependent asset(s) were identified.",
+          "12 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a very high quantum-risk score of 83.53.",
+          "12 CBOM evidence occurrence(s) support the asset.",
+          "The combination of dependency impact and cryptographic risk produces a critical potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "AES128",
+      "asset_ref": "77f7d18d-6930-4123-b014-376fc3b9f123",
+      "bom_ref": "77f7d18d-6930-4123-b014-376fc3b9f123",
+      "blast_radius_score": 73.82,
+      "severity": "HIGH",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
         "count": 5,
         "refs": [
-          "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-          "337419e6-312c-4bbc-849e-350ec5d4d2b7",
-          "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-          "35cfaec6-40a2-46d2-bc5f-4b3601573947",
-          "fbaad60c-57a3-495c-9a57-c6d7b8b1b631"
+          "6e958557-0942-4458-b38d-fcd13cb198bb",
+          "42022578-f2fb-4884-9f39-f3547ada3bb4",
+          "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+          "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+          "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45"
         ]
       },
       "transitive_dependents": {
         "count": 5,
         "refs": [
-          "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-          "337419e6-312c-4bbc-849e-350ec5d4d2b7",
-          "35cfaec6-40a2-46d2-bc5f-4b3601573947",
-          "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-          "fbaad60c-57a3-495c-9a57-c6d7b8b1b631"
+          "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+          "42022578-f2fb-4884-9f39-f3547ada3bb4",
+          "6e958557-0942-4458-b38d-fcd13cb198bb",
+          "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+          "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8"
         ]
       },
       "evidence": {
-        "count": 5
+        "count": 7
       },
       "risk": {
-        "score": 87.06
+        "score": 58.82
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
         "direct_dependent_score": 30,
         "transitive_score": 25,
         "evidence_score": 10,
-        "risk_contribution": 13.06
+        "risk_contribution": 8.82
       },
       "explanation": {
-        "summary": "RSA has a potential migration blast-radius score of 78.06/100 and a severity of CRITICAL.",
+        "summary": "AES128 has a potential migration blast-radius score of 73.82/100 and a severity of HIGH.",
         "reasons": [
           "5 direct dependent asset(s) were identified.",
           "5 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset has a very high quantum-risk score of 87.06.",
-          "5 CBOM evidence occurrence(s) support the asset.",
-          "The combination of dependency impact and cryptographic risk produces a critical potential migration impact."
+          "The asset has a high quantum-risk score of 58.82.",
+          "7 CBOM evidence occurrence(s) support the asset.",
+          "The dependency structure and cryptographic risk indicate a high potential migration impact."
         ]
       }
     },
     {
-      "asset": "Ed448",
-      "asset_ref": "81df709d-e95a-4349-82c5-840cde0e4d5a",
-      "bom_ref": "81df709d-e95a-4349-82c5-840cde0e4d5a",
-      "blast_radius_score": 55.94,
+      "asset": "RSA-2048",
+      "asset_ref": "b38c6aaa-046b-4dab-aa2e-fb24108b70f5",
+      "bom_ref": "b38c6aaa-046b-4dab-aa2e-fb24108b70f5",
+      "blast_radius_score": 71.12,
       "severity": "HIGH",
       "direct_dependencies": {
-        "count": 1,
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 4,
         "refs": [
-          "bfbeb98a-6b34-4120-b7b4-688d7cb9786b"
+          "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+          "4973477b-3b5c-42f4-a048-4240fd8d82b1",
+          "2fa341e1-e329-4ad3-b710-f10d6380724c",
+          "f4093282-1426-42b6-9a08-edc46c2eb4aa"
         ]
+      },
+      "transitive_dependents": {
+        "count": 4,
+        "refs": [
+          "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+          "2fa341e1-e329-4ad3-b710-f10d6380724c",
+          "4973477b-3b5c-42f4-a048-4240fd8d82b1",
+          "f4093282-1426-42b6-9a08-edc46c2eb4aa"
+        ]
+      },
+      "evidence": {
+        "count": 4
+      },
+      "risk": {
+        "score": 74.12
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 30,
+        "transitive_score": 20,
+        "evidence_score": 10,
+        "risk_contribution": 11.12
+      },
+      "explanation": {
+        "summary": "RSA-2048 has a potential migration blast-radius score of 71.12/100 and a severity of HIGH.",
+        "reasons": [
+          "4 direct dependent asset(s) were identified.",
+          "4 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a high quantum-risk score of 74.12.",
+          "4 CBOM evidence occurrence(s) support the asset.",
+          "The dependency structure and cryptographic risk indicate a high potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256",
+      "asset_ref": "16ced5a8-1cd8-4758-9757-1a5cce734d60",
+      "bom_ref": "16ced5a8-1cd8-4758-9757-1a5cce734d60",
+      "blast_radius_score": 52.94,
+      "severity": "HIGH",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
       },
       "direct_dependents": {
         "count": 2,
         "refs": [
-          "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-          "be91327c-581f-4059-b6df-63c324dac44b"
+          "1f71d646-e037-4079-ba74-e166f4a44e28",
+          "2074f7d3-9d6f-4e79-8867-f149d7796deb"
+        ]
+      },
+      "transitive_dependents": {
+        "count": 3,
+        "refs": [
+          "1f71d646-e037-4079-ba74-e166f4a44e28",
+          "2074f7d3-9d6f-4e79-8867-f149d7796deb",
+          "97b429c2-cf5b-4bb3-83f2-276002528a2e"
+        ]
+      },
+      "evidence": {
+        "count": 17
+      },
+      "risk": {
+        "score": 52.94
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 20,
+        "transitive_score": 15,
+        "evidence_score": 10,
+        "risk_contribution": 7.94
+      },
+      "explanation": {
+        "summary": "SHA256 has a potential migration blast-radius score of 52.94/100 and a severity of HIGH.",
+        "reasons": [
+          "2 direct dependent asset(s) were identified.",
+          "3 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a high quantum-risk score of 52.94.",
+          "17 CBOM evidence occurrence(s) support the asset.",
+          "The dependency structure and cryptographic risk indicate a high potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "EdDSA",
+      "asset_ref": "92e6922e-ffc9-43a8-9812-65595cc8c9fe",
+      "bom_ref": "92e6922e-ffc9-43a8-9812-65595cc8c9fe",
+      "blast_radius_score": 50.94,
+      "severity": "HIGH",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 2,
+        "refs": [
+          "9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+          "2635bd31-35e8-42f8-bca0-4083313b04ef"
         ]
       },
       "transitive_dependents": {
         "count": 2,
         "refs": [
-          "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-          "be91327c-581f-4059-b6df-63c324dac44b"
+          "2635bd31-35e8-42f8-bca0-4083313b04ef",
+          "9d06d79e-2a80-4d34-98f3-6e88ffd03133"
         ]
       },
       "evidence": {
@@ -96,18 +263,17 @@
         "score": 72.94
       },
       "score_breakdown": {
-        "direct_dependency_score": 5,
+        "direct_dependency_score": 0,
         "direct_dependent_score": 20,
         "transitive_score": 10,
         "evidence_score": 10,
         "risk_contribution": 10.94
       },
       "explanation": {
-        "summary": "Ed448 has a potential migration blast-radius score of 55.94/100 and a severity of HIGH.",
+        "summary": "EdDSA has a potential migration blast-radius score of 50.94/100 and a severity of HIGH.",
         "reasons": [
           "2 direct dependent asset(s) were identified.",
           "2 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset directly depends on 1 other asset(s).",
           "The asset has a high quantum-risk score of 72.94.",
           "2 CBOM evidence occurrence(s) support the asset.",
           "The dependency structure and cryptographic risk indicate a high potential migration impact."
@@ -115,29 +281,27 @@
       }
     },
     {
-      "asset": "Ed25519",
-      "asset_ref": "d1c8081c-05a5-4434-8b87-4107620e51d3",
-      "bom_ref": "d1c8081c-05a5-4434-8b87-4107620e51d3",
-      "blast_radius_score": 55.94,
+      "asset": "DSA",
+      "asset_ref": "c26a4f73-8626-416b-b143-c8c9d42eaa97",
+      "bom_ref": "c26a4f73-8626-416b-b143-c8c9d42eaa97",
+      "blast_radius_score": 50.94,
       "severity": "HIGH",
       "direct_dependencies": {
-        "count": 1,
-        "refs": [
-          "02b2569f-a4d2-47af-a02b-6552739cbc92"
-        ]
+        "count": 0,
+        "refs": []
       },
       "direct_dependents": {
         "count": 2,
         "refs": [
-          "afbe4883-77a4-4c37-ae6f-4df2d865d377",
-          "a695fabc-0c1b-414d-9396-5fab1fd21688"
+          "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+          "71245f75-2d4e-4769-81a1-280815e98d9b"
         ]
       },
       "transitive_dependents": {
         "count": 2,
         "refs": [
-          "a695fabc-0c1b-414d-9396-5fab1fd21688",
-          "afbe4883-77a4-4c37-ae6f-4df2d865d377"
+          "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+          "71245f75-2d4e-4769-81a1-280815e98d9b"
         ]
       },
       "evidence": {
@@ -147,18 +311,17 @@
         "score": 72.94
       },
       "score_breakdown": {
-        "direct_dependency_score": 5,
+        "direct_dependency_score": 0,
         "direct_dependent_score": 20,
         "transitive_score": 10,
         "evidence_score": 10,
         "risk_contribution": 10.94
       },
       "explanation": {
-        "summary": "Ed25519 has a potential migration blast-radius score of 55.94/100 and a severity of HIGH.",
+        "summary": "DSA has a potential migration blast-radius score of 50.94/100 and a severity of HIGH.",
         "reasons": [
           "2 direct dependent asset(s) were identified.",
           "2 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset directly depends on 1 other asset(s).",
           "The asset has a high quantum-risk score of 72.94.",
           "2 CBOM evidence occurrence(s) support the asset.",
           "The dependency structure and cryptographic risk indicate a high potential migration impact."
@@ -166,75 +329,171 @@
       }
     },
     {
-      "asset": "SHAKE256",
-      "asset_ref": "bfbeb98a-6b34-4120-b7b4-688d7cb9786b",
-      "bom_ref": "bfbeb98a-6b34-4120-b7b4-688d7cb9786b",
-      "blast_radius_score": 40.47,
+      "asset": "SHA1",
+      "asset_ref": "dbfad652-42e1-4511-8294-0401d441b6cb",
+      "bom_ref": "dbfad652-42e1-4511-8294-0401d441b6cb",
+      "blast_radius_score": 49.88,
       "severity": "MEDIUM",
       "direct_dependencies": {
         "count": 0,
         "refs": []
       },
       "direct_dependents": {
-        "count": 1,
+        "count": 2,
         "refs": [
-          "81df709d-e95a-4349-82c5-840cde0e4d5a"
+          "69623150-209c-4c00-aa67-e61d252caecb",
+          "5f262f45-1562-4ade-9d04-3ecb65fdb866"
         ]
       },
       "transitive_dependents": {
-        "count": 3,
+        "count": 2,
         "refs": [
-          "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-          "81df709d-e95a-4349-82c5-840cde0e4d5a",
-          "be91327c-581f-4059-b6df-63c324dac44b"
+          "5f262f45-1562-4ade-9d04-3ecb65fdb866",
+          "69623150-209c-4c00-aa67-e61d252caecb"
         ]
       },
       "evidence": {
-        "count": 2
+        "count": 4
       },
       "risk": {
-        "score": 36.47
+        "score": 65.88
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
-        "direct_dependent_score": 10,
-        "transitive_score": 15,
+        "direct_dependent_score": 20,
+        "transitive_score": 10,
         "evidence_score": 10,
-        "risk_contribution": 5.47
+        "risk_contribution": 9.88
       },
       "explanation": {
-        "summary": "SHAKE256 has a potential migration blast-radius score of 40.47/100 and a severity of MEDIUM.",
+        "summary": "SHA1 has a potential migration blast-radius score of 49.88/100 and a severity of MEDIUM.",
         "reasons": [
-          "1 direct dependent asset(s) were identified.",
-          "3 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset has a quantum-risk score of 36.47.",
-          "2 CBOM evidence occurrence(s) support the asset.",
+          "2 direct dependent asset(s) were identified.",
+          "2 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a high quantum-risk score of 65.88.",
+          "4 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a moderate potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384",
+      "asset_ref": "c064caf6-27d4-4758-891c-7c237a9132cb",
+      "bom_ref": "c064caf6-27d4-4758-891c-7c237a9132cb",
+      "blast_radius_score": 45.43,
+      "severity": "MEDIUM",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 2,
+        "refs": [
+          "d5462ad2-0736-442a-8852-76673c086a85",
+          "ef788906-6b16-4394-9ee4-18876c5e926e"
+        ]
+      },
+      "transitive_dependents": {
+        "count": 2,
+        "refs": [
+          "d5462ad2-0736-442a-8852-76673c086a85",
+          "ef788906-6b16-4394-9ee4-18876c5e926e"
+        ]
+      },
+      "evidence": {
+        "count": 3
+      },
+      "risk": {
+        "score": 36.18
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 20,
+        "transitive_score": 10,
+        "evidence_score": 10,
+        "risk_contribution": 5.43
+      },
+      "explanation": {
+        "summary": "SHA384 has a potential migration blast-radius score of 45.43/100 and a severity of MEDIUM.",
+        "reasons": [
+          "2 direct dependent asset(s) were identified.",
+          "2 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a quantum-risk score of 36.18.",
+          "3 CBOM evidence occurrence(s) support the asset.",
           "The asset has a moderate potential migration impact."
         ]
       }
     },
     {
       "asset": "SHA512",
-      "asset_ref": "02b2569f-a4d2-47af-a02b-6552739cbc92",
-      "bom_ref": "02b2569f-a4d2-47af-a02b-6552739cbc92",
-      "blast_radius_score": 40.47,
+      "asset_ref": "1e2783d3-5a56-4b27-b30c-79544b2a3893",
+      "bom_ref": "1e2783d3-5a56-4b27-b30c-79544b2a3893",
+      "blast_radius_score": 45.25,
       "severity": "MEDIUM",
       "direct_dependencies": {
         "count": 0,
         "refs": []
       },
       "direct_dependents": {
-        "count": 1,
+        "count": 2,
         "refs": [
-          "d1c8081c-05a5-4434-8b87-4107620e51d3"
+          "58597792-d5c4-471b-a5a6-b373ce5a00da",
+          "b1538b37-efb3-464e-8e65-5a0f7bea9eba"
         ]
       },
       "transitive_dependents": {
-        "count": 3,
+        "count": 2,
         "refs": [
-          "a695fabc-0c1b-414d-9396-5fab1fd21688",
-          "afbe4883-77a4-4c37-ae6f-4df2d865d377",
-          "d1c8081c-05a5-4434-8b87-4107620e51d3"
+          "58597792-d5c4-471b-a5a6-b373ce5a00da",
+          "b1538b37-efb3-464e-8e65-5a0f7bea9eba"
+        ]
+      },
+      "evidence": {
+        "count": 2
+      },
+      "risk": {
+        "score": 35.0
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 20,
+        "transitive_score": 10,
+        "evidence_score": 10,
+        "risk_contribution": 5.25
+      },
+      "explanation": {
+        "summary": "SHA512 has a potential migration blast-radius score of 45.25/100 and a severity of MEDIUM.",
+        "reasons": [
+          "2 direct dependent asset(s) were identified.",
+          "2 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset has a quantum-risk score of 35.0.",
+          "2 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a moderate potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA256",
+      "asset_ref": "1f71d646-e037-4079-ba74-e166f4a44e28",
+      "bom_ref": "1f71d646-e037-4079-ba74-e166f4a44e28",
+      "blast_radius_score": 35.47,
+      "severity": "MEDIUM",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "16ced5a8-1cd8-4758-9757-1a5cce734d60"
+        ]
+      },
+      "direct_dependents": {
+        "count": 1,
+        "refs": [
+          "97b429c2-cf5b-4bb3-83f2-276002528a2e"
+        ]
+      },
+      "transitive_dependents": {
+        "count": 1,
+        "refs": [
+          "97b429c2-cf5b-4bb3-83f2-276002528a2e"
         ]
       },
       "evidence": {
@@ -244,17 +503,18 @@
         "score": 36.47
       },
       "score_breakdown": {
-        "direct_dependency_score": 0,
+        "direct_dependency_score": 5,
         "direct_dependent_score": 10,
-        "transitive_score": 15,
+        "transitive_score": 5,
         "evidence_score": 10,
         "risk_contribution": 5.47
       },
       "explanation": {
-        "summary": "SHA512 has a potential migration blast-radius score of 40.47/100 and a severity of MEDIUM.",
+        "summary": "HMAC-SHA256 has a potential migration blast-radius score of 35.47/100 and a severity of MEDIUM.",
         "reasons": [
           "1 direct dependent asset(s) were identified.",
-          "3 transitive dependent asset(s) are reachable through the dependency graph.",
+          "1 transitive dependent asset(s) are reachable through the dependency graph.",
+          "The asset directly depends on 1 other asset(s).",
           "The asset has a quantum-risk score of 36.47.",
           "2 CBOM evidence occurrence(s) support the asset.",
           "The asset has a moderate potential migration impact."
@@ -262,10 +522,10 @@
       }
     },
     {
-      "asset": "DH",
-      "asset_ref": "6fa569d1-b8b9-4b6c-9515-a8e3d54d699b",
-      "bom_ref": "6fa569d1-b8b9-4b6c-9515-a8e3d54d699b",
-      "blast_radius_score": 30.81,
+      "asset": "RAW",
+      "asset_ref": "42ce2f6b-b085-453d-8be6-559341543325",
+      "bom_ref": "42ce2f6b-b085-453d-8be6-559341543325",
+      "blast_radius_score": 26.4,
       "severity": "MEDIUM",
       "direct_dependencies": {
         "count": 0,
@@ -274,44 +534,44 @@
       "direct_dependents": {
         "count": 1,
         "refs": [
-          "5859aebf-30aa-452c-ba11-76ca15c700f5"
+          "aaba33db-779d-43bd-8968-67b097be6b30"
         ]
       },
       "transitive_dependents": {
         "count": 1,
         "refs": [
-          "5859aebf-30aa-452c-ba11-76ca15c700f5"
+          "aaba33db-779d-43bd-8968-67b097be6b30"
         ]
       },
       "evidence": {
         "count": 1
       },
       "risk": {
-        "score": 72.06
+        "score": 42.65
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
         "direct_dependent_score": 10,
         "transitive_score": 5,
         "evidence_score": 5,
-        "risk_contribution": 10.81
+        "risk_contribution": 6.4
       },
       "explanation": {
-        "summary": "DH has a potential migration blast-radius score of 30.81/100 and a severity of MEDIUM.",
+        "summary": "RAW has a potential migration blast-radius score of 26.4/100 and a severity of MEDIUM.",
         "reasons": [
           "1 direct dependent asset(s) were identified.",
           "1 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset has a high quantum-risk score of 72.06.",
+          "The asset has a quantum-risk score of 42.65.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a moderate potential migration impact."
         ]
       }
     },
     {
-      "asset": "RSA-2048",
-      "asset_ref": "afc4f1a7-ddbd-4fd7-b8fd-225a3399834e",
-      "bom_ref": "afc4f1a7-ddbd-4fd7-b8fd-225a3399834e",
-      "blast_radius_score": 29.04,
+      "asset": "MGF1",
+      "asset_ref": "f911a4d5-8952-4c75-a594-dd1ee4a5aabb",
+      "bom_ref": "f911a4d5-8952-4c75-a594-dd1ee4a5aabb",
+      "blast_radius_score": 26.4,
       "severity": "MEDIUM",
       "direct_dependencies": {
         "count": 0,
@@ -320,89 +580,43 @@
       "direct_dependents": {
         "count": 1,
         "refs": [
-          "3ac50882-8fb6-4930-a649-3afff7f22144"
+          "13c0e6f7-7546-4433-ac76-8e1862a48b79"
         ]
       },
       "transitive_dependents": {
         "count": 1,
         "refs": [
-          "3ac50882-8fb6-4930-a649-3afff7f22144"
+          "13c0e6f7-7546-4433-ac76-8e1862a48b79"
         ]
       },
       "evidence": {
         "count": 1
       },
       "risk": {
-        "score": 60.29
+        "score": 42.65
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
         "direct_dependent_score": 10,
         "transitive_score": 5,
         "evidence_score": 5,
-        "risk_contribution": 9.04
+        "risk_contribution": 6.4
       },
       "explanation": {
-        "summary": "RSA-2048 has a potential migration blast-radius score of 29.04/100 and a severity of MEDIUM.",
+        "summary": "MGF1 has a potential migration blast-radius score of 26.4/100 and a severity of MEDIUM.",
         "reasons": [
           "1 direct dependent asset(s) were identified.",
           "1 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset has a high quantum-risk score of 60.29.",
+          "The asset has a quantum-risk score of 42.65.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a moderate potential migration impact."
         ]
       }
     },
     {
-      "asset": "RSA-2048",
-      "asset_ref": "9eae7f2e-c9e7-44cb-9dbd-55281777e1bf",
-      "bom_ref": "9eae7f2e-c9e7-44cb-9dbd-55281777e1bf",
-      "blast_radius_score": 29.04,
-      "severity": "MEDIUM",
-      "direct_dependencies": {
-        "count": 0,
-        "refs": []
-      },
-      "direct_dependents": {
-        "count": 1,
-        "refs": [
-          "6454dc8f-4970-4835-9427-fbf9c9964969"
-        ]
-      },
-      "transitive_dependents": {
-        "count": 1,
-        "refs": [
-          "6454dc8f-4970-4835-9427-fbf9c9964969"
-        ]
-      },
-      "evidence": {
-        "count": 1
-      },
-      "risk": {
-        "score": 60.29
-      },
-      "score_breakdown": {
-        "direct_dependency_score": 0,
-        "direct_dependent_score": 10,
-        "transitive_score": 5,
-        "evidence_score": 5,
-        "risk_contribution": 9.04
-      },
-      "explanation": {
-        "summary": "RSA-2048 has a potential migration blast-radius score of 29.04/100 and a severity of MEDIUM.",
-        "reasons": [
-          "1 direct dependent asset(s) were identified.",
-          "1 transitive dependent asset(s) are reachable through the dependency graph.",
-          "The asset has a high quantum-risk score of 60.29.",
-          "1 CBOM evidence occurrence(s) support the asset.",
-          "The asset has a moderate potential migration impact."
-        ]
-      }
-    },
-    {
-      "asset": "SHA256",
-      "asset_ref": "e5afc9a6-f754-4587-917e-02dfc9260c6d",
-      "bom_ref": "e5afc9a6-f754-4587-917e-02dfc9260c6d",
+      "asset": "HMACSHA2",
+      "asset_ref": "9eb6c5a5-0d82-48f9-a9f5-b6e69ed3617b",
+      "bom_ref": "9eb6c5a5-0d82-48f9-a9f5-b6e69ed3617b",
       "blast_radius_score": 23.57,
       "severity": "LOW",
       "direct_dependencies": {
@@ -412,13 +626,13 @@
       "direct_dependents": {
         "count": 1,
         "refs": [
-          "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f"
+          "928a3bdf-20c0-4db4-b852-7500aab35d65"
         ]
       },
       "transitive_dependents": {
         "count": 1,
         "refs": [
-          "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f"
+          "928a3bdf-20c0-4db4-b852-7500aab35d65"
         ]
       },
       "evidence": {
@@ -435,7 +649,7 @@
         "risk_contribution": 3.57
       },
       "explanation": {
-        "summary": "SHA256 has a potential migration blast-radius score of 23.57/100 and a severity of LOW.",
+        "summary": "HMACSHA2 has a potential migration blast-radius score of 23.57/100 and a severity of LOW.",
         "reasons": [
           "1 direct dependent asset(s) were identified.",
           "1 transitive dependent asset(s) are reachable through the dependency graph.",
@@ -446,9 +660,9 @@
       }
     },
     {
-      "asset": "x448",
-      "asset_ref": "bf7dc611-6a26-49ae-9ee6-bcd98a0f36a7",
-      "bom_ref": "bf7dc611-6a26-49ae-9ee6-bcd98a0f36a7",
+      "asset": "ECDH",
+      "asset_ref": "7c63a6dd-bca9-49ed-b9be-99bccda698a2",
+      "bom_ref": "7c63a6dd-bca9-49ed-b9be-99bccda698a2",
       "blast_radius_score": 20.94,
       "severity": "LOW",
       "direct_dependencies": {
@@ -477,7 +691,7 @@
         "risk_contribution": 10.94
       },
       "explanation": {
-        "summary": "x448 has a potential migration blast-radius score of 20.94/100 and a severity of LOW.",
+        "summary": "ECDH has a potential migration blast-radius score of 20.94/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset has a high quantum-risk score of 72.94.",
@@ -487,10 +701,230 @@
       }
     },
     {
-      "asset": "x25519",
-      "asset_ref": "b4aaaa60-dc43-4098-9a96-7431561cb5de",
-      "bom_ref": "b4aaaa60-dc43-4098-9a96-7431561cb5de",
-      "blast_radius_score": 20.94,
+      "asset": "SHA1withDSA",
+      "asset_ref": "5f262f45-1562-4ade-9d04-3ecb65fdb866",
+      "bom_ref": "5f262f45-1562-4ade-9d04-3ecb65fdb866",
+      "blast_radius_score": 20.81,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "dbfad652-42e1-4511-8294-0401d441b6cb"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 72.06
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.81
+      },
+      "explanation": {
+        "summary": "SHA1withDSA has a potential migration blast-radius score of 20.81/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a high quantum-risk score of 72.06.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1withRSA",
+      "asset_ref": "69623150-209c-4c00-aa67-e61d252caecb",
+      "bom_ref": "69623150-209c-4c00-aa67-e61d252caecb",
+      "blast_radius_score": 20.81,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "dbfad652-42e1-4511-8294-0401d441b6cb"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 72.06
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.81
+      },
+      "explanation": {
+        "summary": "SHA1withRSA has a potential migration blast-radius score of 20.81/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a high quantum-risk score of 72.06.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256withRSA",
+      "asset_ref": "2074f7d3-9d6f-4e79-8867-f149d7796deb",
+      "bom_ref": "2074f7d3-9d6f-4e79-8867-f149d7796deb",
+      "blast_radius_score": 20.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "16ced5a8-1cd8-4758-9757-1a5cce734d60"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA256withRSA has a potential migration blast-radius score of 20.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512withRSA",
+      "asset_ref": "58597792-d5c4-471b-a5a6-b373ce5a00da",
+      "bom_ref": "58597792-d5c4-471b-a5a6-b373ce5a00da",
+      "blast_radius_score": 20.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "1e2783d3-5a56-4b27-b30c-79544b2a3893"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA512withRSA has a potential migration blast-radius score of 20.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384withRSA",
+      "asset_ref": "d5462ad2-0736-442a-8852-76673c086a85",
+      "bom_ref": "d5462ad2-0736-442a-8852-76673c086a85",
+      "blast_radius_score": 20.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "c064caf6-27d4-4758-891c-7c237a9132cb"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA384withRSA has a potential migration blast-radius score of 20.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "MD5",
+      "asset_ref": "c7dfefae-ca4b-49ba-9665-977396161939",
+      "bom_ref": "c7dfefae-ca4b-49ba-9665-977396161939",
+      "blast_radius_score": 19.71,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 0,
@@ -508,30 +942,30 @@
         "count": 2
       },
       "risk": {
-        "score": 72.94
+        "score": 64.71
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 10,
-        "risk_contribution": 10.94
+        "risk_contribution": 9.71
       },
       "explanation": {
-        "summary": "x25519 has a potential migration blast-radius score of 20.94/100 and a severity of LOW.",
+        "summary": "MD5 has a potential migration blast-radius score of 19.71/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
-          "The asset has a high quantum-risk score of 72.94.",
+          "The asset has a high quantum-risk score of 64.71.",
           "2 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "RSA-OAEP",
-      "asset_ref": "428c2f31-dde3-45d3-97bd-9733ca00ba78",
-      "bom_ref": "428c2f31-dde3-45d3-97bd-9733ca00ba78",
-      "blast_radius_score": 19.35,
+      "asset": "TLS",
+      "asset_ref": "04cf407f-0274-4fa6-acaa-d1fb398db750",
+      "bom_ref": "04cf407f-0274-4fa6-acaa-d1fb398db750",
+      "blast_radius_score": 19.39,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 0,
@@ -546,39 +980,37 @@
         "refs": []
       },
       "evidence": {
-        "count": 5
+        "count": 16
       },
       "risk": {
-        "score": 62.35
+        "score": 62.59
       },
       "score_breakdown": {
         "direct_dependency_score": 0,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 10,
-        "risk_contribution": 9.35
+        "risk_contribution": 9.39
       },
       "explanation": {
-        "summary": "RSA-OAEP has a potential migration blast-radius score of 19.35/100 and a severity of LOW.",
+        "summary": "TLS has a potential migration blast-radius score of 19.39/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
-          "The asset has a high quantum-risk score of 62.35.",
-          "5 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a high quantum-risk score of 62.59.",
+          "16 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "public-key@2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "asset_ref": "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "bom_ref": "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "blast_radius_score": 17.42,
+      "asset": "AES",
+      "asset_ref": "5773be2c-3270-41ec-8bb4-09d321b6cac7",
+      "bom_ref": "5773be2c-3270-41ec-8bb4-09d321b6cac7",
+      "blast_radius_score": 17.41,
       "severity": "LOW",
       "direct_dependencies": {
-        "count": 1,
-        "refs": [
-          "db980426-8ba2-415b-9d01-eabc2186b8af"
-        ]
+        "count": 0,
+        "refs": []
       },
       "direct_dependents": {
         "count": 0,
@@ -589,127 +1021,38 @@
         "refs": []
       },
       "evidence": {
-        "count": 1
+        "count": 4
       },
       "risk": {
-        "score": 49.47
+        "score": 49.41
       },
       "score_breakdown": {
-        "direct_dependency_score": 5,
+        "direct_dependency_score": 0,
         "direct_dependent_score": 0,
         "transitive_score": 0,
-        "evidence_score": 5,
-        "risk_contribution": 7.42
+        "evidence_score": 10,
+        "risk_contribution": 7.41
       },
       "explanation": {
-        "summary": "public-key@2c2fdf1d-d974-4544-bc74-19210f7f5fba has a potential migration blast-radius score of 17.42/100 and a severity of LOW.",
+        "summary": "AES has a potential migration blast-radius score of 17.41/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
-          "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 49.47.",
-          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a quantum-risk score of 49.41.",
+          "4 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "public-key@fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
-      "asset_ref": "fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
-      "bom_ref": "fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
-      "blast_radius_score": 17.42,
-      "severity": "LOW",
-      "direct_dependencies": {
-        "count": 1,
-        "refs": [
-          "db980426-8ba2-415b-9d01-eabc2186b8af"
-        ]
-      },
-      "direct_dependents": {
-        "count": 0,
-        "refs": []
-      },
-      "transitive_dependents": {
-        "count": 0,
-        "refs": []
-      },
-      "evidence": {
-        "count": 1
-      },
-      "risk": {
-        "score": 49.47
-      },
-      "score_breakdown": {
-        "direct_dependency_score": 5,
-        "direct_dependent_score": 0,
-        "transitive_score": 0,
-        "evidence_score": 5,
-        "risk_contribution": 7.42
-      },
-      "explanation": {
-        "summary": "public-key@fbaad60c-57a3-495c-9a57-c6d7b8b1b631 has a potential migration blast-radius score of 17.42/100 and a severity of LOW.",
-        "reasons": [
-          "No direct dependent assets were identified.",
-          "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 49.47.",
-          "1 CBOM evidence occurrence(s) support the asset.",
-          "The asset has a relatively low potential migration impact."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@337419e6-312c-4bbc-849e-350ec5d4d2b7",
-      "asset_ref": "337419e6-312c-4bbc-849e-350ec5d4d2b7",
-      "bom_ref": "337419e6-312c-4bbc-849e-350ec5d4d2b7",
-      "blast_radius_score": 17.42,
-      "severity": "LOW",
-      "direct_dependencies": {
-        "count": 1,
-        "refs": [
-          "db980426-8ba2-415b-9d01-eabc2186b8af"
-        ]
-      },
-      "direct_dependents": {
-        "count": 0,
-        "refs": []
-      },
-      "transitive_dependents": {
-        "count": 0,
-        "refs": []
-      },
-      "evidence": {
-        "count": 1
-      },
-      "risk": {
-        "score": 49.47
-      },
-      "score_breakdown": {
-        "direct_dependency_score": 5,
-        "direct_dependent_score": 0,
-        "transitive_score": 0,
-        "evidence_score": 5,
-        "risk_contribution": 7.42
-      },
-      "explanation": {
-        "summary": "private-key@337419e6-312c-4bbc-849e-350ec5d4d2b7 has a potential migration blast-radius score of 17.42/100 and a severity of LOW.",
-        "reasons": [
-          "No direct dependent assets were identified.",
-          "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 49.47.",
-          "1 CBOM evidence occurrence(s) support the asset.",
-          "The asset has a relatively low potential migration impact."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "asset_ref": "afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "bom_ref": "afbe4883-77a4-4c37-ae6f-4df2d865d377",
+      "asset": "public-key@8186590c-749c-43b6-954e-8c17501c1b00",
+      "asset_ref": "8186590c-749c-43b6-954e-8c17501c1b00",
+      "bom_ref": "8186590c-749c-43b6-954e-8c17501c1b00",
       "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "d1c8081c-05a5-4434-8b87-4107620e51d3"
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
         ]
       },
       "direct_dependents": {
@@ -734,7 +1077,7 @@
         "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@afbe4883-77a4-4c37-ae6f-4df2d865d377 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "summary": "public-key@8186590c-749c-43b6-954e-8c17501c1b00 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
@@ -745,15 +1088,15 @@
       }
     },
     {
-      "asset": "private-key@5859aebf-30aa-452c-ba11-76ca15c700f5",
-      "asset_ref": "5859aebf-30aa-452c-ba11-76ca15c700f5",
-      "bom_ref": "5859aebf-30aa-452c-ba11-76ca15c700f5",
+      "asset": "secret-key@97b429c2-cf5b-4bb3-83f2-276002528a2e",
+      "asset_ref": "97b429c2-cf5b-4bb3-83f2-276002528a2e",
+      "bom_ref": "97b429c2-cf5b-4bb3-83f2-276002528a2e",
       "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "6fa569d1-b8b9-4b6c-9515-a8e3d54d699b"
+          "1f71d646-e037-4079-ba74-e166f4a44e28"
         ]
       },
       "direct_dependents": {
@@ -778,7 +1121,7 @@
         "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@5859aebf-30aa-452c-ba11-76ca15c700f5 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "summary": "secret-key@97b429c2-cf5b-4bb3-83f2-276002528a2e has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
@@ -789,15 +1132,15 @@
       }
     },
     {
-      "asset": "private-key@0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-      "asset_ref": "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-      "bom_ref": "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
+      "asset": "public-key@4973477b-3b5c-42f4-a048-4240fd8d82b1",
+      "asset_ref": "4973477b-3b5c-42f4-a048-4240fd8d82b1",
+      "bom_ref": "4973477b-3b5c-42f4-a048-4240fd8d82b1",
       "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "81df709d-e95a-4349-82c5-840cde0e4d5a"
+          "b38c6aaa-046b-4dab-aa2e-fb24108b70f5"
         ]
       },
       "direct_dependents": {
@@ -822,7 +1165,7 @@
         "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@0ae630a3-3a03-48d4-bac8-ce24c8a93aef has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "summary": "public-key@4973477b-3b5c-42f4-a048-4240fd8d82b1 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
@@ -833,15 +1176,15 @@
       }
     },
     {
-      "asset": "private-key@be91327c-581f-4059-b6df-63c324dac44b",
-      "asset_ref": "be91327c-581f-4059-b6df-63c324dac44b",
-      "bom_ref": "be91327c-581f-4059-b6df-63c324dac44b",
+      "asset": "private-key@23739819-92fd-497f-9a33-247b7c69fe2d",
+      "asset_ref": "23739819-92fd-497f-9a33-247b7c69fe2d",
+      "bom_ref": "23739819-92fd-497f-9a33-247b7c69fe2d",
       "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "81df709d-e95a-4349-82c5-840cde0e4d5a"
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
         ]
       },
       "direct_dependents": {
@@ -866,7 +1209,7 @@
         "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@be91327c-581f-4059-b6df-63c324dac44b has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "summary": "private-key@23739819-92fd-497f-9a33-247b7c69fe2d has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
@@ -877,15 +1220,15 @@
       }
     },
     {
-      "asset": "private-key@a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "asset_ref": "a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "bom_ref": "a695fabc-0c1b-414d-9396-5fab1fd21688",
+      "asset": "public-key@f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "asset_ref": "f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "bom_ref": "f4093282-1426-42b6-9a08-edc46c2eb4aa",
       "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "d1c8081c-05a5-4434-8b87-4107620e51d3"
+          "b38c6aaa-046b-4dab-aa2e-fb24108b70f5"
         ]
       },
       "direct_dependents": {
@@ -910,7 +1253,7 @@
         "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@a695fabc-0c1b-414d-9396-5fab1fd21688 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "summary": "public-key@f4093282-1426-42b6-9a08-edc46c2eb4aa has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
@@ -921,15 +1264,15 @@
       }
     },
     {
-      "asset": "private-key@3ac50882-8fb6-4930-a649-3afff7f22144",
-      "asset_ref": "3ac50882-8fb6-4930-a649-3afff7f22144",
-      "bom_ref": "3ac50882-8fb6-4930-a649-3afff7f22144",
-      "blast_radius_score": 14.77,
+      "asset": "public-key@13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "asset_ref": "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "bom_ref": "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "afc4f1a7-ddbd-4fd7-b8fd-225a3399834e"
+          "b38c6aaa-046b-4dab-aa2e-fb24108b70f5"
         ]
       },
       "direct_dependents": {
@@ -944,36 +1287,36 @@
         "count": 1
       },
       "risk": {
-        "score": 31.82
+        "score": 43.59
       },
       "score_breakdown": {
         "direct_dependency_score": 5,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 5,
-        "risk_contribution": 4.77
+        "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@3ac50882-8fb6-4930-a649-3afff7f22144 has a potential migration blast-radius score of 14.77/100 and a severity of LOW.",
+        "summary": "public-key@13093199-d87d-49bf-84e6-b3d8fcd4f6cc has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 31.82.",
+          "The asset has a quantum-risk score of 43.59.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "private-key@6454dc8f-4970-4835-9427-fbf9c9964969",
-      "asset_ref": "6454dc8f-4970-4835-9427-fbf9c9964969",
-      "bom_ref": "6454dc8f-4970-4835-9427-fbf9c9964969",
-      "blast_radius_score": 14.77,
+      "asset": "secret-key@928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "asset_ref": "928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "bom_ref": "928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "9eae7f2e-c9e7-44cb-9dbd-55281777e1bf"
+          "9eb6c5a5-0d82-48f9-a9f5-b6e69ed3617b"
         ]
       },
       "direct_dependents": {
@@ -988,36 +1331,36 @@
         "count": 1
       },
       "risk": {
-        "score": 31.82
+        "score": 43.59
       },
       "score_breakdown": {
         "direct_dependency_score": 5,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 5,
-        "risk_contribution": 4.77
+        "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@6454dc8f-4970-4835-9427-fbf9c9964969 has a potential migration blast-radius score of 14.77/100 and a severity of LOW.",
+        "summary": "secret-key@928a3bdf-20c0-4db4-b852-7500aab35d65 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 31.82.",
+          "The asset has a quantum-risk score of 43.59.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "private-key@35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "asset_ref": "35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "bom_ref": "35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "blast_radius_score": 14.77,
+      "asset": "key@373228b0-400b-4dea-99f5-7ff524837e59",
+      "asset_ref": "373228b0-400b-4dea-99f5-7ff524837e59",
+      "bom_ref": "373228b0-400b-4dea-99f5-7ff524837e59",
+      "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "db980426-8ba2-415b-9d01-eabc2186b8af"
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
         ]
       },
       "direct_dependents": {
@@ -1032,36 +1375,36 @@
         "count": 1
       },
       "risk": {
-        "score": 31.82
+        "score": 43.59
       },
       "score_breakdown": {
         "direct_dependency_score": 5,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 5,
-        "risk_contribution": 4.77
+        "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "private-key@35cfaec6-40a2-46d2-bc5f-4b3601573947 has a potential migration blast-radius score of 14.77/100 and a severity of LOW.",
+        "summary": "key@373228b0-400b-4dea-99f5-7ff524837e59 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 31.82.",
+          "The asset has a quantum-risk score of 43.59.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "public-key@d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "asset_ref": "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "bom_ref": "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "blast_radius_score": 14.77,
+      "asset": "secret-key@d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "asset_ref": "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "bom_ref": "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "db980426-8ba2-415b-9d01-eabc2186b8af"
+          "77f7d18d-6930-4123-b014-376fc3b9f123"
         ]
       },
       "direct_dependents": {
@@ -1076,36 +1419,36 @@
         "count": 1
       },
       "risk": {
-        "score": 31.82
+        "score": 43.59
       },
       "score_breakdown": {
         "direct_dependency_score": 5,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 5,
-        "risk_contribution": 4.77
+        "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "public-key@d21dcd81-27cb-470e-9d95-eae9dec4faf2 has a potential migration blast-radius score of 14.77/100 and a severity of LOW.",
+        "summary": "secret-key@d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 31.82.",
+          "The asset has a quantum-risk score of 43.59.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]
       }
     },
     {
-      "asset": "HKDF-SHA256",
-      "asset_ref": "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f",
-      "bom_ref": "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f",
-      "blast_radius_score": 14.63,
+      "asset": "public-key@dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "asset_ref": "dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "bom_ref": "dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "blast_radius_score": 16.54,
       "severity": "LOW",
       "direct_dependencies": {
         "count": 1,
         "refs": [
-          "e5afc9a6-f754-4587-917e-02dfc9260c6d"
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
         ]
       },
       "direct_dependents": {
@@ -1120,21 +1463,1191 @@
         "count": 1
       },
       "risk": {
-        "score": 30.88
+        "score": 43.59
       },
       "score_breakdown": {
         "direct_dependency_score": 5,
         "direct_dependent_score": 0,
         "transitive_score": 0,
         "evidence_score": 5,
-        "risk_contribution": 4.63
+        "risk_contribution": 6.54
       },
       "explanation": {
-        "summary": "HKDF-SHA256 has a potential migration blast-radius score of 14.63/100 and a severity of LOW.",
+        "summary": "public-key@dd90195e-77f4-4306-a380-c2ba09846fe6 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
         "reasons": [
           "No direct dependent assets were identified.",
           "The asset directly depends on 1 other asset(s).",
-          "The asset has a quantum-risk score of 30.88.",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "key@1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "asset_ref": "1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "bom_ref": "1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "key@1e97f45f-7326-475b-a2a6-bc159798d64f has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "asset_ref": "f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "bom_ref": "f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "private-key@f3be4c41-32fc-4fdc-bc73-0d826a53ef03 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "asset_ref": "2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "bom_ref": "2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "b38c6aaa-046b-4dab-aa2e-fb24108b70f5"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "private-key@2fa341e1-e329-4ad3-b710-f10d6380724c has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "asset_ref": "2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "bom_ref": "2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "92e6922e-ffc9-43a8-9812-65595cc8c9fe"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "private-key@2635bd31-35e8-42f8-bca0-4083313b04ef has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "asset_ref": "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "bom_ref": "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "77f7d18d-6930-4123-b014-376fc3b9f123"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "secret-key@282db0ea-4e44-4c96-82c1-3fb4113a90a4 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "asset_ref": "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "bom_ref": "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "c26a4f73-8626-416b-b143-c8c9d42eaa97"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "public-key@5284f8a5-93b3-409a-8f4b-3195e03b7db5 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@71245f75-2d4e-4769-81a1-280815e98d9b",
+      "asset_ref": "71245f75-2d4e-4769-81a1-280815e98d9b",
+      "bom_ref": "71245f75-2d4e-4769-81a1-280815e98d9b",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "c26a4f73-8626-416b-b143-c8c9d42eaa97"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "private-key@71245f75-2d4e-4769-81a1-280815e98d9b has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "key@cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "asset_ref": "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "bom_ref": "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "key@cf7d5981-ceca-488d-a08e-b68b69fb87a3 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "asset_ref": "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "bom_ref": "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "public-key@9878db0c-dcc3-4bae-ade4-0a5d62ae77ec has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "key@7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "asset_ref": "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "bom_ref": "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "key@7b8079a0-3ebe-41cf-8cce-46e66af0aefa has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "asset_ref": "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "bom_ref": "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "public-key@7eb7d712-9288-4be2-b69e-c5022e6fc87f has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "key@b2ff856e-c435-408e-aa88-10078ba0637f",
+      "asset_ref": "b2ff856e-c435-408e-aa88-10078ba0637f",
+      "bom_ref": "b2ff856e-c435-408e-aa88-10078ba0637f",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "key@b2ff856e-c435-408e-aa88-10078ba0637f has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@61019a43-fb99-4b0a-b919-045a17ef0954",
+      "asset_ref": "61019a43-fb99-4b0a-b919-045a17ef0954",
+      "bom_ref": "61019a43-fb99-4b0a-b919-045a17ef0954",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "481d3a6b-6359-49da-8629-3791a86dd25d"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "public-key@61019a43-fb99-4b0a-b919-045a17ef0954 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "asset_ref": "9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "bom_ref": "9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "92e6922e-ffc9-43a8-9812-65595cc8c9fe"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "public-key@9d06d79e-2a80-4d34-98f3-6e88ffd03133 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "asset_ref": "42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "bom_ref": "42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "77f7d18d-6930-4123-b014-376fc3b9f123"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "secret-key@42022578-f2fb-4884-9f39-f3547ada3bb4 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@aaba33db-779d-43bd-8968-67b097be6b30",
+      "asset_ref": "aaba33db-779d-43bd-8968-67b097be6b30",
+      "bom_ref": "aaba33db-779d-43bd-8968-67b097be6b30",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "42ce2f6b-b085-453d-8be6-559341543325"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "secret-key@aaba33db-779d-43bd-8968-67b097be6b30 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "asset_ref": "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "bom_ref": "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "77f7d18d-6930-4123-b014-376fc3b9f123"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "secret-key@e0ae4e31-eabd-41bf-ae53-7bc30eeedae8 has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@6e958557-0942-4458-b38d-fcd13cb198bb",
+      "asset_ref": "6e958557-0942-4458-b38d-fcd13cb198bb",
+      "bom_ref": "6e958557-0942-4458-b38d-fcd13cb198bb",
+      "blast_radius_score": 16.54,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "77f7d18d-6930-4123-b014-376fc3b9f123"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 43.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.54
+      },
+      "explanation": {
+        "summary": "secret-key@6e958557-0942-4458-b38d-fcd13cb198bb has a potential migration blast-radius score of 16.54/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 43.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256withRSAandMGF1",
+      "asset_ref": "6b94b3a1-c0d0-4d3b-bf0e-19de944e35b9",
+      "bom_ref": "6b94b3a1-c0d0-4d3b-bf0e-19de944e35b9",
+      "blast_radius_score": 15.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA256withRSAandMGF1 has a potential migration blast-radius score of 15.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384withRSAandMGF1",
+      "asset_ref": "5f639943-f38f-41c6-9fcc-c0d5303cd169",
+      "bom_ref": "5f639943-f38f-41c6-9fcc-c0d5303cd169",
+      "blast_radius_score": 15.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA384withRSAandMGF1 has a potential migration blast-radius score of 15.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512withRSAandMGF1",
+      "asset_ref": "d5acc08f-8928-4d9b-9ab3-ea2b598ae4f9",
+      "bom_ref": "d5acc08f-8928-4d9b-9ab3-ea2b598ae4f9",
+      "blast_radius_score": 15.59,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 70.59
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 10.59
+      },
+      "explanation": {
+        "summary": "SHA512withRSAandMGF1 has a potential migration blast-radius score of 15.59/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a high quantum-risk score of 70.59.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA512",
+      "asset_ref": "b1538b37-efb3-464e-8e65-5a0f7bea9eba",
+      "bom_ref": "b1538b37-efb3-464e-8e65-5a0f7bea9eba",
+      "blast_radius_score": 15.12,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "1e2783d3-5a56-4b27-b30c-79544b2a3893"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 34.12
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 5.12
+      },
+      "explanation": {
+        "summary": "HMAC-SHA512 has a potential migration blast-radius score of 15.12/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 34.12.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA384",
+      "asset_ref": "ef788906-6b16-4394-9ee4-18876c5e926e",
+      "bom_ref": "ef788906-6b16-4394-9ee4-18876c5e926e",
+      "blast_radius_score": 15.12,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "c064caf6-27d4-4758-891c-7c237a9132cb"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 34.12
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 5.12
+      },
+      "explanation": {
+        "summary": "HMAC-SHA384 has a potential migration blast-radius score of 15.12/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 34.12.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "RSASSA-PSS",
+      "asset_ref": "13c0e6f7-7546-4433-ac76-8e1862a48b79",
+      "bom_ref": "13c0e6f7-7546-4433-ac76-8e1862a48b79",
+      "blast_radius_score": 13.57,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 1,
+        "refs": [
+          "f911a4d5-8952-4c75-a594-dd1ee4a5aabb"
+        ]
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 23.82
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 5,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 3.57
+      },
+      "explanation": {
+        "summary": "RSASSA-PSS has a potential migration blast-radius score of 13.57/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset directly depends on 1 other asset(s).",
+          "The asset has a quantum-risk score of 23.82.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-CBC-PKCS5",
+      "asset_ref": "ba577d59-2ca8-47a7-a399-f74305d4f08b",
+      "bom_ref": "ba577d59-2ca8-47a7-a399-f74305d4f08b",
+      "blast_radius_score": 12.1,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 47.35
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 7.1
+      },
+      "explanation": {
+        "summary": "AES128-CBC-PKCS5 has a potential migration blast-radius score of 12.1/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a quantum-risk score of 47.35.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-GCM",
+      "asset_ref": "e33e61d3-db2f-4203-bc9a-2c73d4f54186",
+      "bom_ref": "e33e61d3-db2f-4203-bc9a-2c73d4f54186",
+      "blast_radius_score": 12.1,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 47.35
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 7.1
+      },
+      "explanation": {
+        "summary": "AES128-GCM has a potential migration blast-radius score of 12.1/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a quantum-risk score of 47.35.",
+          "1 CBOM evidence occurrence(s) support the asset.",
+          "The asset has a relatively low potential migration impact."
+        ]
+      }
+    },
+    {
+      "asset": "ConcatenationKDF",
+      "asset_ref": "7b064d40-a822-4b28-9831-6f55b723c3de",
+      "bom_ref": "7b064d40-a822-4b28-9831-6f55b723c3de",
+      "blast_radius_score": 11.4,
+      "severity": "LOW",
+      "direct_dependencies": {
+        "count": 0,
+        "refs": []
+      },
+      "direct_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "transitive_dependents": {
+        "count": 0,
+        "refs": []
+      },
+      "evidence": {
+        "count": 1
+      },
+      "risk": {
+        "score": 42.65
+      },
+      "score_breakdown": {
+        "direct_dependency_score": 0,
+        "direct_dependent_score": 0,
+        "transitive_score": 0,
+        "evidence_score": 5,
+        "risk_contribution": 6.4
+      },
+      "explanation": {
+        "summary": "ConcatenationKDF has a potential migration blast-radius score of 11.4/100 and a severity of LOW.",
+        "reasons": [
+          "No direct dependent assets were identified.",
+          "The asset has a quantum-risk score of 42.65.",
           "1 CBOM evidence occurrence(s) support the asset.",
           "The asset has a relatively low potential migration impact."
         ]

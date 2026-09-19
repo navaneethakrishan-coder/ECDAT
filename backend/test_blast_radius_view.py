@@ -1,28 +1,33 @@
 """
 Blast-radius visualization API (services/blast_radius_view.py,
-GET /api/blast-radius/{bom_ref}/graph) against the real ECDAT dataset.
+GET /api/blast-radius/{bom_ref}/graph).
 
-Relationships are checked independently against the raw CycloneDX CBOM
-(data/keycloak-cbom.json), not against the pipeline's own output, so a
-fabricated or misattributed edge cannot pass by agreeing with itself.
+Relationships are checked independently against the raw CycloneDX CBOM, not
+against the pipeline's own output, so a fabricated or misattributed edge
+cannot pass by agreeing with itself.
+
+Runs against the fixture dataset (fixture_dataset.py) rather than `data/`:
+the duplicate-RSA-2048 case below needs two findings that share a name and
+differ only by bom_ref, and `data/` only happens to contain that shape
+depending on which repository was scanned last.
 """
 
 import hashlib
 import json
 from collections import Counter, defaultdict
-from pathlib import Path
 
 from fastapi import HTTPException
 
+import fixture_dataset
 import main
+from services import blast_radius_view
 
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = fixture_dataset.use_fixture_data(main, blast_radius_view)
 
 
 def _load(filename):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        return json.load(file)
+    return fixture_dataset.load(filename)
 
 
 def _by_ref(filename):

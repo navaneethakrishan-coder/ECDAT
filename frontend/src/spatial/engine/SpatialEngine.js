@@ -23,6 +23,8 @@ import {
 } from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+import { paintThemed, paintThemedGrid, refreshPalette } from "./themePalette.js";
+
 export const DEFAULT_DIRECTION = new Vector3(0.62, 0.5, 1).normalize();
 
 export function easeInOutCubic(t) {
@@ -94,14 +96,19 @@ export class SpatialEngine {
       this.tween = null;
     });
 
-    this.scene.add(new HemisphereLight("#a5b8ff", "#05070f", 0.85));
-    this.scene.add(new AmbientLight("#1e293b", 0.6));
+    this.hemiLight = new HemisphereLight("#a5b8ff", "#05070f", 0.85);
+    this.scene.add(this.hemiLight);
+    this.ambientLight = new AmbientLight("#1e293b", 0.6);
+    this.scene.add(this.ambientLight);
     const key = new DirectionalLight("#ffffff", 1.35);
     key.position.set(10, 18, 14);
     this.scene.add(key);
+    this.keyLight = key;
     const rim = new DirectionalLight("#22d3ee", 0.35);
     rim.position.set(-14, 6, -12);
     this.scene.add(rim);
+    this.rimLight = rim;
+
 
     this.raycaster = new Raycaster();
 
@@ -112,6 +119,10 @@ export class SpatialEngine {
     this.handleContextLost = this.handleContextLost.bind(this);
     this.handleVisibility = this.handleVisibility.bind(this);
     this.frame = this.frame.bind(this);
+
+    // Paint the environment for the current theme. Done last: applyTheme
+    // requests a frame, which needs the bound frame loop above.
+    this.applyTheme();
 
     const canvas = this.renderer.domElement;
     canvas.addEventListener("pointermove", this.handlePointerMove);
@@ -509,6 +520,56 @@ export class SpatialEngine {
       projected.copy(position).project(this.camera);
       return { x: (projected.x * 0.5 + 0.5) * width, y: (-projected.y * 0.5 + 0.5) * height, width, height };
     }));
+  }
+
+  /**
+   * Repaints the environment for the current theme: fog, lighting and
+   * every registered environment material. One renderer, one scene --
+   * only the colours change, so camera, layers and picking are untouched.
+   */
+  applyTheme() {
+    const palette = refreshPalette();
+    this.palette = palette;
+
+    if (this.scene.fog) {
+      this.scene.fog.color.set(palette.fog);
+      // Fog pulls geometry toward its own colour. Against a near-black
+      // fog that deepens the scene, but against a pale one it drains the
+      // severity colours -- which are the one thing here that has to stay
+      // readable -- so daylight uses a much thinner fog.
+      this.scene.fog.density = palette.fogDensity;
+    }
+
+    if (this.hemiLight) {
+      this.hemiLight.color.set(palette.sky);
+      this.hemiLight.groundColor.set(palette.ground);
+      this.hemiLight.intensity = 0.85 * palette.lightIntensity;
+    }
+    if (this.ambientLight) {
+      this.ambientLight.intensity = 0.6 * palette.lightIntensity;
+      // In daylight the ambient fill has to be neutral, or every surface
+      // picks up the dark theme's navy cast.
+      this.ambientLight.color.set(palette.theme === "light" ? "#dbe6f7" : "#1e293b");
+    }
+    if (this.keyLight) this.keyLight.intensity = 1.35 * palette.lightIntensity;
+    if (this.rimLight) this.rimLight.intensity = 0.35 * palette.glowIntensity;
+
+    // Whatever is in the scene right now is exactly the live set, so a
+    // rebuilt layer never leaves a stale material behind and nothing has
+    // to keep a registry pruned.
+    this.scene.traverse((object) => {
+      paintThemedGrid(object, palette);
+      const material = object.material;
+      if (!material) return;
+      if (Array.isArray(material)) {
+        material.forEach((entry) => paintThemed(entry, palette));
+      } else {
+        paintThemed(material, palette);
+      }
+    });
+
+    this.needsRender = true;
+    this.requestFrame?.();
   }
 
   dispose() {

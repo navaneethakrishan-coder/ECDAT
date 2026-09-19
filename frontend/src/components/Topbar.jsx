@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Crosshair, Cpu, Search } from "lucide-react";
 
 import { SeverityBadge } from "./Badge";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 const isMac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || "");
 
@@ -150,6 +151,8 @@ export function Topbar({ search, onSearchChange, backendConnected, findings = []
           <span className={`connection-dot${backendConnected ? "" : " connection-dot-down"}`} />
           {backendConnected ? "Backend Online" : "Backend Unreachable"}
         </div>
+
+        <ThemeToggle />
       </div>
     </div>
   );

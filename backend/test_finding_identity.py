@@ -1,13 +1,17 @@
-"""Regression coverage for bom-ref identity preservation across ECDAT."""
+"""Regression coverage for bom-ref identity preservation across ECDAT.
 
-import json
+Runs against the fixture dataset (fixture_dataset.py), which is built by the
+real 13-stage pipeline and deliberately contains two *different* findings
+sharing the name "RSA-2048". That shape is the whole point of this file, and
+reading `data/` instead made it depend on whichever repository ECDAT had
+scanned last -- a scan of a repository without repeated algorithm names left
+the suite asserting nothing.
+"""
+
 from collections import Counter
-from pathlib import Path
 
+import fixture_dataset
 from generate_migration_report import index_by_asset
-
-
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
 PIPELINE_FILES = (
@@ -24,8 +28,7 @@ PIPELINE_FILES = (
 
 
 def load_assets(filename):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        return json.load(file)["assets"]
+    return fixture_dataset.load(filename)["assets"]
 
 
 def finding_id(record):
@@ -41,7 +44,10 @@ def test_duplicate_algorithm_names_do_not_overwrite_each_other():
         if count > 1
     }
 
-    assert duplicate_names, "The fixture must contain repeated algorithm names."
+    assert duplicate_names == {"RSA-2048"}, (
+        "The fixture is built around two distinct RSA-2048 findings; without them "
+        "this file cannot test identity preservation at all."
+    )
     assert len(source_ids) == len(source_assets), "Ingestion must merge only exact bom-ref duplicates."
 
     for filename in PIPELINE_FILES:

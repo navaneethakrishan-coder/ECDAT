@@ -1,34 +1,39 @@
 """
-What-If Migration Simulator API (backend/main.py /api/what-if/*),
-exercised against the real ECDAT dataset by calling the route functions
-directly -- no running server or HTTP client dependency required.
+What-If Migration Simulator API (backend/main.py /api/what-if/*), exercised
+by calling the route functions directly -- no running server or HTTP client
+dependency required.
 
-Findings are always chosen by bom_ref and by their decided strategy,
-never by algorithm name.
+Findings are always chosen by bom_ref and by their decided strategy, never by
+algorithm name.
+
+Runs against the fixture dataset (fixture_dataset.py) rather than `data/`.
+Several assertions here depend on two findings sharing an algorithm name, and
+on a simulation leaving the real dataset byte-for-byte untouched -- neither is
+safe to assert against a directory a developer's last scan can rewrite.
 """
 
 import copy
 import hashlib
 import json
-from pathlib import Path
 
 from fastapi import HTTPException
 from pydantic import ValidationError
 
+import fixture_dataset
 import main
 from models.risk_factors import RiskContext
+from services import migration_scenario
 from services.contextual_risk import calculate_contextual_risk
 from services.migration_priority import calculate_migration_priority
 from services.migration_scenario import load_finding_snapshots, readiness_percent
 from services.pqc_registry import get_pqc_algorithms
 
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = fixture_dataset.use_fixture_data(main, migration_scenario)
 
 
 def _load(filename):
-    with (DATA_DIR / filename).open(encoding="utf-8") as file:
-        return json.load(file)
+    return fixture_dataset.load(filename)
 
 
 def _plan_by_ref():
@@ -271,7 +276,7 @@ def test_portfolio_readiness_matches_the_dashboard_definition():
 
 def test_simulation_never_changes_the_real_finding_or_dataset():
     fingerprint = _data_fingerprint()
-    snapshots_before = copy.deepcopy(load_finding_snapshots())
+    snapshots_before = copy.deepcopy(load_finding_snapshots(DATA_DIR))
 
     bom_ref = _ref_with_strategy("DIRECT_PQC")
     detail_before = main.get_asset(bom_ref)
@@ -282,7 +287,7 @@ def test_simulation_never_changes_the_real_finding_or_dataset():
     main.simulate_what_if_portfolio(main.WhatIfPortfolioRequest(replacements={bom_ref: "ML-KEM-1024"}))
 
     assert _data_fingerprint() == fingerprint
-    assert load_finding_snapshots() == snapshots_before
+    assert load_finding_snapshots(DATA_DIR) == snapshots_before
     assert main.get_asset(bom_ref) == detail_before
 
 

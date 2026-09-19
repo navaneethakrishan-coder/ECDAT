@@ -3,436 +3,48 @@
     "project": "ECDAT",
     "stage": "9.4",
     "component": "migration-action-generation",
-    "source_asset_count": 25,
-    "migration_record_count": 25
+    "source_asset_count": 59,
+    "migration_record_count": 59
   },
   "summary": {
-    "total_assets": 25,
-    "total_migration_actions": 172,
-    "assets_with_pqc_candidates": 11,
+    "total_assets": 59,
+    "total_migration_actions": 388,
+    "assets_with_pqc_candidates": 12,
     "migration_type_distribution": {
-      "pqc-candidate": 9,
-      "architectural-migration": 12,
-      "no-direct-pqc-replacement": 4
+      "pqc-candidate": 12,
+      "no-direct-pqc-replacement": 15,
+      "architectural-migration": 30,
+      "not-applicable": 2
     },
     "migration_strategy_distribution": {
-      "DIRECT_PQC": 5,
-      "NEEDS_REVIEW": 10,
+      "DIRECT_PQC": 6,
+      "NEEDS_REVIEW": 29,
       "HYBRID": 6,
-      "KEEP": 4
+      "KEEP": 18
     }
   },
   "assets": [
     {
-      "asset": "RSA-OAEP",
-      "bom_ref": "428c2f31-dde3-45d3-97bd-9733ca00ba78",
+      "asset": "ECDH",
+      "bom_ref": "7c63a6dd-bca9-49ed-b9be-99bccda698a2",
       "migration_type": "pqc-candidate",
       "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-KEM-768",
       "pqc_family": "KEM",
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [
-        "VerifyRSAOAEPSHA2"
-      ],
-      "affected_class_count": 1,
-      "affected_functions": [
-        "getInstance"
-      ],
-      "affected_function_count": 1,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Identify the encryption/decryption workflow."
-        },
-        {
-          "step": 2,
-          "action": "Identify key-management and key-establishment dependencies."
-        },
-        {
-          "step": 3,
-          "action": "Determine whether the asset requires direct replacement or architectural migration."
-        },
-        {
-          "step": 4,
-          "action": "Evaluate ML-KEM-768 where it is applicable to the identified key-establishment function."
-        },
-        {
-          "step": 5,
-          "action": "Validate encryption compatibility and data-format requirements."
-        },
-        {
-          "step": 6,
-          "action": "Validate backward compatibility during migration."
-        },
-        {
-          "step": 7,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 8,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 9,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 9,
-      "explanation": {
-        "summary": "ECDAT generated 9 migration action(s) for RSA-OAEP.",
-        "reasons": [
-          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so RSA-OAEP can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@3ac50882-8fb6-4930-a649-3afff7f22144",
-      "bom_ref": "3ac50882-8fb6-4930-a649-3afff7f22144",
-      "migration_type": "architectural-migration",
-      "migration_strategy": "NEEDS_REVIEW",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [
-        "VerifyRSAOAEPSHA2"
-      ],
-      "affected_class_count": 1,
-      "affected_functions": [
-        "getInstance"
-      ],
-      "affected_function_count": 1,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Do not replace this primitive until its migration-strategy review is resolved."
-        },
-        {
-          "step": 2,
-          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
-        },
-        {
-          "step": 3,
-          "action": "Record the confirmed purpose so a migration strategy can be derived."
-        },
-        {
-          "step": 4,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 6,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 6,
-      "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@3ac50882-8fb6-4930-a649-3afff7f22144.",
-        "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
-        ]
-      }
-    },
-    {
-      "asset": "RSA-2048",
-      "bom_ref": "afc4f1a7-ddbd-4fd7-b8fd-225a3399834e",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "NEEDS_REVIEW",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/VerifyRSAOAEPSHA2.java"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [
-        "VerifyRSAOAEPSHA2"
-      ],
-      "affected_class_count": 1,
-      "affected_functions": [
-        "getInstance"
-      ],
-      "affected_function_count": 1,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Do not replace this primitive until its migration-strategy review is resolved."
-        },
-        {
-          "step": 2,
-          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
-        },
-        {
-          "step": 3,
-          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
-        },
-        {
-          "step": 4,
-          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
-        },
-        {
-          "step": 5,
-          "action": "Record the confirmed purpose so a migration strategy can be derived."
-        },
-        {
-          "step": 6,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 7,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 8,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 8,
-      "explanation": {
-        "summary": "ECDAT generated 8 migration action(s) for RSA-2048.",
-        "reasons": [
-          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
-        ]
-      }
-    },
-    {
-      "asset": "RSA",
-      "bom_ref": "db980426-8ba2-415b-9d01-eabc2186b8af",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "NEEDS_REVIEW",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py",
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
       ],
       "affected_file_count": 2,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Do not replace this primitive until its migration-strategy review is resolved."
-        },
-        {
-          "step": 2,
-          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
-        },
-        {
-          "step": 3,
-          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
-        },
-        {
-          "step": 4,
-          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
-        },
-        {
-          "step": 5,
-          "action": "Record the confirmed purpose so a migration strategy can be derived."
-        },
-        {
-          "step": 6,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 7,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 8,
-          "action": "Document the migration decision and validation results."
-        }
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider"
       ],
-      "action_count": 8,
-      "explanation": {
-        "summary": "ECDAT generated 8 migration action(s) for RSA.",
-        "reasons": [
-          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
-        ]
-      }
-    },
-    {
-      "asset": "Ed448",
-      "bom_ref": "81df709d-e95a-4349-82c5-840cde0e4d5a",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "HYBRID",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Add ML-DSA-65 signatures alongside existing Ed448 signatures (composite or dual signing)."
-        },
-        {
-          "step": 2,
-          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate Ed448."
-        },
-        {
-          "step": 3,
-          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
-        },
-        {
-          "step": 4,
-          "action": "Plan retirement of Ed448 signatures once every verifier supports ML-DSA-65."
-        },
-        {
-          "step": 5,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 6,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 7,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 7,
-      "explanation": {
-        "summary": "ECDAT generated 7 migration action(s) for Ed448.",
-        "reasons": [
-          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so Ed448 is kept alongside ML-DSA-65 during the transition."
-        ]
-      }
-    },
-    {
-      "asset": "SHAKE256",
-      "bom_ref": "bfbeb98a-6b34-4120-b7b4-688d7cb9786b",
-      "migration_type": "no-direct-pqc-replacement",
-      "migration_strategy": "KEEP",
-      "pqc_candidate": null,
-      "pqc_family": null,
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "MEDIUM",
-      "actions": [
-        {
-          "step": 1,
-          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
-        },
-        {
-          "step": 2,
-          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
-        },
-        {
-          "step": 3,
-          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
-        },
-        {
-          "step": 4,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 6,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 6,
-      "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for SHAKE256.",
-        "reasons": [
-          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "bom_ref": "afbe4883-77a4-4c37-ae6f-4df2d865d377",
-      "migration_type": "architectural-migration",
-      "migration_strategy": "HYBRID",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
-        },
-        {
-          "step": 2,
-          "action": "Update key storage, distribution and rotation to handle both keys."
-        },
-        {
-          "step": 3,
-          "action": "Retire this key once the governing algorithm's classical component is removed."
-        },
-        {
-          "step": 4,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 6,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 6,
-      "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@afbe4883-77a4-4c37-ae6f-4df2d865d377.",
-        "reasons": [
-          "Migration strategy HYBRID: This key material belongs to Ed25519 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
-        ]
-      }
-    },
-    {
-      "asset": "DH",
-      "bom_ref": "6fa569d1-b8b9-4b6c-9515-a8e3d54d699b",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "DIRECT_PQC",
-      "pqc_candidate": "ML-KEM-768",
-      "pqc_family": "KEM",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
+      "affected_function_count": 1,
       "impact_level": "HIGH",
       "actions": [
         {
@@ -478,28 +90,36 @@
       ],
       "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for DH.",
+        "summary": "ECDAT generated 10 migration action(s) for ECDH.",
         "reasons": [
-          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so DH can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so ECDH can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
         ]
       }
     },
     {
-      "asset": "public-key@2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "bom_ref": "2c2fdf1d-d974-4544-bc74-19210f7f5fba",
-      "migration_type": "architectural-migration",
+      "asset": "SHA1",
+      "bom_ref": "dbfad652-42e1-4511-8294-0401d441b6cb",
+      "migration_type": "no-direct-pqc-replacement",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
+        "distribution/downloads/src/main/java/CopyDependencies.java",
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java",
+        "server-spi-private/src/main/java/org/keycloak/protocol/saml/util/ArtifactBindingUtils.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
+      "affected_file_count": 3,
+      "affected_classes": [
+        "ArtifactBindingUtils",
+        "CopyDependencies",
+        "SignatureUtil"
+      ],
+      "affected_class_count": 3,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
@@ -507,7 +127,7 @@
         },
         {
           "step": 2,
-          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+          "action": "Reconcile the conflicting CBOM primitive and source-context evidence for this finding."
         },
         {
           "step": 3,
@@ -528,25 +148,87 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for public-key@2c2fdf1d-d974-4544-bc74-19210f7f5fba.",
+        "summary": "ECDAT generated 6 migration action(s) for SHA1.",
         "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
+          "Migration strategy NEEDS_REVIEW: The repository evidence for this finding's purpose conflicts, so no purpose -- and therefore no migration strategy -- is selected automatically."
         ]
       }
     },
     {
-      "asset": "private-key@6454dc8f-4970-4835-9427-fbf9c9964969",
-      "bom_ref": "6454dc8f-4970-4835-9427-fbf9c9964969",
-      "migration_type": "architectural-migration",
+      "asset": "SHA256withRSAandMGF1",
+      "bom_ref": "6b94b3a1-c0d0-4d3b-bf0e-19de944e35b9",
+      "migration_type": "pqc-candidate",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
+        },
+        {
+          "step": 3,
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
+        },
+        {
+          "step": 4,
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
+        },
+        {
+          "step": 5,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 6,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 7,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 8,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 8,
+      "explanation": {
+        "summary": "ECDAT generated 8 migration action(s) for SHA256withRSAandMGF1.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
+        ]
+      }
+    },
+    {
+      "asset": "RAW",
+      "bom_ref": "42ce2f6b-b085-453d-8be6-559341543325",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HmacOTP"
+      ],
+      "affected_class_count": 1,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "LOW",
@@ -557,7 +239,7 @@
         },
         {
           "step": 2,
-          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+          "action": "Determine this finding's cryptographic purpose from source usage."
         },
         {
           "step": 3,
@@ -578,74 +260,92 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@6454dc8f-4970-4835-9427-fbf9c9964969.",
+        "summary": "ECDAT generated 6 migration action(s) for RAW.",
         "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
+          "Migration strategy NEEDS_REVIEW: The resolved purpose (raw-cryptographic-representation) does not identify a specific cryptographic role for category 'cryptographic-format', so no strategy is selected."
         ]
       }
     },
     {
-      "asset": "private-key@5859aebf-30aa-452c-ba11-76ca15c700f5",
-      "bom_ref": "5859aebf-30aa-452c-ba11-76ca15c700f5",
-      "migration_type": "architectural-migration",
-      "migration_strategy": "DIRECT_PQC",
-      "pqc_candidate": "ML-KEM-768",
-      "pqc_family": "KEM",
+      "asset": "EdDSA",
+      "bom_ref": "92e6922e-ffc9-43a8-9812-65595cc8c9fe",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
       "affected_files": [
-        "src/cryptography/hazmat/primitives/asymmetric/dsa.py"
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
+      "affected_file_count": 2,
+      "affected_classes": [
+        "GeneratedEddsaKeyProvider",
+        "GeneratedEddsaKeyProviderFactory"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Generate replacement ML-KEM-768 key material."
+          "action": "Add ML-DSA-65 signatures alongside existing EdDSA signatures (composite or dual signing)."
         },
         {
           "step": 2,
-          "action": "Retire and securely destroy this key after the governing algorithm is migrated."
+          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate EdDSA."
         },
         {
           "step": 3,
-          "action": "Review the identified affected source files before implementation."
+          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
         },
         {
           "step": 4,
-          "action": "Update automated tests for the migrated cryptographic path."
+          "action": "Plan retirement of EdDSA signatures once every verifier supports ML-DSA-65."
         },
         {
           "step": 5,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 6,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 7,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 5,
+      "action_count": 7,
       "explanation": {
-        "summary": "ECDAT generated 5 migration action(s) for private-key@5859aebf-30aa-452c-ba11-76ca15c700f5.",
+        "summary": "ECDAT generated 7 migration action(s) for EdDSA.",
         "reasons": [
-          "Migration strategy DIRECT_PQC: This key material belongs to DH (CBOM dependency), whose strategy is DIRECT_PQC; the key material is replaced by new ML-KEM-768 key material."
+          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so EdDSA is kept alongside ML-DSA-65 during the transition."
         ]
       }
     },
     {
-      "asset": "HKDF-SHA256",
-      "bom_ref": "1ed1be66-bbba-46e2-b3df-6ccde6d42d3f",
+      "asset": "HMAC-SHA256",
+      "bom_ref": "1f71d646-e037-4079-ba74-e166f4a44e28",
       "migration_type": "no-direct-pqc-replacement",
       "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/hkdf/generate_hkdf.py"
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_file_count": 2,
+      "affected_classes": [
+        "HMACProvider",
+        "KeycloakModelUtils"
+      ],
+      "affected_class_count": 2,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "LOW",
+      "impact_level": "MEDIUM",
       "actions": [
         {
           "step": 1,
@@ -653,7 +353,7 @@
         },
         {
           "step": 2,
-          "action": "Confirm the configuration: Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
         },
         {
           "step": 3,
@@ -674,77 +374,35 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for HKDF-SHA256.",
+        "summary": "ECDAT generated 6 migration action(s) for HMAC-SHA256.",
         "reasons": [
-          "Migration strategy KEEP: Key derivation (kdf) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: review -- Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
-        ]
-      }
-    },
-    {
-      "asset": "private-key@0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-      "bom_ref": "0ae630a3-3a03-48d4-bac8-ce24c8a93aef",
-      "migration_type": "architectural-migration",
-      "migration_strategy": "HYBRID",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
-        },
-        {
-          "step": 2,
-          "action": "Update key storage, distribution and rotation to handle both keys."
-        },
-        {
-          "step": 3,
-          "action": "Retire this key once the governing algorithm's classical component is removed."
-        },
-        {
-          "step": 4,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 6,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 6,
-      "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@0ae630a3-3a03-48d4-bac8-ce24c8a93aef.",
-        "reasons": [
-          "Migration strategy HYBRID: This key material belongs to Ed448 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+          "Migration strategy KEEP: Message authentication (mac/hmac) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
         ]
       }
     },
     {
       "asset": "RSA-2048",
-      "bom_ref": "9eae7f2e-c9e7-44cb-9dbd-55281777e1bf",
+      "bom_ref": "b38c6aaa-046b-4dab-aa2e-fb24108b70f5",
       "migration_type": "pqc-candidate",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java",
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
+      "affected_file_count": 3,
+      "affected_classes": [
+        "JWKParser",
+        "KeyUtils",
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 3,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
       "impact_level": "HIGH",
       "actions": [
         {
@@ -789,33 +447,37 @@
       }
     },
     {
-      "asset": "private-key@be91327c-581f-4059-b6df-63c324dac44b",
-      "bom_ref": "be91327c-581f-4059-b6df-63c324dac44b",
+      "asset": "public-key@8186590c-749c-43b6-954e-8c17501c1b00",
+      "bom_ref": "8186590c-749c-43b6-954e-8c17501c1b00",
       "migration_type": "architectural-migration",
-      "migration_strategy": "HYBRID",
-      "pqc_candidate": "ML-DSA-65",
-      "pqc_family": "digital-signature",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
       "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
+        "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
+      "affected_classes": [
+        "AbstractGeneratedEcKeyProviderFactory"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
       "impact_level": "LOW",
       "actions": [
         {
           "step": 1,
-          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
         },
         {
           "step": 2,
-          "action": "Update key storage, distribution and rotation to handle both keys."
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
         },
         {
           "step": 3,
-          "action": "Retire this key once the governing algorithm's classical component is removed."
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
         },
         {
           "step": 4,
@@ -832,78 +494,148 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@be91327c-581f-4059-b6df-63c324dac44b.",
+        "summary": "ECDAT generated 6 migration action(s) for public-key@8186590c-749c-43b6-954e-8c17501c1b00.",
         "reasons": [
-          "Migration strategy HYBRID: This key material belongs to Ed448 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
         ]
       }
     },
     {
-      "asset": "private-key@a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "bom_ref": "a695fabc-0c1b-414d-9396-5fab1fd21688",
-      "migration_type": "architectural-migration",
+      "asset": "SHA384withRSAandMGF1",
+      "bom_ref": "5f639943-f38f-41c6-9fcc-c0d5303cd169",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
+        },
+        {
+          "step": 3,
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
+        },
+        {
+          "step": 4,
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
+        },
+        {
+          "step": 5,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 6,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 7,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 8,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 8,
+      "explanation": {
+        "summary": "ECDAT generated 8 migration action(s) for SHA384withRSAandMGF1.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
+        ]
+      }
+    },
+    {
+      "asset": "DSA",
+      "bom_ref": "c26a4f73-8626-416b-b143-c8c9d42eaa97",
+      "migration_type": "pqc-candidate",
       "migration_strategy": "HYBRID",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+          "action": "Add ML-DSA-65 signatures alongside existing DSA signatures (composite or dual signing)."
         },
         {
           "step": 2,
-          "action": "Update key storage, distribution and rotation to handle both keys."
+          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate DSA."
         },
         {
           "step": 3,
-          "action": "Retire this key once the governing algorithm's classical component is removed."
+          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
         },
         {
           "step": 4,
-          "action": "Review the identified affected source files before implementation."
+          "action": "Plan retirement of DSA signatures once every verifier supports ML-DSA-65."
         },
         {
           "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
+          "action": "Review the identified affected source files before implementation."
         },
         {
           "step": 6,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 7,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 6,
+      "action_count": 7,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@a695fabc-0c1b-414d-9396-5fab1fd21688.",
+        "summary": "ECDAT generated 7 migration action(s) for DSA.",
         "reasons": [
-          "Migration strategy HYBRID: This key material belongs to Ed25519 (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so DSA is kept alongside ML-DSA-65 during the transition."
         ]
       }
     },
     {
-      "asset": "SHA256",
-      "bom_ref": "e5afc9a6-f754-4587-917e-02dfc9260c6d",
-      "migration_type": "no-direct-pqc-replacement",
+      "asset": "secret-key@97b429c2-cf5b-4bb3-83f2-276002528a2e",
+      "bom_ref": "97b429c2-cf5b-4bb3-83f2-276002528a2e",
+      "migration_type": "architectural-migration",
       "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/hkdf/generate_hkdf.py"
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_classes": [
+        "KeycloakModelUtils"
+      ],
+      "affected_class_count": 1,
       "affected_functions": [],
       "affected_function_count": 0,
-      "impact_level": "MEDIUM",
+      "impact_level": "LOW",
       "actions": [
         {
           "step": 1,
@@ -932,25 +664,315 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for SHA256.",
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@97b429c2-cf5b-4bb3-83f2-276002528a2e.",
         "reasons": [
-          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
+          "Migration strategy KEEP: This key material belongs to HMAC-SHA256 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
         ]
       }
     },
     {
-      "asset": "public-key@fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
-      "bom_ref": "fbaad60c-57a3-495c-9a57-c6d7b8b1b631",
+      "asset": "EC",
+      "bom_ref": "481d3a6b-6359-49da-8629-3791a86dd25d",
       "migration_type": "architectural-migration",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java",
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java",
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java",
+        "services/src/main/java/org/keycloak/keys/AbstractGeneratedEcKeyProviderFactory.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java",
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java"
+      ],
+      "affected_file_count": 10,
+      "affected_classes": [
+        "AbstractGeneratedEcKeyProviderFactory",
+        "BCECDSACryptoProvider",
+        "BCEcdhEsAlgorithmProvider",
+        "BCFIPSECDSACryptoProvider",
+        "BCFIPSEcdhEsAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider",
+        "GeneratedEcdhKeyProvider",
+        "GeneratedEcdsaKeyProvider",
+        "KeyUtils",
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 10,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Determine this finding's cryptographic purpose from source usage."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for EC.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The resolved purpose (public-key-cryptography) does not identify a specific cryptographic role for category 'asymmetric', so no strategy is selected."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@4973477b-3b5c-42f4-a048-4240fd8d82b1",
+      "bom_ref": "4973477b-3b5c-42f4-a048-4240fd8d82b1",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwk/JWKParser.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_classes": [
+        "JWKParser"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@4973477b-3b5c-42f4-a048-4240fd8d82b1.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@23739819-92fd-497f-9a33-247b7c69fe2d",
+      "bom_ref": "23739819-92fd-497f-9a33-247b7c69fe2d",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdhKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEcdhKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for private-key@23739819-92fd-497f-9a33-247b7c69fe2d.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "bom_ref": "f4093282-1426-42b6-9a08-edc46c2eb4aa",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "KeyUtils"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@f4093282-1426-42b6-9a08-edc46c2eb4aa.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "bom_ref": "13093199-d87d-49bf-84e6-b3d8fcd4f6cc",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@13093199-d87d-49bf-84e6-b3d8fcd4f6cc.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "bom_ref": "928a3bdf-20c0-4db4-b852-7500aab35d65",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "LOW",
@@ -982,27 +1004,31 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for public-key@fbaad60c-57a3-495c-9a57-c6d7b8b1b631.",
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@928a3bdf-20c0-4db4-b852-7500aab35d65.",
         "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (HMACSHA2) needs review, so this key material does too."
         ]
       }
     },
     {
-      "asset": "private-key@35cfaec6-40a2-46d2-bc5f-4b3601573947",
-      "bom_ref": "35cfaec6-40a2-46d2-bc5f-4b3601573947",
+      "asset": "key@373228b0-400b-4dea-99f5-7ff524837e59",
+      "bom_ref": "373228b0-400b-4dea-99f5-7ff524837e59",
       "migration_type": "architectural-migration",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
       "impact_level": "LOW",
       "actions": [
         {
@@ -1032,226 +1058,272 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@35cfaec6-40a2-46d2-bc5f-4b3601573947.",
+        "summary": "ECDAT generated 6 migration action(s) for key@373228b0-400b-4dea-99f5-7ff524837e59.",
         "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
         ]
       }
     },
     {
-      "asset": "public-key@d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "bom_ref": "d21dcd81-27cb-470e-9d95-eae9dec4faf2",
-      "migration_type": "architectural-migration",
-      "migration_strategy": "NEEDS_REVIEW",
+      "asset": "AES",
+      "bom_ref": "5773be2c-3270-41ec-8bb4-09d321b6cac7",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "docs/development/custom-vectors/rsa-oaep-sha2/generate_rsa_oaep_sha2.py"
+        "crypto/default/src/main/java/org/keycloak/crypto/def/AesKeyWrapAlgorithmProvider.java",
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "LOW",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Do not replace this primitive until its migration-strategy review is resolved."
-        },
-        {
-          "step": 2,
-          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
-        },
-        {
-          "step": 3,
-          "action": "Record the confirmed purpose so a migration strategy can be derived."
-        },
-        {
-          "step": 4,
-          "action": "Review the identified affected source files before implementation."
-        },
-        {
-          "step": 5,
-          "action": "Update automated tests for the migrated cryptographic path."
-        },
-        {
-          "step": 6,
-          "action": "Document the migration decision and validation results."
-        }
+      "affected_file_count": 2,
+      "affected_classes": [
+        "AesKeyWrapAlgorithmProvider",
+        "BCEcdhEsAlgorithmProvider"
       ],
-      "action_count": 6,
-      "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for public-key@d21dcd81-27cb-470e-9d95-eae9dec4faf2.",
-        "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
-        ]
-      }
-    },
-    {
-      "asset": "x448",
-      "bom_ref": "bf7dc611-6a26-49ae-9ee6-bcd98a0f36a7",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "DIRECT_PQC",
-      "pqc_candidate": "ML-KEM-768",
-      "pqc_family": "KEM",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_class_count": 2,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Identify the current key-establishment protocol and handshake flow."
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
         },
         {
           "step": 2,
-          "action": "Identify all inputs and outputs of the existing key-agreement operation."
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
         },
         {
           "step": 3,
-          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
         },
         {
           "step": 4,
-          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
-        },
-        {
-          "step": 5,
-          "action": "Update protocol negotiation and key-establishment handling where required."
-        },
-        {
-          "step": 6,
-          "action": "Validate key encapsulation and decapsulation integration."
-        },
-        {
-          "step": 7,
-          "action": "Validate interoperability with all communicating endpoints."
-        },
-        {
-          "step": 8,
           "action": "Review the identified affected source files before implementation."
         },
         {
-          "step": 9,
+          "step": 5,
           "action": "Update automated tests for the migrated cryptographic path."
         },
         {
-          "step": 10,
+          "step": 6,
           "action": "Document the migration decision and validation results."
         }
       ],
-      "action_count": 10,
+      "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for x448.",
+        "summary": "ECDAT generated 6 migration action(s) for AES.",
         "reasons": [
-          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so x448 can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
+          "Migration strategy KEEP: Symmetric encryption is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: recommended -- Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
         ]
       }
     },
     {
-      "asset": "Ed25519",
-      "bom_ref": "d1c8081c-05a5-4434-8b87-4107620e51d3",
+      "asset": "secret-key@d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "bom_ref": "d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@d04a8c15-3cdc-4f1e-b0db-c5e14ba3ab45.",
+        "reasons": [
+          "Migration strategy KEEP: This key material belongs to AES128 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "bom_ref": "dd90195e-77f4-4306-a380-c2ba09846fe6",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCECDSACryptoProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCECDSACryptoProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@dd90195e-77f4-4306-a380-c2ba09846fe6.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "key@1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "bom_ref": "1e97f45f-7326-475b-a2a6-bc159798d64f",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for key@1e97f45f-7326-475b-a2a6-bc159798d64f.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256withRSA",
+      "bom_ref": "2074f7d3-9d6f-4e79-8867-f149d7796deb",
       "migration_type": "pqc-candidate",
-      "migration_strategy": "HYBRID",
+      "migration_strategy": "DIRECT_PQC",
       "pqc_candidate": "ML-DSA-65",
       "pqc_family": "digital-signature",
       "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "HIGH",
       "actions": [
         {
           "step": 1,
-          "action": "Add ML-DSA-65 signatures alongside existing Ed25519 signatures (composite or dual signing)."
+          "action": "Identify all digital-signature generation and verification paths."
         },
         {
           "step": 2,
-          "action": "Update verification to accept the dual-signature format while legacy verifiers still validate Ed25519."
+          "action": "Identify certificate, key, and signature-format dependencies."
         },
         {
           "step": 3,
-          "action": "Review certificate, key and signature-format dependencies for the dual-signature transition."
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
         },
         {
           "step": 4,
-          "action": "Plan retirement of Ed25519 signatures once every verifier supports ML-DSA-65."
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
         },
         {
           "step": 5,
-          "action": "Review the identified affected source files before implementation."
+          "action": "Update signature generation and verification interfaces where required."
         },
         {
           "step": 6,
-          "action": "Update automated tests for the migrated cryptographic path."
+          "action": "Review certificate and trust-chain compatibility."
         },
         {
           "step": 7,
-          "action": "Document the migration decision and validation results."
-        }
-      ],
-      "action_count": 7,
-      "explanation": {
-        "summary": "ECDAT generated 7 migration action(s) for Ed25519.",
-        "reasons": [
-          "Migration strategy HYBRID: Evidence of HIGH blast radius (2 dependent finding(s)) means the migration must interoperate and be phased, so Ed25519 is kept alongside ML-DSA-65 during the transition."
-        ]
-      }
-    },
-    {
-      "asset": "x25519",
-      "bom_ref": "b4aaaa60-dc43-4098-9a96-7431561cb5de",
-      "migration_type": "pqc-candidate",
-      "migration_strategy": "DIRECT_PQC",
-      "pqc_candidate": "ML-KEM-768",
-      "pqc_family": "KEM",
-      "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
-      ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
-      "affected_functions": [],
-      "affected_function_count": 0,
-      "impact_level": "HIGH",
-      "actions": [
-        {
-          "step": 1,
-          "action": "Identify the current key-establishment protocol and handshake flow."
-        },
-        {
-          "step": 2,
-          "action": "Identify all inputs and outputs of the existing key-agreement operation."
-        },
-        {
-          "step": 3,
-          "action": "Evaluate replacement of the current key-agreement mechanism with a PQC KEM for post-quantum key establishment."
-        },
-        {
-          "step": 4,
-          "action": "Evaluate ML-KEM-768 as the target post-quantum KEM."
-        },
-        {
-          "step": 5,
-          "action": "Update protocol negotiation and key-establishment handling where required."
-        },
-        {
-          "step": 6,
-          "action": "Validate key encapsulation and decapsulation integration."
-        },
-        {
-          "step": 7,
-          "action": "Validate interoperability with all communicating endpoints."
+          "action": "Validate signature encoding and interoperability."
         },
         {
           "step": 8,
@@ -1268,25 +1340,83 @@
       ],
       "action_count": 10,
       "explanation": {
-        "summary": "ECDAT generated 10 migration action(s) for x25519.",
+        "summary": "ECDAT generated 10 migration action(s) for SHA256withRSA.",
         "reasons": [
-          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so x25519 can be replaced directly by ML-KEM-768. Confirm no external peers still require the current scheme."
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so SHA256withRSA can be replaced directly by ML-DSA-65. Confirm no external peers still require the current scheme."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "bom_ref": "f3be4c41-32fc-4fdc-bc73-0d826a53ef03",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEcdsaKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEcdsaKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for private-key@f3be4c41-32fc-4fdc-bc73-0d826a53ef03.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
         ]
       }
     },
     {
       "asset": "SHA512",
-      "bom_ref": "02b2569f-a4d2-47af-a02b-6552739cbc92",
+      "bom_ref": "1e2783d3-5a56-4b27-b30c-79544b2a3893",
       "migration_type": "no-direct-pqc-replacement",
       "migration_strategy": "KEEP",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "src/cryptography/hazmat/primitives/twofactor/totp.py"
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
       ],
-      "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_file_count": 2,
+      "affected_classes": [
+        "HMACProvider",
+        "RSAProvider"
+      ],
+      "affected_class_count": 2,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "MEDIUM",
@@ -1325,18 +1455,1645 @@
       }
     },
     {
-      "asset": "private-key@337419e6-312c-4bbc-849e-350ec5d4d2b7",
-      "bom_ref": "337419e6-312c-4bbc-849e-350ec5d4d2b7",
+      "asset": "SHA512withRSA",
+      "bom_ref": "58597792-d5c4-471b-a5a6-b373ce5a00da",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA512withRSA.",
+        "reasons": [
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so SHA512withRSA can be replaced directly by ML-DSA-65. Confirm no external peers still require the current scheme."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@2fa341e1-e329-4ad3-b710-f10d6380724c",
+      "bom_ref": "2fa341e1-e329-4ad3-b710-f10d6380724c",
       "migration_type": "architectural-migration",
       "migration_strategy": "NEEDS_REVIEW",
       "pqc_candidate": null,
       "pqc_family": null,
       "affected_files": [
-        "src/cryptography/hazmat/primitives/serialization/ssh.py"
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/RSAKeyValueType.java"
       ],
       "affected_file_count": 1,
-      "affected_classes": [],
-      "affected_class_count": 0,
+      "affected_classes": [
+        "RSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for private-key@2fa341e1-e329-4ad3-b710-f10d6380724c.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA-2048) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "bom_ref": "2635bd31-35e8-42f8-bca0-4083313b04ef",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEddsaKeyProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+        },
+        {
+          "step": 2,
+          "action": "Update key storage, distribution and rotation to handle both keys."
+        },
+        {
+          "step": 3,
+          "action": "Retire this key once the governing algorithm's classical component is removed."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for private-key@2635bd31-35e8-42f8-bca0-4083313b04ef.",
+        "reasons": [
+          "Migration strategy HYBRID: This key material belongs to EdDSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384withRSA",
+      "bom_ref": "d5462ad2-0736-442a-8852-76673c086a85",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA384withRSA.",
+        "reasons": [
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so SHA384withRSA can be replaced directly by ML-DSA-65. Confirm no external peers still require the current scheme."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "bom_ref": "282db0ea-4e44-4c96-82c1-3fb4113a90a4",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@282db0ea-4e44-4c96-82c1-3fb4113a90a4.",
+        "reasons": [
+          "Migration strategy KEEP: This key material belongs to AES128 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1withDSA",
+      "bom_ref": "5f262f45-1562-4ade-9d04-3ecb65fdb866",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "SignatureUtil"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA1withDSA.",
+        "reasons": [
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so SHA1withDSA can be replaced directly by ML-DSA-65. Confirm no external peers still require the current scheme."
+        ]
+      }
+    },
+    {
+      "asset": "SHA384",
+      "bom_ref": "c064caf6-27d4-4758-891c-7c237a9132cb",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 3,
+      "affected_classes": [
+        "HMACProvider",
+        "HashUtils",
+        "RSAProvider"
+      ],
+      "affected_class_count": 3,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for SHA384.",
+        "reasons": [
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "bom_ref": "5284f8a5-93b3-409a-8f4b-3195e03b7db5",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+        },
+        {
+          "step": 2,
+          "action": "Update key storage, distribution and rotation to handle both keys."
+        },
+        {
+          "step": 3,
+          "action": "Retire this key once the governing algorithm's classical component is removed."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@5284f8a5-93b3-409a-8f4b-3195e03b7db5.",
+        "reasons": [
+          "Migration strategy HYBRID: This key material belongs to DSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+        ]
+      }
+    },
+    {
+      "asset": "private-key@71245f75-2d4e-4769-81a1-280815e98d9b",
+      "bom_ref": "71245f75-2d4e-4769-81a1-280815e98d9b",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core-api/src/main/java/org/keycloak/dom/xmlsec/w3/xmldsig/DSAKeyValueType.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "DSAKeyValueType"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+        },
+        {
+          "step": 2,
+          "action": "Update key storage, distribution and rotation to handle both keys."
+        },
+        {
+          "step": 3,
+          "action": "Retire this key once the governing algorithm's classical component is removed."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for private-key@71245f75-2d4e-4769-81a1-280815e98d9b.",
+        "reasons": [
+          "Migration strategy HYBRID: This key material belongs to DSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA512",
+      "bom_ref": "b1538b37-efb3-464e-8e65-5a0f7bea9eba",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HMACProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for HMAC-SHA512.",
+        "reasons": [
+          "Migration strategy KEEP: Message authentication (mac/hmac) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
+        ]
+      }
+    },
+    {
+      "asset": "SHA1withRSA",
+      "bom_ref": "69623150-209c-4c00-aa67-e61d252caecb",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "DIRECT_PQC",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "saml-core/src/main/java/org/keycloak/saml/processing/core/saml/v2/util/SignatureUtil.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "SignatureUtil"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Identify all digital-signature generation and verification paths."
+        },
+        {
+          "step": 2,
+          "action": "Identify certificate, key, and signature-format dependencies."
+        },
+        {
+          "step": 3,
+          "action": "Evaluate migration of the current signature mechanism to a PQC signature scheme."
+        },
+        {
+          "step": 4,
+          "action": "Evaluate ML-DSA-65 as the target post-quantum signature algorithm."
+        },
+        {
+          "step": 5,
+          "action": "Update signature generation and verification interfaces where required."
+        },
+        {
+          "step": 6,
+          "action": "Review certificate and trust-chain compatibility."
+        },
+        {
+          "step": 7,
+          "action": "Validate signature encoding and interoperability."
+        },
+        {
+          "step": 8,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 9,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 10,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 10,
+      "explanation": {
+        "summary": "ECDAT generated 10 migration action(s) for SHA1withRSA.",
+        "reasons": [
+          "Migration strategy DIRECT_PQC: The scanned evidence shows no network-facing exposure and no HIGH/CRITICAL complexity or blast radius, so SHA1withRSA can be replaced directly by ML-DSA-65. Confirm no external peers still require the current scheme."
+        ]
+      }
+    },
+    {
+      "asset": "TLS",
+      "bom_ref": "04cf407f-0274-4fa6-acaa-d1fb398db750",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "adapters/saml/core/src/main/java/org/keycloak/adapters/cloned/HttpClientBuilder.java",
+        "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/embedded/JGroupsConfigurator.java",
+        "model/infinispan/src/main/java/org/keycloak/spi/infinispan/impl/remote/DefaultCacheRemoteConfigProviderFactory.java",
+        "operator/src/main/java/org/keycloak/operator/controllers/KeycloakClientBaseController.java",
+        "services/src/main/java/org/keycloak/connections/httpclient/HttpClientBuilder.java",
+        "services/src/main/java/org/keycloak/truststore/JSSETruststoreConfigurator.java",
+        "test-framework/conformance-runner/src/main/java/org/keycloak/testframework/conformance/OpenIdConformanceServer.java",
+        "test-framework/core/src/main/java/org/keycloak/testframework/server/DistributionKeycloakServer.java",
+        "test-framework/core/src/main/java/org/keycloak/testframework/server/ReadinessProbe.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/AbstractQuarkusDeployableContainer.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/arquillian/containers/InfinispanServerDeployableContainer.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java",
+        "testsuite/integration-arquillian/util/src/main/java/org/keycloak/testsuite/utils/tls/TLSUtils.java",
+        "testsuite/utils/src/main/java/org/keycloak/testsuite/KeycloakServer.java",
+        "util/embedded-ldap/src/main/java/org/keycloak/util/ldap/TLS13StartTlsHandler.java"
+      ],
+      "affected_file_count": 15,
+      "affected_classes": [
+        "AbstractQuarkusDeployableContainer",
+        "DefaultCacheRemoteConfigProviderFactory",
+        "DistributionKeycloakServer",
+        "HttpClientBuilder",
+        "InfinispanServerDeployableContainer",
+        "JGroupsConfigurator",
+        "JSSETruststoreConfigurator",
+        "KeycloakClientBaseController",
+        "KeycloakServer",
+        "MutualTLSUtils",
+        "OpenIdConformanceServer",
+        "ReadinessProbe",
+        "TLS13StartTlsHandler",
+        "TLSUtils"
+      ],
+      "affected_class_count": 14,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Identify the protocol's key-exchange and authentication components and assess each separately."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for TLS.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: A protocol finding does not identify which key-exchange and authentication components it uses, so they must be resolved before a component-level strategy can be chosen."
+        ]
+      }
+    },
+    {
+      "asset": "SHA512withRSAandMGF1",
+      "bom_ref": "d5acc08f-8928-4d9b-9ab3-ea2b598ae4f9",
+      "migration_type": "pqc-candidate",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "RSAProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Confirm from source usage which role this finding performs: public-key encryption / key transport or digital signature."
+        },
+        {
+          "step": 3,
+          "action": "If it performs public-key encryption / key transport, evaluate ML-KEM-768 (KEM)."
+        },
+        {
+          "step": 4,
+          "action": "If it performs digital signature, evaluate ML-DSA-65 (digital-signature)."
+        },
+        {
+          "step": 5,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 6,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 7,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 8,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 8,
+      "explanation": {
+        "summary": "ECDAT generated 8 migration action(s) for SHA512withRSAandMGF1.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The evidence leaves more than one cryptographic role possible (public-key encryption / key transport, digital signature; purpose source: algorithm-family-fallback, confidence LOW). These roles need different PQC families, so the actual usage must be confirmed before choosing."
+        ]
+      }
+    },
+    {
+      "asset": "HMACSHA2",
+      "bom_ref": "9eb6c5a5-0d82-48f9-a9f5-b6e69ed3617b",
+      "migration_type": "not-applicable",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Determine this finding's cryptographic purpose from source usage."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for HMACSHA2.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The repository evidence does not identify this finding's cryptographic purpose, so no migration strategy is selected."
+        ]
+      }
+    },
+    {
+      "asset": "key@cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "bom_ref": "cf7d5981-ceca-488d-a08e-b68b69fb87a3",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for key@cf7d5981-ceca-488d-a08e-b68b69fb87a3.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "bom_ref": "9878db0c-dcc3-4bae-ade4-0a5d62ae77ec",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@9878db0c-dcc3-4bae-ade4-0a5d62ae77ec.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "key@7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "bom_ref": "7b8079a0-3ebe-41cf-8cce-46e66af0aefa",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "KeyUtils"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for key@7b8079a0-3ebe-41cf-8cce-46e66af0aefa.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "MGF1",
+      "bom_ref": "f911a4d5-8952-4c75-a594-dd1ee4a5aabb",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Confirm the configuration: Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for MGF1.",
+        "reasons": [
+          "Migration strategy KEEP: Mask generation is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: review -- Strength depends on how it is used (inputs, key sizes, underlying hash); confirm the configuration."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "bom_ref": "7eb7d712-9288-4be2-b69e-c5022e6fc87f",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@7eb7d712-9288-4be2-b69e-c5022e6fc87f.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-CBC-PKCS5",
+      "bom_ref": "ba577d59-2ca8-47a7-a399-f74305d4f08b",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for AES128-CBC-PKCS5.",
+        "reasons": [
+          "Migration strategy KEEP: Symmetric encryption is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: recommended -- Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        ]
+      }
+    },
+    {
+      "asset": "AES128-GCM",
+      "bom_ref": "e33e61d3-db2f-4203-bc9a-2c73d4f54186",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for AES128-GCM.",
+        "reasons": [
+          "Migration strategy KEEP: Symmetric encryption is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: recommended -- Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        ]
+      }
+    },
+    {
+      "asset": "HMAC-SHA384",
+      "bom_ref": "ef788906-6b16-4394-9ee4-18876c5e926e",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HMACProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for HMAC-SHA384.",
+        "reasons": [
+          "Migration strategy KEEP: Message authentication (mac/hmac) is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
+        ]
+      }
+    },
+    {
+      "asset": "key@b2ff856e-c435-408e-aa88-10078ba0637f",
+      "bom_ref": "b2ff856e-c435-408e-aa88-10078ba0637f",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for key@b2ff856e-c435-408e-aa88-10078ba0637f.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@61019a43-fb99-4b0a-b919-045a17ef0954",
+      "bom_ref": "61019a43-fb99-4b0a-b919-045a17ef0954",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/fips1402/src/main/java/org/keycloak/crypto/fips/BCFIPSECDSACryptoProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCFIPSECDSACryptoProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Resolve the migration strategy of the algorithm that uses this key material first; the key material follows that decision."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@61019a43-fb99-4b0a-b919-045a17ef0954.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (EC) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "ConcatenationKDF",
+      "bom_ref": "7b064d40-a822-4b28-9831-6f55b723c3de",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/default/src/main/java/org/keycloak/crypto/def/BCEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "BCEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Reconcile the conflicting CBOM primitive and source-context evidence for this finding."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed purpose so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for ConcatenationKDF.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The repository evidence for this finding's purpose conflicts, so no purpose -- and therefore no migration strategy -- is selected automatically."
+        ]
+      }
+    },
+    {
+      "asset": "public-key@9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "bom_ref": "9d06d79e-2a80-4d34-98f3-6e88ffd03133",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "HYBRID",
+      "pqc_candidate": "ML-DSA-65",
+      "pqc_family": "digital-signature",
+      "affected_files": [
+        "services/src/main/java/org/keycloak/keys/GeneratedEddsaKeyProviderFactory.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "GeneratedEddsaKeyProviderFactory"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Generate ML-DSA-65 key material to be used alongside this existing key during the hybrid transition."
+        },
+        {
+          "step": 2,
+          "action": "Update key storage, distribution and rotation to handle both keys."
+        },
+        {
+          "step": 3,
+          "action": "Retire this key once the governing algorithm's classical component is removed."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for public-key@9d06d79e-2a80-4d34-98f3-6e88ffd03133.",
+        "reasons": [
+          "Migration strategy HYBRID: This key material belongs to EdDSA (CBOM dependency), whose strategy is HYBRID; the key material is retained alongside new ML-DSA-65 key material."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "bom_ref": "42022578-f2fb-4884-9f39-f3547ada3bb4",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesGcmEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@42022578-f2fb-4884-9f39-f3547ada3bb4.",
+        "reasons": [
+          "Migration strategy KEEP: This key material belongs to AES128 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
+        ]
+      }
+    },
+    {
+      "asset": "SHA256",
+      "bom_ref": "16ced5a8-1cd8-4758-9757-1a5cce734d60",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "common/src/main/java/org/keycloak/common/util/KeyUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HMACProvider.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/HashUtils.java",
+        "core/src/main/java/org/keycloak/jose/jws/crypto/RSAProvider.java",
+        "core/src/main/java/org/keycloak/mdoc/MdocCredential.java",
+        "operator/src/main/java/org/keycloak/operator/Utils.java",
+        "server-spi-private/src/main/java/org/keycloak/broker/provider/AbstractIdentityProvider.java",
+        "server-spi-private/src/main/java/org/keycloak/models/utils/KeycloakModelUtils.java",
+        "services/src/main/java/org/keycloak/protocol/docker/DockerKeyIdentifier.java",
+        "services/src/main/java/org/keycloak/protocol/oid4vc/issuance/signing/vcdm/Ed255192018Suite.java",
+        "services/src/main/java/org/keycloak/protocol/oidc/mappers/SHA256PairwiseSubMapper.java",
+        "services/src/main/java/org/keycloak/protocol/oidc/par/endpoints/AbstractParEndpoint.java",
+        "services/src/main/java/org/keycloak/services/clientpolicy/executor/PKCEEnforcerExecutor.java",
+        "services/src/main/java/org/keycloak/services/resources/IdentityBrokerService.java",
+        "services/src/main/java/org/keycloak/services/util/MtlsHoKTokenUtil.java",
+        "services/src/main/java/org/keycloak/utils/BrokerUtil.java",
+        "testsuite/integration-arquillian/tests/base/src/main/java/org/keycloak/testsuite/util/MutualTLSUtils.java"
+      ],
+      "affected_file_count": 17,
+      "affected_classes": [
+        "AbstractIdentityProvider",
+        "AbstractParEndpoint",
+        "BrokerUtil",
+        "DockerKeyIdentifier",
+        "Ed255192018Suite",
+        "HMACProvider",
+        "HashUtils",
+        "IdentityBrokerService",
+        "KeyUtils",
+        "KeycloakModelUtils",
+        "MdocCredential",
+        "MtlsHoKTokenUtil",
+        "MutualTLSUtils",
+        "PKCEEnforcerExecutor",
+        "RSAProvider",
+        "SHA256PairwiseSubMapper",
+        "Utils"
+      ],
+      "affected_class_count": 17,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Record the assessment against Grover's algorithm: Security margin is generally considered adequate against Grover's algorithm."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for SHA256.",
+        "reasons": [
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: not-required -- Security margin is generally considered adequate against Grover's algorithm."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@aaba33db-779d-43bd-8968-67b097be6b30",
+      "bom_ref": "aaba33db-779d-43bd-8968-67b097be6b30",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "server-spi/src/main/java/org/keycloak/models/utils/HmacOTP.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "HmacOTP"
+      ],
+      "affected_class_count": 1,
       "affected_functions": [],
       "affected_function_count": 0,
       "impact_level": "LOW",
@@ -1368,9 +3125,283 @@
       ],
       "action_count": 6,
       "explanation": {
-        "summary": "ECDAT generated 6 migration action(s) for private-key@337419e6-312c-4bbc-849e-350ec5d4d2b7.",
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@aaba33db-779d-43bd-8968-67b097be6b30.",
         "reasons": [
-          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RSA) needs review, so this key material does too."
+          "Migration strategy NEEDS_REVIEW: The algorithm this key material belongs to (RAW) needs review, so this key material does too."
+        ]
+      }
+    },
+    {
+      "asset": "AES128",
+      "bom_ref": "77f7d18d-6930-4123-b014-376fc3b9f123",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java",
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesGcmEncryptionProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/AesKeyWrapAlgorithmProvider.java",
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 4,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider",
+        "AesGcmEncryptionProvider",
+        "AesKeyWrapAlgorithmProvider",
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 4,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for AES128.",
+        "reasons": [
+          "Migration strategy KEEP: Symmetric encryption is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: recommended -- Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "bom_ref": "e0ae4e31-eabd-41bf-ae53-7bc30eeedae8",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/ElytronEcdhEsAlgorithmProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "ElytronEcdhEsAlgorithmProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@e0ae4e31-eabd-41bf-ae53-7bc30eeedae8.",
+        "reasons": [
+          "Migration strategy KEEP: This key material belongs to AES128 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
+        ]
+      }
+    },
+    {
+      "asset": "RSASSA-PSS",
+      "bom_ref": "13c0e6f7-7546-4433-ac76-8e1862a48b79",
+      "migration_type": "not-applicable",
+      "migration_strategy": "NEEDS_REVIEW",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "crypto/elytron/src/main/java/org/keycloak/crypto/elytron/WildFlyElytronProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "WildFlyElytronProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "HIGH",
+      "actions": [
+        {
+          "step": 1,
+          "action": "Do not replace this primitive until its migration-strategy review is resolved."
+        },
+        {
+          "step": 2,
+          "action": "Confirm the primitive and its parameters to determine whether it is quantum-vulnerable."
+        },
+        {
+          "step": 3,
+          "action": "Record the confirmed quantum status so a migration strategy can be derived."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for RSASSA-PSS.",
+        "reasons": [
+          "Migration strategy NEEDS_REVIEW: The role (digital signature) normally requires PQC migration, but the quantum status is 'unknown' rather than confirmed vulnerable."
+        ]
+      }
+    },
+    {
+      "asset": "secret-key@6e958557-0942-4458-b38d-fcd13cb198bb",
+      "bom_ref": "6e958557-0942-4458-b38d-fcd13cb198bb",
+      "migration_type": "architectural-migration",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "core/src/main/java/org/keycloak/jose/jwe/enc/AesCbcHmacShaEncryptionProvider.java"
+      ],
+      "affected_file_count": 1,
+      "affected_classes": [
+        "AesCbcHmacShaEncryptionProvider"
+      ],
+      "affected_class_count": 1,
+      "affected_functions": [],
+      "affected_function_count": 0,
+      "impact_level": "LOW",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Consider classical hardening: Grover's algorithm halves the effective security level; consider a larger key or output size (e.g. 256-bit symmetric keys)."
+        },
+        {
+          "step": 3,
+          "action": "Keep this primitive in the cryptographic inventory and re-assess if its usage changes."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for secret-key@6e958557-0942-4458-b38d-fcd13cb198bb.",
+        "reasons": [
+          "Migration strategy KEEP: This key material belongs to AES128 (CBOM dependency), whose strategy is KEEP; the key material is kept, as its algorithm needs no PQC migration."
+        ]
+      }
+    },
+    {
+      "asset": "MD5",
+      "bom_ref": "c7dfefae-ca4b-49ba-9665-977396161939",
+      "migration_type": "no-direct-pqc-replacement",
+      "migration_strategy": "KEEP",
+      "pqc_candidate": null,
+      "pqc_family": null,
+      "affected_files": [
+        "distribution/downloads/src/main/java/CopyDependencies.java",
+        "services/src/main/java/org/keycloak/cache/ComputedKey.java"
+      ],
+      "affected_file_count": 2,
+      "affected_classes": [
+        "ComputedKey",
+        "CopyDependencies"
+      ],
+      "affected_class_count": 2,
+      "affected_functions": [
+        "getInstance"
+      ],
+      "affected_function_count": 1,
+      "impact_level": "MEDIUM",
+      "actions": [
+        {
+          "step": 1,
+          "action": "No post-quantum algorithm replacement is required for this cryptographic role."
+        },
+        {
+          "step": 2,
+          "action": "Replace this primitive with a stronger classical alternative: Already weak against classical attacks, independent of quantum computing; replace it with a stronger classical primitive (a PQC KEM or signature is not a replacement for this role)."
+        },
+        {
+          "step": 3,
+          "action": "Track the classical replacement in the cryptographic inventory until it is complete."
+        },
+        {
+          "step": 4,
+          "action": "Review the identified affected source files before implementation."
+        },
+        {
+          "step": 5,
+          "action": "Update automated tests for the migrated cryptographic path."
+        },
+        {
+          "step": 6,
+          "action": "Document the migration decision and validation results."
+        }
+      ],
+      "action_count": 6,
+      "explanation": {
+        "summary": "ECDAT generated 6 migration action(s) for MD5.",
+        "reasons": [
+          "Migration strategy KEEP: Hashing is not broken by Shor's algorithm and has no ML-KEM/ML-DSA replacement, so no PQC migration applies. Classical hardening: required -- Already weak against classical attacks, independent of quantum computing; replace it with a stronger classical primitive (a PQC KEM or signature is not a replacement for this role)."
         ]
       }
     }

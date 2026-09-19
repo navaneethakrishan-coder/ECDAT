@@ -26,6 +26,8 @@ import { RepositoryAnalysisPanel } from "./components/RepositoryAnalysisPanel";
 import { Sidebar } from "./components/Sidebar";
 import { Topbar } from "./components/Topbar";
 import { migrationStages } from "./components/detail/migrationStages";
+import { ChatLauncher } from "./components/chat/ChatLauncher";
+import { ChatPanel } from "./components/chat/ChatPanel";
 import { CryptographicSecurityMap } from "./components/visualization/CryptographicSecurityMap";
 import { usePrefersReducedMotion } from "./components/visualization/mapEnvironment";
 import { useLandscapeState, useSecurityMapModel } from "./components/visualization/useSecurityMapModel";
@@ -42,6 +44,9 @@ import { branchSummaries } from "./spatial/surfaces";
 import { useScrollSpy } from "./spatial/useScrollSpy";
 import "./App.css";
 import "./spatial/spatial.css";
+// Loaded last so the theme tokens win on equal specificity.
+import "./theme/theme.css";
+import "./components/chat/chat.css";
 
 // Chart colors follow the same "color means one specific thing"
 // language used everywhere else: severity distributions (risk,
@@ -123,6 +128,9 @@ function App() {
   const [sourceImpactFilter, setSourceImpactFilter] = useState("ALL");
 
   const [selectedAsset, setSelectedAsset] = useState(null);
+  // ECDAT AI: a conversation about the analysis, separate from the
+  // per-finding AI Analysis panel, which is unchanged.
+  const [chatOpen, setChatOpen] = useState(false);
   // The finding (bom_ref) currently focused in the Security Map and
   // highlighted in the Asset Explorer. Opening a finding sets both this
   // and selectedAsset, so the map, the explorer and the investigation
@@ -658,6 +666,14 @@ function App() {
 
   const activeSection = useScrollSpy(SECTION_SPY_TARGETS, { enabled: !isStage && !loading && !error && Boolean(summary) });
 
+  // Opens ECDAT AI with a finding attached, from wherever the user is
+  // looking at it. Declared with the other hooks, above the loading and
+  // error returns, so the hook order never depends on render state.
+  const askEcdatAi = useCallback((bomRef) => {
+    if (bomRef) setFocusedFinding(bomRef);
+    setChatOpen(true);
+  }, []);
+
   // ==========================================================
   // LOADING / ERROR (full page)
   // ==========================================================
@@ -779,6 +795,38 @@ function App() {
   // Only hand the workspace the record for the finding it is showing, so
   // navigating between findings never flashes the previous one's data.
   const selectedDetail = assetDetail?.bom_ref === selectedAsset ? assetDetail : null;
+  // ---- ECDAT AI
+  //
+  // The assistant is given whichever finding the user is looking at --
+  // the open investigation, or the finding focused in the map -- so
+  // "why is this risky?" resolves to a real bom_ref rather than guessing.
+  const chatFindingRef = selectedAsset || focusedFinding || null;
+  const chatFinding = chatFindingRef
+    ? {
+        bomRef: chatFindingRef,
+        name:
+          (assetDetail?.bom_ref === chatFindingRef ? assetDetail.asset : null) ||
+          enrichedAssets.find((asset) => asset.bomRef === chatFindingRef)?.name ||
+          chatFindingRef,
+        strategy:
+          (assetDetail?.bom_ref === chatFindingRef ? assetDetail?.migration_strategy?.strategy : null) ||
+          enrichedAssets.find((asset) => asset.bomRef === chatFindingRef)?.strategy ||
+          null,
+      }
+    : null;
+
+  const ecdatChat = (
+    <>
+      <ChatLauncher open={chatOpen} onToggle={() => setChatOpen((open) => !open)} hasFinding={Boolean(chatFinding)} />
+      <ChatPanel
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        selectedFinding={chatFinding}
+        backendConnected={backendConnected}
+      />
+    </>
+  );
+
   const previousRef = investigationTrail[investigationTrail.length - 1] || null;
   const previousFinding = previousRef
     ? { bomRef: previousRef, name: enrichedAssets.find((asset) => asset.bomRef === previousRef)?.name || previousRef }
@@ -1039,6 +1087,7 @@ function App() {
         onBack={backInvestigation}
         onInvestigate={(bomRef) => openFinding(bomRef, "blast")}
         onEvidence={publishEvidence}
+        onAskAi={askEcdatAi}
       />
     ) : null;
 
@@ -1105,6 +1154,7 @@ function App() {
           onGoFinding={() => goSection("landscape")}
           onGoInvestigation={() => setActiveSurface(null)}
         />
+        {ecdatChat}
       </SpatialContext.Provider>
     );
   }
@@ -1162,6 +1212,8 @@ function App() {
         {/* The investigation workspace renders at the document root so the
             dashboard behind it can recede as the background layer. */}
         {selectedAsset && createPortal(workspaceElement("overlay"), document.body)}
+
+        {ecdatChat}
       </div>
     </SpatialContext.Provider>
   );

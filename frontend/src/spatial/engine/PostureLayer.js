@@ -23,6 +23,7 @@ import {
 } from "three";
 
 import { disposeObject } from "./SpatialEngine";
+import { roleColor, themed } from "./themePalette.js";
 
 const SEVERITY_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
 const SEVERITY_HEX = { CRITICAL: "#ef4444", HIGH: "#f97316", MEDIUM: "#eab308", LOW: "#22c55e" };
@@ -74,14 +75,17 @@ export class PostureLayer {
     // Base plate the posture instruments stand on.
     const plate = new Mesh(
       new RingGeometry(0.2, 18.5, 64, 1),
-      this.track(new MeshBasicMaterial({ color: "#0c1a33", depthWrite: false }), 0.35),
+      this.track(themed(new MeshBasicMaterial({ depthWrite: false }), "plate"), 0.35),
     );
     plate.rotation.x = -Math.PI / 2;
     plate.position.y = 0.02;
     this.content.add(plate);
 
     // Readiness: full track + value arc, standing upright, facing the landscape.
-    const track = new Mesh(new TorusGeometry(3.2, 0.16, 12, 96), this.track(new MeshBasicMaterial({ color: "#1c2740" }), 0.9));
+    const track = new Mesh(
+      new TorusGeometry(3.2, 0.16, 12, 96),
+      this.track(themed(new MeshBasicMaterial({}), "track"), 0.9),
+    );
     track.position.copy(RING_CENTER);
     this.content.add(track);
 
@@ -134,13 +138,16 @@ export class PostureLayer {
       pylon.position.set(x, 0, 0);
       const body = new Mesh(
         new BoxGeometry(1.4, 4.2, 1.4),
-        this.track(new MeshStandardMaterial({ color: "#0f1a33", emissive: "#12305a", emissiveIntensity: 0.35, roughness: 0.6 }), 0.92),
+        this.track(
+          themed(new MeshStandardMaterial({ emissiveIntensity: 0.35, roughness: 0.6 }), "pylon"),
+          0.92,
+        ),
       );
       body.position.y = 2.1;
       pylon.add(body);
       const frame = new LineSegments(
         new EdgesGeometry(body.geometry),
-        this.track(new LineBasicMaterial({ color: metric.interactive ? "#22d3ee" : "#2e4a7a" }), 0.7),
+        this.track(new LineBasicMaterial({ color: metric.interactive ? "#22d3ee" : roleColor("wall-edge") }), 0.7),
       );
       frame.position.copy(body.position);
       pylon.add(frame);
@@ -196,7 +203,11 @@ export class PostureLayer {
     this.pylons.forEach(({ frame, metric }, key) => {
       const active = key === this.activeMetric;
       const hovered = key === this.hoveredKey;
-      frame.material.color.set(active ? "#67e8f9" : hovered && metric.interactive ? "#a5f3fc" : metric.interactive ? "#22d3ee" : "#2e4a7a");
+      // The resting colour is read from the palette, or re-selecting a
+      // metric would repaint the frame back to the dark theme's navy.
+      frame.material.color.set(
+        active ? "#67e8f9" : hovered && metric.interactive ? "#a5f3fc" : metric.interactive ? "#22d3ee" : roleColor("wall-edge"),
+      );
     });
     this.engine?.requestFrame();
   }

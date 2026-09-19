@@ -403,7 +403,7 @@
   padding: 2px 7px;
   border: 1px solid rgba(148, 178, 220, 0.18);
   border-radius: 6px;
-  background: rgba(6, 9, 20, 0.72);
+  background: var(--map-surface-soft);
   color: var(--text-primary);
   font-size: 11px;
   font-weight: 600;
@@ -428,7 +428,7 @@
 }
 
 .security-map-region-label {
-  color: #7f95bd;
+  color: var(--map-label-region);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -437,7 +437,7 @@
 }
 
 .security-map-band-label {
-  color: #4f6a99;
+  color: var(--map-label-band);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -452,7 +452,7 @@
   padding: 8px 10px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: rgba(8, 11, 22, 0.96);
+  background: var(--map-surface);
   box-shadow: var(--shadow-elevated);
   color: var(--text-primary);
   font-size: 11px;
@@ -515,7 +515,7 @@
   padding: 6px 10px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: rgba(6, 9, 20, 0.85);
+  background: var(--map-surface-strong);
   color: var(--text-secondary);
   font-size: 11px;
 }
@@ -540,7 +540,7 @@
   padding: 0 9px;
   border: 1px solid var(--border-subtle);
   border-radius: 7px;
-  background: rgba(10, 14, 27, 0.82);
+  background: var(--glass-bg-strong);
   color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
@@ -569,7 +569,7 @@
   padding-left: 8px;
   border: 1px solid var(--border-subtle);
   border-radius: 7px;
-  background: rgba(10, 14, 27, 0.82);
+  background: var(--glass-bg-strong);
   color: var(--text-secondary);
 }
 
@@ -588,7 +588,7 @@
   max-width: 250px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: rgba(8, 12, 24, 0.86);
+  background: var(--map-panel);
   box-shadow: var(--shadow-card);
 }
 
@@ -1003,7 +1003,7 @@
 }
 
 .map2d-region rect {
-  fill: rgba(15, 31, 61, 0.55);
+  fill: var(--map-plate);
   stroke: #2e4a7a;
 }
 

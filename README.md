@@ -141,7 +141,7 @@ A scan takes as long as CBOMKit takes (seconds to ~10 minutes depending on the r
 
 ```bash
 cd backend
-python test_<name>.py            # each of the 36 test scripts runs standalone
+python test_<name>.py            # each of the 37 test scripts runs standalone
 python check_risk_consistency.py # the pipeline's own risk-agreement gate
 ```
 
@@ -149,6 +149,7 @@ No test needs the dev server or any particular scan. Analysis tests read a **fix
 
 ```bash
 cd frontend
+npm test                         # Vitest: theme system, ECDAT AI panel, 3D palette
 npm run lint
 npm run build
 ```
@@ -157,14 +158,21 @@ npm run build
 
 ## Current demo dataset
 
-`data/keycloak-cbom.json` (the filename is fixed and historical) holds a CBOMKit scan of **`pyca/cryptography`, branch `main`, commit `39138c6`**:
+`data/keycloak-cbom.json` (the filename is fixed and historical) holds a CBOMKit scan of **`keycloak/keycloak`, branch `main`, commit `dd4ae31`**:
 
-- **25 findings** from 47 raw component entries (exact `bom_ref` duplicates merged)
-- **29 recorded dependency entries**, giving **15 unique dependency edges**; `x25519`, `x448` and `RSA-OAEP` have none
-- **Strategies:** KEEP 4, DIRECT_PQC 5, HYBRID 6, NEEDS_REVIEW 10
-- **PQC candidates** (selected paths): 11 · **172** generated migration actions
-- **Priority:** 3 findings HIGH/CRITICAL (1 CRITICAL, 2 HIGH) → **88% readiness**
-- Two distinct `RSA-2048` findings, in a `.java` and a `.py` file, kept independent throughout
+- **59 findings** from 59 raw component entries — 30 algorithms, 28 related-crypto-material, 1 protocol
+- **37 recorded dependency entries**, giving **37 unique dependency edges**; 10 findings have none (`AES`, `ECDH`, `MD5` and others)
+- **Risk severity:** 1 CRITICAL, 15 HIGH, 41 MEDIUM, 2 LOW
+- **Strategies:** NEEDS_REVIEW 29, KEEP 18, DIRECT_PQC 6, HYBRID 6
+- **PQC candidates** (selected paths): 12 · **388** generated migration actions
+- **Key material:** 28 findings inherit the strategy of the algorithm they depend on
+- **Priority:** 3 findings HIGH/CRITICAL (1 CRITICAL, 2 HIGH) → **95% readiness**
+- **Mosca / business criticality:** UNKNOWN — no `data/business-context.json` is configured, so those factors are excluded from priority rather than guessed
+
+The identity guarantee that two findings sharing an algorithm name stay
+separate is asserted against the deterministic fixture
+(`backend/fixture_dataset.py`), not against this dataset, so it holds whatever
+repository is scanned.
 
 ---
 

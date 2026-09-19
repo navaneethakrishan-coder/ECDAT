@@ -27,6 +27,7 @@ import {
 
 import { INVESTIGATION_SURFACES } from "../surfaces";
 import { disposeObject } from "./SpatialEngine";
+import { themed } from "./themePalette.js";
 
 const TONE_HEX = {
   critical: "#ef4444",
@@ -219,14 +220,14 @@ export class InvestigationLayer {
     // Column from the floor to the top of the risk scale, in node-local space.
     const column = new Line(
       new BufferGeometry().setFromPoints([new Vector3(x, -nodeY, 0), new Vector3(x, height - nodeY, 0)]),
-      new LineBasicMaterial({ color: "#2e4066", transparent: true, opacity: 0.9 }),
+      themed(new LineBasicMaterial({ transparent: true, opacity: 0.9 }), "column"),
     );
     this.extras.add(column);
     BANDS.forEach((band) => {
       const y = (band / 100) * height - nodeY;
       const tick = new Line(
         new BufferGeometry().setFromPoints([new Vector3(x - 0.25, y, 0), new Vector3(x + 0.25, y, 0)]),
-        new LineBasicMaterial({ color: "#3b5c94", transparent: true, opacity: 0.9 }),
+        themed(new LineBasicMaterial({ transparent: true, opacity: 0.9 }), "band"),
       );
       this.extras.add(tick);
     });

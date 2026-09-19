@@ -8,6 +8,7 @@ import { LandscapeLayer } from "../engine/LandscapeLayer";
 import { PostureLayer } from "../engine/PostureLayer";
 import { SimulationLayer } from "../engine/SimulationLayer";
 import { DEFAULT_DIRECTION, SpatialEngine } from "../engine/SpatialEngine";
+import { useTheme } from "../../theme/ThemeContext";
 
 const GLOBAL_DIRECTION = new Vector3(0.28, 0.95, 1).normalize();
 const SIMULATION_DIRECTION = new Vector3(0.1, 0.45, 1).normalize();
@@ -63,6 +64,7 @@ export default function SpatialStage({
   const callbacksRef = useRef({ onSelectFinding, onSurface, onMetric, onContextLost });
   const initialRef = useRef({ reducedMotion, tier });
   const [hoveredRef, setHoveredRef] = useState(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     callbacksRef.current = { onSelectFinding, onSurface, onMetric, onContextLost };
@@ -101,6 +103,16 @@ export default function SpatialStage({
       stageRef.current = null;
     };
   }, []);
+
+  // ---- repaint the scene when the theme changes
+  //
+  // The same engine, scene and camera stay in place: applyTheme() only
+  // re-reads the --env-* tokens and updates fog, lighting and the
+  // materials layers registered as environment. No second renderer, and
+  // no rebuild of the landscape.
+  useEffect(() => {
+    stageRef.current?.engine?.applyTheme();
+  }, [theme]);
 
   // ---- push React state into the layers
   useEffect(() => {

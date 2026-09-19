@@ -152,7 +152,7 @@
 .space-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 90% at 50% 30%, transparent 55%, rgba(2, 3, 8, 0.65));
+  background: radial-gradient(120% 90% at 50% 30%, transparent 55%, var(--spatial-vignette));
 }
 
 /* ---- context re-staging (slow, camera-like) ---- */
@@ -362,7 +362,7 @@
   list-style: none;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-md);
-  background: rgba(8, 11, 22, 0.97);
+  background: var(--spatial-surface);
   box-shadow: var(--shadow-elevated), 0 0 0 1px rgba(34, 211, 238, 0.06);
   animation: ecdat-fade-in var(--motion-fast) ease backwards;
 }
@@ -432,7 +432,7 @@
 
   border: 1px solid rgba(34, 211, 238, 0.28);
   border-radius: var(--radius-xl);
-  background: rgba(8, 12, 24, 0.94);
+  background: var(--spatial-plane);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.85), 0 0 40px -18px rgba(34, 211, 238, 0.35);
@@ -599,7 +599,7 @@
   padding: 2px 6px;
   border: 1px solid var(--border-subtle);
   border-radius: 4px;
-  background: rgba(9, 13, 24, 0.8);
+  background: var(--spatial-surface-soft);
   color: var(--accent-strong);
   font-family: var(--font-display);
   letter-spacing: 0.06em;
@@ -790,7 +790,7 @@
 }
 
 .readiness-core-inner {
-  fill: rgba(6, 9, 20, 0.78);
+  fill: var(--spatial-core-fill);
   stroke: rgba(91, 156, 246, 0.18);
   stroke-width: 1;
 }
@@ -955,7 +955,7 @@
 .asset-workspace.spatial-workspace {
   background:
     radial-gradient(1100px 600px at 50% -10%, rgba(34, 211, 238, 0.06), transparent 60%),
-    rgba(4, 6, 13, 0.94);
+    var(--spatial-scrim-strong);
   animation: workspace-enter var(--motion-medium) var(--ease-spatial) backwards;
 }
 
@@ -1091,7 +1091,7 @@
     radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.09), transparent 58%),
     linear-gradient(rgba(91, 156, 246, 0.05) 1px, transparent 1px) 0 0 / 30px 30px,
     linear-gradient(90deg, rgba(91, 156, 246, 0.05) 1px, transparent 1px) 0 0 / 30px 30px,
-    rgba(8, 12, 24, 0.9);
+    var(--spatial-plane-soft);
   box-shadow: var(--depth-primary);
   transform: rotateX(6deg);
   transform-origin: 50% 100%;
@@ -1145,7 +1145,7 @@
   padding: 12px;
   border: 1px solid var(--border-strong);
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, rgba(34, 211, 238, 0.14), rgba(9, 13, 26, 0.96) 70%);
+  background: radial-gradient(circle at 50% 35%, rgba(34, 211, 238, 0.14), var(--spatial-core-outer) 70%);
   color: var(--text-primary);
   text-align: center;
   transition: box-shadow var(--motion-medium), border-color var(--motion-medium);
@@ -1205,7 +1205,7 @@
   padding: 8px 9px;
   border: 1px solid var(--border-strong);
   border-radius: 10px;
-  background: rgba(10, 15, 29, 0.96);
+  background: var(--spatial-surface-raised);
   box-shadow: 0 12px 22px -12px rgba(0, 0, 0, 0.8);
   color: var(--text-primary);
   text-align: left;

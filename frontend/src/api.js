@@ -345,3 +345,46 @@ export function simulateWhatIf(bomRef, pqcOption) {
   });
 }
 
+
+/**
+ * Asks the ECDAT assistant about the current analysis.
+ *
+ * `bomRef` attaches the selected finding as the primary context; the
+ * conversation is the current session's turns, kept in the browser only.
+ * Rejections carry {reason_code, reason} like the other ECDAT endpoints,
+ * so the chat UI can offer a retry with a real explanation.
+ */
+export async function sendChatMessage({ message, bomRef = null, conversation = [] }) {
+  const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      bom_ref: bomRef,
+      conversation: conversation.map(({ role, content }) => ({ role, content })),
+    }),
+  });
+
+  if (!response.ok) {
+    let detail = `The ECDAT assistant is unavailable (${response.status}).`;
+    let reasonCode = null;
+
+    try {
+      const error = await response.json();
+      if (error.detail?.reason) {
+        detail = error.detail.reason;
+        reasonCode = error.detail.reason_code || null;
+      } else if (typeof error.detail === "string") {
+        detail = error.detail;
+      }
+    } catch {
+      // Keep the default message.
+    }
+
+    const failure = new Error(detail);
+    failure.reasonCode = reasonCode;
+    throw failure;
+  }
+
+  return response.json();
+}

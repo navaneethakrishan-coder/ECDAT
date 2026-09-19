@@ -1,0 +1,1294 @@
+/* ==========================================================================
+   ECDAT THEME SYSTEM
+   ==========================================================================
+   ECDAT ships two themes. Dark is the original console, defined by the
+   :root block in App.css -- the semantic aliases below only *name* those
+   existing values, so dark renders exactly as it did before. Light
+   redefines the same names under :root[data-theme="light"].
+
+   Components read these tokens instead of literal colours, which is what
+   keeps a second theme from becoming a second implementation of the UI.
+   A colour still hard-coded in a component is dark-only, and a bug.
+
+   Loaded after App.css so these definitions win on equal specificity.
+   ========================================================================== */
+
+:root {
+  /* ---- semantic surfaces ---- */
+  --theme-page: var(--bg-canvas);
+  --theme-panel: var(--bg-surface);
+  --theme-panel-raised: var(--bg-surface-raised);
+  --theme-inset: var(--bg-inset);
+
+  /* ---- semantic borders ---- */
+  --theme-border: var(--border-subtle);
+  --theme-border-strong: var(--border-strong);
+
+  /* ---- semantic text ---- */
+  --theme-text: var(--text-primary);
+  --theme-text-secondary: var(--text-secondary);
+  --theme-text-muted: var(--text-muted);
+
+  /* ---- semantic accent ---- */
+  --theme-accent: var(--accent);
+  --theme-accent-strong: var(--accent-strong);
+  --theme-accent-glow: var(--glow-blue);
+
+  /* ---- semantic status ---- */
+  --theme-success: var(--sev-low);
+  --theme-warning: var(--sev-medium);
+  --theme-danger: var(--sev-critical);
+  --theme-info: var(--accent-cyan);
+
+  /* ---- form controls ---- */
+  --input-bg: var(--bg-inset);
+  --input-bg-focus: var(--bg-inset-alt);
+  --input-border: var(--border-subtle);
+  --input-border-focus: var(--accent);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
+
+  /* ---- elevation, expressed as colours a theme can change ---- */
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  --shadow-color-strong: rgba(0, 0, 0, 0.85);
+  --scrim: rgba(3, 6, 14, 0.72);
+  --hairline-inset: rgba(255, 255, 255, 0.045);
+  --surface-hover: rgba(148, 178, 220, 0.08);
+
+  /* ---- spatial + stage chrome ----
+     These were literal colours inside spatial.css and stage.css, which
+     made that whole layer dark-only. The dark values here are the exact
+     originals, so naming them changed nothing. ---- */
+  --stage-bg: #04060d;
+  --dock-bg: rgba(7, 10, 20, 0.9);
+  --dock-bg-strong: rgba(7, 10, 20, 0.94);
+  --dock-bg-solid: rgba(7, 10, 20, 0.97);
+  --dock-shadow: rgba(0, 0, 0, 0.95);
+  --anchor-bg: rgba(6, 9, 20, 0.84);
+  --anchor-bg-active: rgba(8, 14, 30, 0.92);
+
+  --spatial-surface: rgba(8, 11, 22, 0.97);
+  --spatial-surface-soft: rgba(9, 13, 24, 0.8);
+  --spatial-surface-raised: rgba(10, 15, 29, 0.96);
+  --spatial-plane: rgba(8, 12, 24, 0.94);
+  --spatial-plane-soft: rgba(8, 12, 24, 0.9);
+  --spatial-core-fill: rgba(6, 9, 20, 0.78);
+  --spatial-core-outer: rgba(9, 13, 26, 0.96);
+  --spatial-scrim-strong: rgba(4, 6, 13, 0.94);
+  --spatial-vignette: rgba(2, 3, 8, 0.65);
+
+  --map-surface: rgba(8, 11, 22, 0.96);
+  --map-surface-soft: rgba(6, 9, 20, 0.72);
+  --map-surface-strong: rgba(6, 9, 20, 0.85);
+  --map-panel: rgba(8, 12, 24, 0.86);
+  --map-plate: rgba(15, 31, 61, 0.55);
+  /* Scene labels sit on the 3D canvas with no plate behind them, so they
+     are the one place where a dark-only literal shows up immediately. */
+  --map-label-region: #7f95bd;
+  --map-label-band: #4f6a99;
+
+  /* ---- the 3D environment, read by SpatialEngine through
+     getComputedStyle, so the scene follows the theme without a second
+     renderer and without a second scene graph.
+
+     Every value below is the literal the corresponding material was
+     originally constructed with, so naming them changed nothing about
+     how the dark scene renders. Severity and strategy colours are
+     absent on purpose: they encode meaning and must not move. ---- */
+  --env-fog: #05070f;
+  --env-fog-density: 0.016;
+  --env-sky: #a5b8ff;           /* hemisphere light, from above */
+  --env-ground: #05070f;        /* hemisphere light, bounced back up */
+  --env-light-intensity: 1;
+  --env-glow-intensity: 1;
+
+  --env-grid-minor: #132340;    /* floor grid, ordinary lines */
+  --env-grid-major: #1f3a66;    /* floor grid, centre line */
+  --env-wall: #0d1d38;          /* structural planes */
+  --env-wall-edge: #2e4a7a;     /* their frames, and region outlines */
+  --env-region: #0f1f3d;        /* landscape region plates */
+  --env-band: #3b5c94;          /* risk-band guide lines */
+  --env-plate: #0c1a33;         /* posture base plate */
+  --env-track: #1c2740;         /* readiness ring track */
+  --env-pylon: #0f1a33;         /* posture pylon bodies */
+  --env-pylon-emissive: #12305a;
+  --env-column: #2e4066;        /* investigation risk scale */
+  --env-dust: #8fb3e6;          /* sparse depth points */
+
+  /* ---- semantic design-system names ----
+     The vocabulary both themes are written against. In dark these are
+     aliases for the values above, so naming them changed nothing; light
+     redefines them with its own surface logic. ---- */
+  --bg-page: var(--bg-canvas);
+  --bg-workspace: var(--bg-canvas);
+  --bg-sheet: var(--bg-surface);
+  --bg-sheet-elevated: var(--bg-surface-raised);
+  --bg-well: var(--bg-inset);
+
+  --text-blueprint: var(--accent-strong);
+
+  --border-hairline: var(--border-subtle);
+  --border-default: var(--border-subtle);
+  --border-focus: var(--accent);
+
+  --accent-primary: var(--accent);
+  --accent-secondary: var(--accent-cyan);
+  --accent-soft: rgba(59, 130, 246, 0.12);
+  --accent-ink: var(--accent-strong);
+
+  --success: var(--sev-low);
+  --warning: var(--sev-medium);
+  --danger: var(--sev-critical);
+  --info: var(--accent-cyan);
+
+  /* In dark, "recessed" is not a real effect -- depth comes from
+     luminance -- so it resolves to nothing rather than to a fake inset. */
+  --shadow-recessed: none;
+  --rule-hairline: 1px solid var(--border-subtle);
+  --rule-strong: 1px solid var(--border-strong);
+  --sheet-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   LIGHT THEME
+   ==========================================================================
+   A daylight security console, not a white admin panel: cool near-white
+   neutrals with a blue cast, real borders instead of grey mush, and the
+   same blue / cyan / violet accent language carrying the same meanings.
+   Glow is dialled down rather than removed -- on white it reads as a
+   coloured halo, where a little goes much further.
+   ========================================================================== */
+
+:root[data-theme="light"] {
+  color: #0f1726;
+  background: #e0e7f1;
+
+  /* ---- THE DRAFTING TABLE ----
+     Light mode does not invert dark mode's depth logic, it replaces it.
+     In dark, nearer means brighter. On a daylight instrument, the working
+     sheet is the brightest thing and everything else recedes from it:
+     the table beneath is tinted, and a data readout is a *machined well*
+     cut into the sheet -- darker than the sheet, not lighter. That single
+     inversion is what stops this reading as "dark mode but white". ---- */
+
+  /* the drafting table itself: cool, clearly darker than the sheets */
+  --bg-canvas: #e0e7f1;
+  --bg-page: #e0e7f1;
+  --bg-workspace: #e8edf5;
+  /* the working sheet */
+  --bg-surface: #ffffff;
+  --bg-sheet: #ffffff;
+  --bg-surface-raised: #ffffff;
+  --bg-sheet-elevated: #ffffff;
+  /* wells: cut into the sheet, so they sit *below* it */
+  --bg-inset: #eef2f8;
+  --bg-well: #eef2f8;
+  --bg-inset-alt: #e4eaf4;
+
+  /* glass: frosted white over the page wash */
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-bg-strong: rgba(255, 255, 255, 0.93);
+  --glass-border: rgba(30, 58, 110, 0.14);
+
+  /* rules: a drafting sheet is ruled, so borders are a drawing tool
+     here rather than a way to fence off cards. Three weights, used for
+     three different jobs. */
+  --border-subtle: #dde4ee;
+  --border-hairline: #dde4ee;
+  --border-default: #ccd6e6;
+  --border-strong: #a8b8cf;
+  --border-focus: #1d4ed8;
+  --rule-hairline: 1px solid #dde4ee;
+  --rule-strong: 1px solid #ccd6e6;
+
+  /* ink: graphite, not grey. Every tier stays legible on white. */
+  --text-primary: #0f1726;
+  --text-secondary: #46566e;
+  --text-tertiary: #5d6d87;
+  --text-muted: #6d7d95;
+  --text-blueprint: #1d4ed8;
+
+  /* accents: the same four hues carrying the same four meanings as in
+     dark -- blue acts, cyan means PQC, violet means AI, magenta stays
+     decorative -- but darkened until they behave like ink on paper
+     rather than light emitted from a screen. */
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-primary: #1d4ed8;
+  --accent-secondary: #0e7490;
+  --accent-soft: rgba(29, 78, 216, 0.08);
+  --accent-ink: #1d4ed8;
+  --accent-cyan: #0e7490;
+  --accent-cyan-strong: #0891b2;
+  --accent-violet: #6d28d9;
+  --accent-violet-strong: #7c3aed;
+  --accent-magenta: #a21caf;
+  --accent-magenta-strong: #c026d3;
+
+  /* glow: a soft coloured halo, not a light source */
+  --glow-cyan: 0 0 0 1px rgba(14, 116, 144, 0.18), 0 6px 20px -8px rgba(14, 116, 144, 0.32);
+  --glow-blue: 0 0 0 1px rgba(37, 99, 235, 0.18), 0 6px 20px -8px rgba(37, 99, 235, 0.34);
+  --glow-violet: 0 0 0 1px rgba(109, 40, 217, 0.18), 0 6px 20px -8px rgba(109, 40, 217, 0.32);
+  --glow-magenta: 0 6px 20px -8px rgba(162, 28, 175, 0.28);
+  --glow-critical: 0 0 0 1px rgba(190, 18, 60, 0.22), 0 6px 20px -8px rgba(190, 18, 60, 0.36);
+  --glow-high: 0 0 0 1px rgba(194, 65, 12, 0.2), 0 6px 18px -8px rgba(194, 65, 12, 0.32);
+  --glow-low: 0 6px 18px -8px rgba(21, 128, 61, 0.3);
+
+  /* severity: darkened so text on a tinted chip stays legible */
+  --sev-low: #15803d;
+  --sev-low-bg: rgba(21, 128, 61, 0.1);
+  --sev-low-border: rgba(21, 128, 61, 0.26);
+
+  --sev-medium: #a16207;
+  --sev-medium-bg: rgba(161, 98, 7, 0.1);
+  --sev-medium-border: rgba(161, 98, 7, 0.26);
+
+  --sev-high: #c2410c;
+  --sev-high-bg: rgba(194, 65, 12, 0.1);
+  --sev-high-border: rgba(194, 65, 12, 0.26);
+
+  --sev-critical: #be123c;
+  --sev-critical-bg: rgba(190, 18, 60, 0.1);
+  --sev-critical-border: rgba(190, 18, 60, 0.28);
+
+  --sev-unknown: #64748b;
+  --sev-unknown-bg: rgba(100, 116, 139, 0.1);
+  --sev-unknown-border: rgba(100, 116, 139, 0.24);
+
+  --success: #15803d;
+  --warning: #a16207;
+  --danger: #be123c;
+  --info: #0e7490;
+
+  /* elevation: a sheet on a table lifts by a hair and a crisp edge, not
+     by a 40px blur. Depth here is carried by tone and rules; shadow only
+     confirms which plane something is on. */
+  --shadow-card: 0 1px 2px rgba(15, 32, 66, 0.05);
+  --shadow-elevated: 0 2px 4px rgba(15, 32, 66, 0.06), 0 12px 28px -18px rgba(15, 32, 66, 0.3);
+  /* a well is cut *into* the sheet: the light catches its upper lip */
+  --shadow-recessed: inset 0 1px 2px rgba(23, 42, 77, 0.07), inset 0 0 0 1px rgba(23, 42, 77, 0.04);
+  --shadow-color: rgba(15, 32, 66, 0.16);
+  --shadow-color-strong: rgba(15, 32, 66, 0.3);
+  --scrim: rgba(226, 232, 245, 0.8);
+  --hairline-inset: rgba(15, 32, 66, 0.05);
+  --surface-hover: rgba(37, 99, 235, 0.07);
+
+  /* form controls */
+  --input-bg: #ffffff;
+  --input-bg-focus: #ffffff;
+  --input-border: #cbd7e8;
+  --input-border-focus: var(--accent);
+
+  /* spatial + stage chrome in daylight: the console panes become frosted
+     white over the page wash, keeping the same layering */
+  --stage-bg: #e0e7f1;
+  --dock-bg: rgba(255, 255, 255, 0.88);
+  --dock-bg-strong: rgba(255, 255, 255, 0.93);
+  --dock-bg-solid: rgba(255, 255, 255, 0.97);
+  --dock-shadow: rgba(15, 32, 66, 0.22);
+  --anchor-bg: rgba(255, 255, 255, 0.9);
+  --anchor-bg-active: rgba(239, 245, 255, 0.96);
+
+  --spatial-surface: rgba(255, 255, 255, 0.97);
+  --spatial-surface-soft: rgba(255, 255, 255, 0.86);
+  --spatial-surface-raised: rgba(255, 255, 255, 0.96);
+  --spatial-plane: rgba(248, 251, 255, 0.94);
+  --spatial-plane-soft: rgba(248, 251, 255, 0.9);
+  --spatial-core-fill: rgba(255, 255, 255, 0.9);
+  --spatial-core-outer: rgba(238, 244, 253, 0.96);
+  --spatial-scrim-strong: rgba(244, 248, 254, 0.94);
+  --spatial-vignette: rgba(203, 216, 238, 0.5);
+
+  --map-surface: rgba(255, 255, 255, 0.96);
+  --map-surface-soft: rgba(255, 255, 255, 0.84);
+  --map-surface-strong: rgba(255, 255, 255, 0.92);
+  --map-panel: rgba(248, 251, 255, 0.92);
+  --map-plate: rgba(203, 216, 238, 0.55);
+  /* Dark enough to stay legible against the daylight canvas. */
+  --map-label-region: #455e8c;
+  --map-label-band: #3d5480;
+
+  /* depth shadows (spatial.css) rebuilt as a soft navy lift */
+  --depth-primary:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 0 0 1px rgba(30, 58, 110, 0.1),
+    0 18px 44px -26px rgba(15, 32, 66, 0.3);
+  --depth-secondary:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 14px 30px -24px rgba(15, 32, 66, 0.26);
+
+  /* ---- the 3D environment in daylight ----
+     Inverted in role, not in hue: surfaces that were lighter than a
+     near-black backdrop become white panels sitting on the page wash,
+     and lines that glowed become ink. Anything left at its dark value
+     would read as a grey slab here, which is exactly what a theme is
+     supposed to prevent. */
+  /* The scene stands on the same drafting table as the sheets, so its
+     fog resolves to the table colour and distant geometry recedes into
+     it rather than into a separate blue haze. Region plates are white
+     because they are sheets laid on that table -- the same three planes
+     as the HTML, in three dimensions.
+
+     Lighting is pulled back below 1: over-lit, the severity colours
+     washed out to pastel, and severity is the one thing in this scene
+     that must stay legible. */
+  --env-fog: #e0e7f1;
+  --env-fog-density: 0.005;
+  --env-sky: #ffffff;
+  --env-ground: #ccd6e6;
+  --env-light-intensity: 1;
+  --env-glow-intensity: 0.45;
+
+  --env-grid-minor: #c2d0e4;
+  --env-grid-major: #97aecf;
+  --env-wall: #c7d4e8;
+  --env-wall-edge: #8098bd;
+  --env-region: #ffffff;
+  --env-band: #8098bd;
+  --env-plate: #ffffff;
+  --env-track: #ccd7e8;
+  --env-pylon: #e7eef8;
+  /* Black adds nothing: in daylight the pylons are lit, not self-lit. */
+  --env-pylon-emissive: #000000;
+  --env-column: #8098bd;
+  --env-dust: #8098bd;
+}
+
+/* Switching themes should feel like a light coming on, not a page reload.
+   Only the chrome transitions, and never for users who ask for less
+   motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .app-shell,
+  .panel,
+  .topbar,
+  .sidebar,
+  .stage-dock,
+  .workspace-panel,
+  .chat-panel {
+    transition:
+      background-color var(--transition-base),
+      border-color var(--transition-base),
+      color var(--transition-base);
+  }
+}
+
+/* ==========================================================================
+   THE THEME SWITCH
+   ========================================================================== */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--bg-inset);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  background: var(--bg-inset-alt);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-toggle svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+.theme-toggle.is-compact {
+  padding: 6px;
+}
+
+.theme-toggle.is-compact .theme-toggle-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   THE DRAFTING TABLE — light-mode structure
+   ==========================================================================
+   Everything below is scoped to [data-theme="light"], so dark is untouched
+   by construction.
+
+   Dark builds hierarchy out of light: brighter means nearer, and a glow
+   means "this matters". Repainting that white gives you four identical
+   cards floating on a white page, which is the look this is meant to
+   avoid. So light builds hierarchy out of three other things instead:
+
+     TONE       the table is tinted, the sheet is white, the well is
+                tinted again -- a readout is cut *into* the sheet
+     RULE       hairlines do the dividing that borders-around-cards did
+     ALIGNMENT  a shared grid, so density reads as order
+
+   Shadow is demoted to confirming which plane something sits on.
+   ========================================================================== */
+
+/* ---- 1. the table ----
+   A drafting surface with its grid barely present: enough to say "this is
+   a working surface", not enough to read as pattern. The dark theme's two
+   coloured atmosphere washes are dropped -- in daylight they were just a
+   lavender haze. */
+:root[data-theme="light"] .stage-shell,
+:root[data-theme="light"] .app-shell {
+  background:
+    repeating-linear-gradient(0deg, rgba(23, 42, 77, 0.028) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(90deg, rgba(23, 42, 77, 0.028) 0 1px, transparent 1px 64px),
+    var(--bg-page);
+}
+
+/* ---- 2. sheets ----
+   One crisp edge and a hairline of lift. No blur, no glass: paper does
+   not frost. */
+:root[data-theme="light"] .stage-dock,
+:root[data-theme="light"] .panel {
+  border: 1px solid var(--border-default);
+  background: var(--bg-sheet);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* The investigation workspace is a *surface*, not a sheet: it holds a
+   masthead and several working sections, and if it were white too they
+   would be white cards on a white card -- which is the look this whole
+   theme exists to avoid. So it takes the table tone, and the sheets are
+   the only white on it. */
+:root[data-theme="light"] .stage-inspector,
+:root[data-theme="light"] .asset-workspace {
+  border: 1px solid var(--border-default);
+  background: var(--bg-workspace);
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* The tab strip is the sheet's masthead: separated from the work by a
+   rule rather than by a gap. */
+:root[data-theme="light"] .stage-dock-tabs {
+  border-bottom: var(--rule-strong);
+  background: var(--bg-sheet);
+}
+
+/* ---- 3. the topbar is the instrument fascia ----
+   Held to the page by one firm rule instead of a shadow. */
+:root[data-theme="light"] .topbar {
+  border-bottom: var(--rule-strong);
+  background: var(--bg-sheet);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ---- 4. wells ----
+   Inputs are recessed. This is the clearest single signal that light mode
+   is not an inversion: in dark an input is lighter than its panel, here it
+   is darker. */
+:root[data-theme="light"] .search-input,
+:root[data-theme="light"] input[type="text"],
+:root[data-theme="light"] input[type="search"],
+:root[data-theme="light"] select,
+:root[data-theme="light"] textarea {
+  border: 1px solid var(--border-default);
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .search-input:focus,
+:root[data-theme="light"] input:focus-visible,
+:root[data-theme="light"] select:focus-visible,
+:root[data-theme="light"] textarea:focus-visible {
+  border-color: var(--border-focus);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+/* ---- 5. the eyebrow becomes a drawing label ----
+   A tinted pill is UI chrome; a ruled label is how a technical sheet names
+   its own contents. */
+:root[data-theme="light"] .hero-eyebrow {
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 2px solid var(--text-blueprint);
+  border-radius: 0;
+  background: none;
+  color: var(--text-blueprint);
+  letter-spacing: 0.12em;
+}
+
+/* ---- 6. the readiness readout ----
+   The headline metric is a reading, so it belongs in a well. The dark
+   theme's frosted glass, drifting halo and orbiting dashed ring are all
+   luminance effects; on paper they have nothing to do, so they go. What is
+   left is the number, which is the point. */
+:root[data-theme="light"] .hero-readiness-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root[data-theme="light"] .hero-readiness-card::before,
+:root[data-theme="light"] .hero-readiness-meter::before {
+  content: none;
+}
+
+/* Tone is carried on a single edge, the way a gauge is marked. */
+:root[data-theme="light"] .readiness-tone-critical { border-left: 3px solid var(--danger); }
+:root[data-theme="light"] .readiness-tone-high { border-left: 3px solid var(--sev-high); }
+:root[data-theme="light"] .readiness-tone-medium { border-left: 3px solid var(--warning); }
+:root[data-theme="light"] .readiness-tone-low { border-left: 3px solid var(--success); }
+
+/* ---- 7. the metric register ----
+   Four identical bordered cards with four coloured top-bars is the stock
+   dashboard move, and it gives "172 developer steps" the same weight as
+   "3 critical findings". Here the four become one ruled block -- a
+   register -- so they read as one instrument with four readings, and the
+   emphasis can be spent on the one reading that matters. */
+:root[data-theme="light"] .hero-stat-tiles {
+  gap: 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sheet);
+  overflow: hidden;
+}
+
+:root[data-theme="light"] .stat-card {
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+/* The rules between cells, each drawn once so they never double up. */
+:root[data-theme="light"] .hero-stat-tiles > *:nth-child(odd) {
+  border-right: var(--rule-hairline);
+}
+
+:root[data-theme="light"] .hero-stat-tiles > *:nth-child(1),
+:root[data-theme="light"] .hero-stat-tiles > *:nth-child(2) {
+  border-bottom: var(--rule-hairline);
+}
+
+/* No top accent bar on any cell: the register is one object. */
+:root[data-theme="light"] .stat-card::before {
+  content: none;
+}
+
+/* Hover shifts the cell's tone rather than lifting it off the page --
+   nothing inside a register floats. */
+:root[data-theme="light"] .stat-card:hover {
+  transform: none;
+  background: var(--bg-well);
+}
+
+:root[data-theme="light"] .stat-card-interactive:active {
+  background: var(--bg-inset-alt);
+}
+
+/* The one reading that demands attention is marked rather than
+   re-coloured: a machined edge and a tinted field, like a red-lined
+   gauge. */
+:root[data-theme="light"] .stat-card-critical {
+  border-left: 3px solid var(--danger);
+  background: rgba(190, 18, 60, 0.035);
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .stat-card-critical:hover {
+  background: rgba(190, 18, 60, 0.06);
+}
+
+/* ---- 8. reading the register ----
+   Label, rule, value: the order a technical readout is read in. Tabular
+   figures so the values align down the column. */
+:root[data-theme="light"] .stat-card-top {
+  padding-bottom: var(--space-2);
+  border-bottom: var(--rule-hairline);
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+}
+
+:root[data-theme="light"] .stat-value {
+  margin-top: var(--space-3);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-theme="light"] .stat-card-critical .stat-value { color: var(--danger); }
+:root[data-theme="light"] .stat-card-cyan .stat-value { color: var(--accent-secondary); }
+
+:root[data-theme="light"] .stat-subtitle {
+  color: var(--text-muted);
+}
+
+/* Icons are reference marks, so they stay quiet and lose the filled chip
+   that made every cell look like its own card. */
+:root[data-theme="light"] .stat-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 0;
+  background: none;
+  color: var(--text-muted);
+}
+
+:root[data-theme="light"] .stat-card-critical .stat-icon { color: var(--danger); }
+:root[data-theme="light"] .stat-card-cyan .stat-icon { color: var(--accent-secondary); }
+
+/* ---- 9. the chassis ----
+   Three planes now read at a glance: the rail is the instrument's frame,
+   the table is tinted and ruled, and the sheets are the only white. A
+   white rail on a white sheet gave the shell no edge at all. */
+:root[data-theme="light"] .sidebar {
+  border-right: 1px solid var(--border-default);
+  background: #d6deec;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root[data-theme="light"] .nav-item:hover {
+  background: rgba(23, 42, 77, 0.06);
+}
+
+/* ---- 10. tabs are ruled, not pilled ----
+   A filled pill is app chrome. On a drafting sheet the active section is
+   marked the way a tab on a drawing set is: by a rule under its name. */
+:root[data-theme="light"] .stage-dock-tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 0 10px;
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .stage-dock-tabs button:hover {
+  background: none;
+  color: var(--text-primary);
+  border-bottom-color: var(--border-strong);
+}
+
+:root[data-theme="light"] .stage-dock-tabs button.is-active {
+  background: none;
+  border-bottom-color: var(--text-blueprint);
+  color: var(--text-blueprint);
+}
+
+/* ---- 11. the ring is drawn, not lit ----
+   Every tone of the readiness ring carries a coloured drop-shadow so it
+   glows against the dark console. On a white well that halo just reads as
+   a smudge, so the ring is left as a clean stroke. */
+:root[data-theme="light"] .readiness-core-value,
+:root[data-theme="light"] .readiness-ring-value,
+:root[data-theme="light"] .readiness-core-segment {
+  filter: none;
+}
+
+:root[data-theme="light"] .readiness-core-track {
+  stroke: #d7deea;
+}
+
+:root[data-theme="light"] .readiness-core-inner {
+  fill: #ffffff;
+  stroke: var(--border-default);
+}
+
+:root[data-theme="light"] .readiness-core-orbit {
+  stroke: rgba(23, 42, 77, 0.16);
+}
+
+/* The copy fills the well rather than leaving a blank third of it. */
+:root[data-theme="light"] .hero-readiness-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+:root[data-theme="light"] .hero-readiness-eyebrow {
+  color: var(--text-blueprint);
+  letter-spacing: 0.12em;
+}
+
+/* The tone line stays graphite: the ring and the well's edge already
+   carry the tone, and a third coloured element here just competed with
+   the number. */
+:root[data-theme="light"] .hero-readiness-label {
+  color: var(--text-primary);
+}
+
+/* ---- 12. marking the critical reading ----
+   The red edge was landing directly on the register's own column rule,
+   which doubled the line and made a marker look like a divider. A gauge
+   marks the *reading*, not the box around it: the rule under the label
+   turns red, and the value and its mark follow. */
+:root[data-theme="light"] .stat-card-critical {
+  border-left: 0;
+}
+
+:root[data-theme="light"] .stat-card-critical .stat-card-top {
+  border-bottom-color: var(--danger);
+  color: var(--danger);
+}
+
+/* ==========================================================================
+   THE DOSSIER — light-mode asset investigation
+   ==========================================================================
+   Opening a finding should feel like pulling its sheet from a drawer: a
+   masthead that identifies it, the governing reading in a well, and the
+   working sections ruled below. Same three planes as the dashboard, at
+   the density a single finding needs.
+   ========================================================================== */
+
+/* ---- the masthead ----
+   Frosted glass and a cyan-to-violet wash are console effects. On the
+   sheet the header is simply the top of the page, closed by a rule. */
+:root[data-theme="light"] .workspace-header {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sheet);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root[data-theme="light"] .workspace-header::before {
+  content: none;
+}
+
+:root[data-theme="light"] .workspace-eyebrow {
+  color: var(--text-blueprint);
+  letter-spacing: 0.12em;
+}
+
+/* The severity mark loses its glow; on paper a coloured field and a
+   crisp edge say the same thing without the bloom. */
+:root[data-theme="light"] .workspace-avatar-low,
+:root[data-theme="light"] .workspace-avatar-medium,
+:root[data-theme="light"] .workspace-avatar-high,
+:root[data-theme="light"] .workspace-avatar-critical,
+:root[data-theme="light"] .workspace-avatar-unknown {
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .workspace-avatar-critical {
+  color: var(--danger);
+}
+
+/* ---- the governing reading ----
+   Quantum risk is the number the rest of the sheet is about, so it gets
+   the well. A left rule alone left it floating in the middle of the
+   masthead with nothing holding it. */
+:root[data-theme="light"] .workspace-risk-hero {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border-default);
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .risk-hero-high { border-left-color: var(--sev-high); }
+:root[data-theme="light"] .risk-hero-critical { border-left-color: var(--danger); }
+:root[data-theme="light"] .risk-hero-medium { border-left-color: var(--warning); }
+:root[data-theme="light"] .risk-hero-low { border-left-color: var(--success); }
+
+:root[data-theme="light"] .risk-hero-label {
+  color: var(--text-blueprint);
+}
+
+/* ---- the annotation ----
+   The reason line is a note written against the reading, so it reads as
+   one: indented behind a severity rule rather than sitting loose under a
+   hairline. */
+:root[data-theme="light"] .workspace-header-reason {
+  margin-top: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 0;
+  border-left: 3px solid var(--border-strong);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--bg-well);
+  color: var(--text-secondary);
+}
+
+/* ---- working sections ----
+   The panel keeps its type colour -- blue for evidence, orange/red for
+   risk, cyan for migration -- but as a solid rule rather than a gradient
+   bar. A gradient is decoration; a ruled edge is an index mark. */
+:root[data-theme="light"] .workspace-panel {
+  border: 1px solid var(--border-default);
+  background: var(--bg-sheet);
+  box-shadow: var(--shadow-card);
+}
+
+:root[data-theme="light"] .panel-evidence::before { background: var(--accent-primary); }
+:root[data-theme="light"] .panel-risk-impact::before { background: var(--sev-high); }
+:root[data-theme="light"] .panel-migration::before { background: var(--accent-secondary); }
+
+/* The section heading closes with a rule across the sheet, so each
+   section reads as its own ruled block rather than as a floating card. */
+:root[data-theme="light"] .workspace-panel h3 {
+  padding-bottom: var(--space-3);
+  border-bottom: var(--rule-strong);
+}
+
+/* ---- readings ----
+   Every metric tile is a well. These already sit on --bg-inset, which is
+   the well tone, so they only need the cut edge to read as recessed. */
+:root[data-theme="light"] .metric-tile {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .metric-tile > span {
+  color: var(--text-secondary);
+}
+
+/* ---- long-form evidence ----
+   Explanations are the one place in the product with real prose, so they
+   get a measure to read at rather than the full width of the sheet. */
+:root[data-theme="light"] .workspace-explanation p,
+:root[data-theme="light"] .workspace-explanation li {
+  max-width: 72ch;
+}
+
+/* ---- the investigation rail ----
+   The surface switcher is navigation, not content, so it sits on the
+   table tone and lets the sheets beside it stay the only white. */
+:root[data-theme="light"] .investigation-hub-column {
+  background: var(--bg-workspace);
+  border-right: var(--rule-strong);
+}
+
+/* ---- the investigation index ----
+   The hub is a spatial diagram and stays one: its geometry, positioning
+   and perspective are untouched. Only its finish changes, from a cyan-lit
+   console plane to a ruled sheet -- the drafting grid here is the same
+   ink and the same 64px pitch as the table itself, so the diagram reads
+   as drawn on the workspace rather than lit from behind it. */
+:root[data-theme="light"] .hub-plane {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(0deg, rgba(23, 42, 77, 0.045) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(90deg, rgba(23, 42, 77, 0.045) 0 1px, transparent 1px 32px),
+    var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+/* Connector lines become draughting leader lines. */
+:root[data-theme="light"] .hub-link {
+  stroke: rgba(23, 42, 77, 0.28);
+}
+
+:root[data-theme="light"] .hub-link.is-active {
+  stroke: var(--accent-primary);
+  filter: none;
+}
+
+/* Each branch is a labelled sheet pinned to the diagram: a crisp edge
+   instead of the console's heavy drop shadow. */
+:root[data-theme="light"] .hub-branch {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sheet);
+  box-shadow: var(--shadow-card);
+}
+
+:root[data-theme="light"] .hub-branch:hover {
+  border-color: var(--border-strong);
+}
+
+:root[data-theme="light"] .hub-branch.is-in-view:not(.is-active) {
+  border-color: var(--border-strong);
+}
+
+/* The open surface is marked, not lit. */
+:root[data-theme="light"] .hub-branch.is-active {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 1px var(--accent-primary), var(--shadow-card);
+}
+
+:root[data-theme="light"] .hub-branch-head {
+  color: var(--text-secondary);
+}
+
+/* Critical reads as ink on paper; the dark theme's pale #fca5a5 was
+   picked to glow on near-black and is illegible on white. */
+:root[data-theme="light"] .hub-tone-critical .hub-branch-value {
+  color: var(--danger);
+}
+
+/* ==========================================================================
+   ECDAT AI — light
+   ==========================================================================
+   A chat panel is the easiest thing in a product to make look like every
+   other chat panel: rounded bubbles, a pill composer, a circular send
+   button. In daylight ECDAT's assistant is instead an instrument on the
+   same drafting table as everything else -- a ruled header, a recessed
+   transcript, and a composer that is a well with a rule above it.
+
+   Violet stays: in this product violet means AI and nothing else, and the
+   assistant is the AI subsystem. It is darkened to ink so it reads as a
+   marking rather than a light.
+   ========================================================================== */
+
+:root[data-theme="light"] .chat-panel {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sheet);
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ---- header: the instrument's nameplate ---- */
+:root[data-theme="light"] .chat-header {
+  border-bottom: var(--rule-strong);
+  background: var(--bg-sheet);
+}
+
+:root[data-theme="light"] .chat-avatar {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(109, 40, 217, 0.3);
+  background: rgba(109, 40, 217, 0.07);
+  color: #6d28d9;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .chat-identity h2 {
+  letter-spacing: 0.02em;
+}
+
+:root[data-theme="light"] .chat-identity p {
+  color: var(--text-secondary);
+}
+
+/* The model line is provenance, so it is set as data rather than as a
+   coloured status pill. */
+:root[data-theme="light"] .chat-status {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-well);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .chat-icon-button {
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .chat-icon-button:hover {
+  background: var(--bg-well);
+  color: var(--text-primary);
+}
+
+/* ---- context: which finding the assistant was handed ----
+   This is the most important line in the panel, because an answer about
+   "this finding" can only be checked if the finding is visible. It reads
+   as a ruled specimen label. */
+:root[data-theme="light"] .chat-context-chip {
+  border-bottom: var(--rule-hairline);
+  border-left: 3px solid var(--accent-primary);
+  background: var(--bg-well);
+}
+
+:root[data-theme="light"] .chat-context-label {
+  color: var(--text-blueprint);
+}
+
+:root[data-theme="light"] .chat-context-name {
+  color: var(--text-primary);
+}
+
+/* ---- the transcript is a well ---- */
+:root[data-theme="light"] .chat-scroll {
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .chat-empty-title {
+  color: var(--text-primary);
+}
+
+:root[data-theme="light"] .chat-empty-body {
+  color: var(--text-secondary);
+}
+
+/* ---- who said what ----
+   Not two colours of bubble. The question is set on the sheet, indented
+   behind a rule the way a query is minuted; the answer sits on the sheet
+   with the assistant's own violet rule. Sender is carried by structure,
+   so it survives being read in greyscale. */
+:root[data-theme="light"] .chat-message {
+  border-radius: var(--radius-sm);
+  background: var(--bg-sheet);
+  border: 1px solid var(--border-hairline);
+}
+
+:root[data-theme="light"] .chat-message-user {
+  border-left: 3px solid var(--border-strong);
+}
+
+:root[data-theme="light"] .chat-message-assistant {
+  border-left: 3px solid #6d28d9;
+}
+
+:root[data-theme="light"] .chat-message-author {
+  color: var(--text-blueprint);
+  letter-spacing: 0.06em;
+}
+
+:root[data-theme="light"] .chat-message-meta time {
+  color: var(--text-muted);
+}
+
+/* Code and evidence inside an answer are readings, so they take the well
+   treatment the rest of the product uses. */
+:root[data-theme="light"] .chat-message pre,
+:root[data-theme="light"] .chat-message code {
+  border: 1px solid var(--border-default);
+  background: var(--bg-well);
+  color: var(--text-primary);
+}
+
+/* ---- quick actions ----
+   Squared and ruled: these are instrument buttons, not chat suggestions. */
+:root[data-theme="light"] .chat-suggestions button {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-sheet);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .chat-suggestions button:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+  color: var(--text-blueprint);
+}
+
+/* ---- composer ---- */
+:root[data-theme="light"] .chat-composer {
+  border-top: var(--rule-strong);
+  background: var(--bg-sheet);
+}
+
+:root[data-theme="light"] .chat-composer textarea {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .chat-composer textarea:focus-visible {
+  border-color: #6d28d9;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.12);
+}
+
+:root[data-theme="light"] .chat-send {
+  border-radius: var(--radius-sm);
+  background: #6d28d9;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .chat-send:hover:not(:disabled) {
+  background: #5b21b6;
+  transform: none;
+}
+
+:root[data-theme="light"] .chat-send:disabled {
+  background: var(--bg-inset-alt);
+  color: var(--text-muted);
+}
+
+/* ---- states ---- */
+:root[data-theme="light"] .chat-thinking {
+  border-left: 3px solid #6d28d9;
+  background: var(--bg-sheet);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .chat-error {
+  border: 1px solid var(--sev-critical-border);
+  border-left: 3px solid var(--danger);
+  border-radius: var(--radius-sm);
+  background: var(--sev-critical-bg);
+  color: var(--text-primary);
+}
+
+/* ---- the launcher ---- */
+:root[data-theme="light"] .chat-launcher {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sheet);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-elevated);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root[data-theme="light"] .chat-launcher svg {
+  color: #6d28d9;
+}
+
+:root[data-theme="light"] .chat-launcher:hover {
+  border-color: #6d28d9;
+}
+
+/* "Ask ECDAT AI" is the same subsystem, so it carries the same mark. */
+:root[data-theme="light"] .ask-ecdat-ai svg {
+  color: #6d28d9;
+}
+
+/* ==========================================================================
+   PROPAGATION — the rest of the product, in the same language
+   ==========================================================================
+   Once the dashboard and the dossier settled, the remaining surfaces only
+   needed the same four rules applied: sheets are white, readings are
+   recessed, severity is an edge rather than a wash, and actions are ink.
+   ========================================================================== */
+
+/* ---- the findings register ----
+   Each finding already carries a full-height severity rail, which is
+   exactly the drafting marker this language wants. What it did not need
+   was a severity gradient bleeding across the card behind it -- two
+   signals for one fact, one of them decorative. */
+:root[data-theme="light"] .asset-card {
+  background: var(--bg-sheet);
+  border-color: var(--border-hairline);
+}
+
+:root[data-theme="light"] .asset-card.risk-accent-high,
+:root[data-theme="light"] .asset-card.risk-accent-critical,
+:root[data-theme="light"] .asset-card.risk-accent-medium,
+:root[data-theme="light"] .asset-card.risk-accent-low {
+  background: var(--bg-sheet);
+}
+
+:root[data-theme="light"] .asset-card.risk-accent-critical {
+  border-color: var(--sev-critical-border);
+}
+
+/* Hover moves the row, it does not light it. */
+:root[data-theme="light"] .asset-card:hover {
+  background: var(--bg-well);
+  border-color: var(--border-strong);
+  transform: none;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .asset-card.risk-accent-critical:hover,
+:root[data-theme="light"] .asset-card.risk-accent-high:hover {
+  box-shadow: none;
+}
+
+/* Selection is structural: a blueprint edge and a tonal shift, so it is
+   still obvious with colour vision differences or in greyscale. */
+:root[data-theme="light"] .asset-card-selected,
+:root[data-theme="light"] .asset-card-selected:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 0 var(--accent-primary);
+}
+
+/* ---- actions are ink ----
+   A cyan-to-violet gradient with a blue halo is a console button. On
+   paper the primary action is a solid blueprint field. */
+:root[data-theme="light"] .btn-primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .btn-primary:hover:not(:disabled) {
+  background: #1e40af;
+  filter: none;
+  transform: none;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .btn-lg.btn-primary,
+:root[data-theme="light"] .btn-lg.btn-primary:hover:not(:disabled) {
+  background: var(--accent-primary);
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .btn-outline {
+  background: var(--bg-well);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-recessed);
+}
+
+:root[data-theme="light"] .btn-outline:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  color: var(--text-blueprint);
+}
+
+:root[data-theme="light"] .btn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* ---- charts sit in wells ----
+   A donut is a reading like any other, so it gets the same recess as the
+   numeric ones rather than its own floating card. */
+:root[data-theme="light"] .donut-panel,
+:root[data-theme="light"] .chart-panel {
+  background: var(--bg-sheet);
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---- scan workflow ----
+   The pipeline stepper is a status readout, so it is recessed; the form
+   above it stays on the sheet. */
+:root[data-theme="light"] .pipeline-stepper,
+:root[data-theme="light"] .scan-history,
+:root[data-theme="light"] .evidence-chain,
+:root[data-theme="light"] .whatif-result {
+  border: 1px solid var(--border-default);
+  background: var(--bg-well);
+  box-shadow: var(--shadow-recessed);
+}
+
+/* ---- tables read as ruled registers ---- */
+:root[data-theme="light"] table th {
+  border-bottom: var(--rule-strong);
+  color: var(--text-blueprint);
+  background: var(--bg-sheet);
+}
+
+:root[data-theme="light"] table td {
+  border-bottom: var(--rule-hairline);
+}
+
+/* ---- keyboard focus stays visible everywhere ---- */
+:root[data-theme="light"] :focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}

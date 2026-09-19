@@ -138,14 +138,16 @@ Implemented by `backend/services/scanning/` and exposed as `POST /api/scan` (ali
 
 ## 4. Current dataset snapshot
 
-`data/keycloak-cbom.json` currently holds a CBOMKit scan of `pyca/cryptography` (branch `main`, commit `39138c6`), produced through the scan workflow in §3.1 and verified as a fresh CBOM rather than one CBOMKit already held. The filename is fixed and historical. From it:
+`data/keycloak-cbom.json` currently holds a CBOMKit scan of `keycloak/keycloak` (branch `main`, commit `dd4ae31`), produced through the scan workflow in §3.1 and verified as a fresh CBOM rather than one CBOMKit already held. The filename is fixed and historical. From it:
 
-- **Findings:** 25 (47 raw component entries, with exact `bom_ref` duplicates merged).
-- **Relationships:** 29 recorded dependency entries, giving 15 unique CycloneDX dependency edges. Three findings have none: `x25519`, `x448`, `RSA-OAEP`.
-- **Strategies:** KEEP 4, DIRECT_PQC 5, HYBRID 6, NEEDS_REVIEW 10 (the three RSA algorithms and seven key-material findings).
-- **PQC Candidates (selected paths):** 11.
-- **Priority:** 3 findings are HIGH/CRITICAL (1 CRITICAL, 2 HIGH), giving 88% readiness.
-- **Duplicate names:** two distinct `RSA-2048` findings (`afc4f1a7…`, `9eae7f2e…`), a reminder that `bom_ref` is the only identity.
+- **Findings:** 59 (59 raw component entries; nothing to merge, as every `bom_ref` is already unique). By asset type: 30 algorithms, 28 related-crypto-material, 1 protocol.
+- **Relationships:** 37 recorded dependency entries, giving 37 unique CycloneDX dependency edges. Ten findings have none, among them `AES`, `ECDH` and `MD5`.
+- **Risk severity:** 1 CRITICAL, 15 HIGH, 41 MEDIUM, 2 LOW.
+- **Strategies:** NEEDS_REVIEW 29, KEEP 18, DIRECT_PQC 6, HYBRID 6.
+- **PQC Candidates (selected paths):** 12. **Migration actions:** 388.
+- **Key material:** 28 findings inherit the strategy of the algorithm they depend on.
+- **Priority:** 3 findings are HIGH/CRITICAL (1 CRITICAL, 2 HIGH), giving 95% readiness.
+- **Duplicate names:** none in this dataset. That `bom_ref` is the only identity — that two findings sharing an algorithm name stay separate through all 13 stages — is asserted against the deterministic fixture (`backend/fixture_dataset.py`), which is built to contain exactly that case. The guarantee therefore does not depend on which repository happens to be scanned.
 - **Business context:** none configured, so business criticality and data lifetime are UNKNOWN for all findings and Mosca analysis is not performed.
 
 Earlier revisions of these documents describe a 30-finding scan of the same repository at commit `a825ca0`; `CHANGELOG.md` keeps those figures as history. Nothing in the analysis changed — the repository did.
@@ -216,7 +218,7 @@ backend/
       service.py      scan lifecycle, state, records and history
   knowledge/crypto_knowledge.py, knowledge/migration_strategy_policy.py
   models/risk_factors.py       RiskContext
-  test_*.py                    36 test scripts (run individually with python)
+  test_*.py                    37 test scripts (run individually with python)
   fixture_dataset.py           deterministic test dataset, independent of data/
   Legacy/unused: main_backup*.py, cbom_parser_backup.py, score_contextual_cbom.py,
                  generate_summary.py, inspect_dependencies.py

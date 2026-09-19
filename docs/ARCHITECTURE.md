@@ -193,7 +193,7 @@ This is enforced by tests. `test_finding_identity.py` checks that all generated 
 | 12 | `generate_migration_report.py` | risk, blast, complexity, priority, plan, actions | `ecdat-migration-report.json` (unified per-finding record) |
 | 13 | `check_risk_consistency.py` | explainable risk, risk-assessed assets, report | none — exits non-zero if any risk figure disagrees |
 
-**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned — the scan service writes every new CBOM there, which is why no analysis module had to change — and the current file comes from a CBOMKit scan of `pyca/cryptography` at commit `39138c6`. `data/pqc-algorithms.json` is the PQC registry.
+**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned — the scan service writes every new CBOM there, which is why no analysis module had to change — and the current file comes from a CBOMKit scan of `keycloak/keycloak` at commit `dd4ae31` (59 findings). `data/pqc-algorithms.json` is the PQC registry.
 
 **Scan runtime artifacts:** `data/ecdat-scan.json` and `data/ecdat-scan-history.json` are written by the scan service (§2.1.2), not by the pipeline. They are machine-generated per scan and git-ignored; no pipeline stage reads them.
 
@@ -371,7 +371,7 @@ Levels: ≥75 CRITICAL, ≥50 HIGH, ≥25 MEDIUM.
 
 Unknown factors are excluded and the rest rescaled. With both optional factors unknown, as in the current dataset, this reduces exactly to risk 0.40 / blast radius 0.35 / complexity 0.25. Levels: ≥75 CRITICAL, ≥60 HIGH, ≥40 MEDIUM.
 
-Dashboard **readiness** = the share of findings not at HIGH/CRITICAL priority. It is currently 88%: 3 of 25 findings are HIGH/CRITICAL (1 CRITICAL, 2 HIGH).
+Dashboard **readiness** = the share of findings not at HIGH/CRITICAL priority. It is currently 95%: 3 of 59 findings are HIGH/CRITICAL (1 CRITICAL, 2 HIGH).
 
 ---
 
@@ -504,6 +504,19 @@ The output is generated text. ECDAT constrains the context but cannot guarantee 
 
 ---
 
+## 16.1 ECDAT AI (chat assistant)
+
+A conversational view of the same analysis, separate from the AI Advisor above -- the Advisor writes one structured brief about one finding; the assistant answers follow-up questions across the portfolio. Both use the same local `qwen3:14b`; neither changes anything in `data/`.
+
+- **Request:** `POST /api/chat {message, bom_ref?, conversation[]}` -> `services/chat_assistant.py`.
+- **Context** (`services/chat_context.py`) is assembled from the generated artifacts and nothing else -- no environment, no credentials, no arbitrary files. Without a `bom_ref` it describes the repository, the portfolio summary and the top findings by migration priority, so "what should I migrate first" is answerable from records. With one, that finding becomes the primary context: purpose and its confidence, risk and its explanation, strategy with its reason code and rationale, recommendation state (ranking output labelled as such), blast radius with its recorded relationship source, complexity, priority, business criticality, Mosca analysis, actions, and the Evidence Explorer's record -- where the finding was seen in the *scanned repository*, with what confidence, and ECDAT's own derivation chain. A `bom_ref` that is not in the dataset is reported as such rather than answered about.
+- **Bounds:** occurrences are capped (`MAX_OCCURRENCES`) and captured source lines truncated (`MAX_SNIPPET_CHARS`); history is trimmed to the recent turns and stripped to `role`/`content`.
+- **Prompt** (`SYSTEM_PROMPT`) makes the rules explicit: answer only from the supplied context, never invent a finding, dependency, score or `bom_ref`, never claim a migration was performed, distinguish fact from interpretation, explain `NEEDS_REVIEW` as a deliberate absence of a recommendation, and describe What-If results as simulations.
+- **Failures** become a reason code and one sentence the UI can show -- `empty-message`, `message-too-long`, `model-unavailable`, `model-timeout`, `model-error`, `malformed-response`, `empty-response` -- never a stack trace.
+- **Conversation** lives in the browser for the session only. There is no database, and a conversation about a security analysis is not persisted behind the user's back.
+
+---
+
 ## 17. Backend API
 
 Every route reads the generated JSON at request time. Per-finding path parameters are `bom_ref`s.
@@ -520,12 +533,13 @@ Every route reads the generated JSON at request time. Per-finding path parameter
 | Scanning | `POST /api/scan {repository, branch}` (400 `{reason_code, reason}` on an invalid target, 409 while a scan is running), `GET /api/scan/status` (real per-stage progress, §2.1.2), `GET /api/scan/capabilities` (supported targets with live availability + not-implemented targets), `GET /api/scan/history` (last 20 scans) |
 | Analysis (aliases) | `POST /api/analyze {repository, branch}`, `GET /api/analyze/status` — the original routes, kept with their original response keys (`status`, `repository`, `branch`, `message`, `error`) and extended with the scan payload |
 | AI | `POST /api/ai/advice {asset}`; legacy `POST /api/ai/advisor {asset_name}` |
+| Chat | `POST /api/chat {message, bom_ref?, conversation[]}` -> `{response, model, context}`; failures are `{reason_code, reason}` (400 for a bad question, 502 for the model) |
 
 ---
 
 ## 18. Frontend architecture
 
-- **Stack:** React 19 + Vite 8, Recharts (donuts), lucide-react (icons) and three.js for the shared 3D security space (lazily loaded, so the dashboard's first paint does not wait on it). One tokenized stylesheet (`App.css`) plus the spatial stylesheets. No router, no global state library, no frontend test runner.
+- **Stack:** React 19 + Vite 8, Recharts (donuts), lucide-react (icons) and three.js for the shared 3D security space (lazily loaded, so the dashboard's first paint does not wait on it). One tokenized stylesheet (`App.css`), the theme tokens (`theme/theme.css`) and the spatial stylesheets. No router, no global state library.
 - **Layout modes (`spatial/stage/useLayoutMode.js`):** the shared `SpatialStage` at ≥1025px (desktop) and 601–1024px (a simpler tablet stage); the scrolling layout at ≤600px, when WebGL is unavailable, and if the WebGL context is lost. All content stays in accessible HTML outside the canvas in every mode.
 - **3D engine (`spatial/engine/`):** exactly **one** `WebGLRenderer`, canvas, camera and control set, rendered on demand. Environment, posture, landscape, investigation and simulation layers plug into it; nothing is drawn that is not backed by a record from the API.
 - **`App.jsx`:** owns all dashboard state and effects:
@@ -534,6 +548,7 @@ Every route reads the generated JSON at request time. Per-finding path parameter
   - scan status polling, plus scan capabilities and history, and adoption of a scan already running when the page loads
   - backend health polling
   - AI request state, with a stale-response guard
+  - ECDAT AI open/closed state, and which finding the assistant is given
 - **`api.js`:** wraps every endpoint used.
 - **Dashboard components:**
   - `Topbar`, `Sidebar`
@@ -561,13 +576,16 @@ Every route reads the generated JSON at request time. Per-finding path parameter
     | NEEDS_REVIEW | "Migration Decision: Needs review" |
     | KEEP | "Migration Decision: No PQC migration" |
 - **Migration Path ranking line:** labels ranking output "Ranking-model candidate: … — selected by the migration strategy" or "— not selected: migration requires review".
-- **Responsive design:** tested at 1440/1024/768/400px. Wide tables and the What-If comparison scroll inside their own containers; the blast-radius tree switches from a fan-out to a left-rail list at ≤900px.
+- **Theming (`theme/`):** one piece of state at the app root, persisted in `localStorage` under `ecdat.theme` and written to `document.documentElement` as `data-theme` (plus `colorScheme`). Dark is the default and the original console; light redefines the same tokens under `:root[data-theme="light"]`. Components read semantic tokens, never literal colours — a hard-coded colour in a component is dark-only, and a bug. `ThemeProvider` writes the attribute in the setter rather than only in its effect, because React runs a child's effects before its parent's and the 3D scene repaints from the tokens in an effect of its own.
+  - **The 3D scene follows the theme through the same tokens.** `spatial/engine/themePalette.js` reads the `--env-*` custom properties; a layer tags an environment material with `themed(material, role)` and `SpatialEngine.applyTheme()` re-reads the tokens and repaints fog, lighting and every tagged material by walking the scene. There is still exactly one renderer, one canvas and one scene graph — only colours change. Severity and strategy colours are deliberately **not** themed: they encode meaning. The floor grid is handled separately because `GridHelper` bakes its colours into a vertex attribute rather than its material.
+- **ECDAT AI (`components/chat/`):** a launcher plus a panel, rendered in both layout modes. It is HTML, not CSS3D inside the scene. The panel attaches whichever finding the user is looking at (the open investigation, else the finding focused in the map) and shows which one, so an answer about "this finding" can be checked against the context it was given; the investigation workspace's **Ask ECDAT AI** button opens it with that finding attached from any surface. Conversation state lives in `useChat.js` for the session only. A failed turn keeps the question so **Retry** re-asks it rather than making the user retype it.
+- **Responsive design:** tested at 1440/1280/1024/900/768/400px. Wide tables and the What-If comparison scroll inside their own containers; the blast-radius tree switches from a fan-out to a left-rail list at ≤900px. ECDAT AI is a floating panel above its launcher on desktop; at ≤1024px the stage dock spans nearly the full width, so the panel becomes a sheet across the bottom, held clear of the stage action bar; at ≤760px it is a full-bleed bottom sheet.
 
 ---
 
 ## 19. Testing and validation
 
-- **Backend tests:** 36 `backend/test_*.py` scripts, each runnable as `python test_x.py` from `backend/` (no pytest dependency). No test needs a dev server or a particular scan: `test_api_validation.py` and `test_api_integration.py` start the real app themselves on a free port, over the fixture dataset.
+- **Backend tests:** 37 `backend/test_*.py` scripts, each runnable as `python test_x.py` from `backend/` (no pytest dependency). No test needs a dev server or a particular scan: `test_api_validation.py` and `test_api_integration.py` start the real app themselves on a free port, over the fixture dataset.
 - **The fixture dataset** (`backend/fixture_dataset.py`) is how the analysis tests stay true whatever ECDAT last scanned. It defines a small, hand-written CBOM whose findings cover the situations under test — a key agreement, two *different* findings that share the name "RSA-2048", a TLS-exposed signature with key material that inherits its strategy, a hash and a MAC — and runs it through the **real** 13-stage pipeline in an isolated copy of `backend/` under the system temp directory. Tests address findings by role (`fixture_dataset.ref("x25519")`) and derive counts from the fixture, never from a bom_ref or total copied from one scan; `data/` is neither read nor written. The dataset is cached and rebuilt automatically whenever the fixture or any production module changes.
   The suite covers:
   - scan targets and the scanner registry (`test_scan_targets.py`), CBOM freshness and provenance against a fake CBOMKit (`test_cbomkit_freshness.py`), CBOM validation and normalization against the CBOM currently in `data/` (`test_cbom_validation.py`), and the scan lifecycle, concurrency, stage timeout and atomic writes against fake scanners and a fake pipeline runner (`test_scan_service.py`)
@@ -576,8 +594,10 @@ Every route reads the generated JSON at request time. Per-finding path parameter
   - recommendation state
   - What-If, Evidence Explorer and the blast-radius view
   - finding identity, and report/actions/plan consistency
+  - the chat assistant's context, prompt discipline and every failure mode of the local model (`test_chat_assistant.py`), against the fixture dataset and a fake HTTP client
 - **Pipeline gate:** `check_risk_consistency.py` runs as stage 13.
-- **Frontend checks:** `npm run build` and `npm run lint` (oxlint). UI behavior has been verified with scripted browser sessions (Playwright / Chrome DevTools), not with committed frontend tests.
+- **Frontend tests:** `npm test` (Vitest + Testing Library, jsdom). The suite covers the parts of the UI whose behaviour is not obvious from reading them: the theme system (`src/theme/theme.test.jsx`), the assistant panel (`src/components/chat/chat.test.jsx`) and the 3D environment's palette (`src/spatial/engine/themePalette.test.js`). The 3D scene itself is not rendered under test — jsdom has no WebGL — so the palette module is tested directly and the scene is verified in a browser.
+- **Frontend checks:** `npm run build` and `npm run lint` (oxlint). Layout, the 3D scene and both themes are verified with scripted browser sessions (Playwright / Chrome DevTools).
 
 ---
 

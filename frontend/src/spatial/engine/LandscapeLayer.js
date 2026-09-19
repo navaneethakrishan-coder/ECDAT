@@ -34,6 +34,7 @@ import {
 
 import { SEVERITY_COLORS, displayName, nodeRadius, shortRef } from "../../components/visualization/securityMapModel";
 import { disposeObject } from "./SpatialEngine";
+import { themed } from "./themePalette.js";
 
 const CYAN = "#22d3ee";
 const VIOLET = "#a78bfa";
@@ -122,7 +123,7 @@ export class LandscapeLayer {
       const plateWidth = Math.max(region.end - region.start + 0.8, 1.6);
       const plate = new Mesh(
         new PlaneGeometry(plateWidth, depth + 3),
-        new MeshBasicMaterial({ color: "#0f1f3d", transparent: true, opacity: 0.42, depthWrite: false }),
+        themed(new MeshBasicMaterial({ transparent: true, opacity: 0.42, depthWrite: false }), "region"),
       );
       plate.rotation.x = -Math.PI / 2;
       plate.position.set(region.center, 0.01, 0);
@@ -130,7 +131,7 @@ export class LandscapeLayer {
 
       const outline = new LineSegments(
         new EdgesGeometry(plate.geometry),
-        new LineBasicMaterial({ color: "#2e4a7a", transparent: true, opacity: 0.55 }),
+        themed(new LineBasicMaterial({ transparent: true, opacity: 0.55 }), "wall-edge"),
       );
       outline.rotation.x = -Math.PI / 2;
       outline.position.copy(plate.position);
@@ -153,7 +154,10 @@ export class LandscapeLayer {
       const y = (band.value / 100) * height;
       const line = new Line(
         new BufferGeometry().setFromPoints([new Vector3(-halfWidth, y, backZ), new Vector3(halfWidth, y, backZ)]),
-        new LineDashedMaterial({ color: "#3b5c94", dashSize: 0.5, gapSize: 0.35, transparent: true, opacity: 0.6 }),
+        themed(
+          new LineDashedMaterial({ dashSize: 0.5, gapSize: 0.35, transparent: true, opacity: 0.6 }),
+          "band",
+        ),
       );
       line.computeLineDistances();
       this.content.add(line);
