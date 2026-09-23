@@ -4,6 +4,34 @@ Dated log of meaningful changes to the codebase and to this documentation set. N
 
 ---
 
+## 2026-09-23 — v1.0-prototype: SIH prototype finalized
+
+**Date:** 2026-09-23
+
+The current implementation is frozen as the SIH prototype baseline (tag `v1.0-prototype`). No feature was added, no UI redesigned, no architecture or analysis behaviour changed. What this entry records is the verification that was run against it, and the three corrections that verification turned up.
+
+### The canonical dataset was re-scanned
+
+`data/` now holds a CBOMKit scan of `keycloak/keycloak`, branch `main`, at commit **`b4242ba`** (2026-09-22), replacing the `dd4ae31` scan. Every figure is unchanged — 59 findings (30 algorithm, 28 related-crypto-material, 1 protocol), 37 dependency edges with 10 findings having none, risk 1 CRITICAL / 15 HIGH / 41 MEDIUM / 2 LOW, strategies NEEDS_REVIEW 29 / KEEP 18 / DIRECT_PQC 6 / HYBRID 6, 12 selected PQC paths, 388 migration actions, 95% readiness. The diff is the regenerated `bom_ref` UUIDs, the CBOM timestamp and commit, and key ordering inside three count maps.
+
+### Corrections
+
+- **`test_pqc_mapper.py` crashed on a default Windows console.** Three test labels contained `→`; printing them raised `UnicodeEncodeError` under cp1252 whenever stdout was not UTF-8, so the documented `python test_pqc_mapper.py` failed before running an assertion. The labels now use `->`. No assertion changed.
+- **Five places still said the project has no frontend tests** (`README.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT_CONTEXT.md` ×2, `docs/AI_ADVISOR.md`), contradicting the 38 Vitest tests added on 2026-09-20 and documented in the same README. They now state what the suite actually covers.
+- **README's atomicity claim was imprecise.** Atomic writes (`os.replace`) cover the scan-state files, not the pipeline's stage outputs; the limitation now says which is which.
+
+`QRYPTA` is now named in the README as the product this engine sits inside.
+
+### Verification
+
+- **Backend:** 37/37 test scripts pass. `check_risk_consistency.py` — 118 risk figures agree with the authoritative source.
+- **Cross-stage consistency:** all 12 generated stages carry the identical 59-`bom_ref` set, matching the CBOM's components exactly; no orphans, no duplicates. Every declared summary count matches its records (risk, priority, blast radius, complexity, strategy, migration type, recommendation, action totals). NEEDS_REVIEW findings carry no candidate, score, rank, selected component or confirmation, and their ranking-model output is preserved rather than discarded; DIRECT_PQC and HYBRID each select a `pqc_component` that the recommendation agrees with; KEEP selects none.
+- **Frontend:** 38/38 Vitest tests pass. `npm run lint` — no errors (2 pre-existing `set-state-in-effect` advisories in `App.jsx`). `npm run build` — succeeds, 2450 modules.
+- **Browser:** both themes at 1440×900, 1280×800, 1024×768, 900×800, 768×1024 and 400×844. One WebGL canvas at every size that renders the space, none at 400px where the scrolling fallback takes over; no horizontal overflow anywhere; no console errors. Theme choice persists across reload (`localStorage['ecdat.theme']`), with light at `--bg-page #e0e7f1` / fog 0.005 and dark unchanged at `#05070f` / 0.016. Evidence Explorer, Blast Radius, Migration Path, What-If, AI Analysis and the chatbot were each exercised against the live backend; `data/` was checksummed before and after and is byte-identical, so What-If stayed read-only against the real dataset.
+- **One transient failure, not a defect:** the first AI Advisor call returned 500 because the local `llama-server` crashed on CUDA initialization. ECDAT surfaced the reason and a Retry rather than a stack trace, and the retry returned a full analysis. The chatbot answered correctly throughout.
+
+---
+
 ## 2026-09-20 — Drafting Table light UI, dataset-independent tests, Keycloak as the canonical demo
 
 **Date:** 2026-09-20

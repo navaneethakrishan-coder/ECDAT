@@ -193,7 +193,7 @@ This is enforced by tests. `test_finding_identity.py` checks that all generated 
 | 12 | `generate_migration_report.py` | risk, blast, complexity, priority, plan, actions | `ecdat-migration-report.json` (unified per-finding record) |
 | 13 | `check_risk_consistency.py` | explainable risk, risk-assessed assets, report | none — exits non-zero if any risk figure disagrees |
 
-**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned — the scan service writes every new CBOM there, which is why no analysis module had to change — and the current file comes from a CBOMKit scan of `keycloak/keycloak` at commit `dd4ae31` (59 findings). `data/pqc-algorithms.json` is the PQC registry.
+**Static inputs:** `data/keycloak-cbom.json` holds the raw CBOM. The filename is fixed regardless of which repository was scanned — the scan service writes every new CBOM there, which is why no analysis module had to change — and the current file comes from a CBOMKit scan of `keycloak/keycloak` at commit `b4242ba` (59 findings). `data/pqc-algorithms.json` is the PQC registry.
 
 **Scan runtime artifacts:** `data/ecdat-scan.json` and `data/ecdat-scan-history.json` are written by the scan service (§2.1.2), not by the pipeline. They are machine-generated per scan and git-ignored; no pipeline stage reads them.
 
@@ -610,7 +610,7 @@ Every route reads the generated JSON at request time. Per-finding path parameter
 - Business criticality and data lifetime are UNKNOWN unless configured, so Mosca urgency is currently not computed for any finding.
 - The risk context's criticality and exposure are heuristics from paths and API contexts; the specific matching signal is not recorded.
 - The What-If model distinguishes PQC families, not parameter sets.
-- There is no authentication, no persistence beyond JSON files, and no frontend unit tests.
+- There is no authentication and no persistence beyond JSON files. The frontend suite (`npm test`) covers the theme system, the assistant panel and the 3D palette rather than the whole UI.
 - Legacy files remain in `backend/`: `main_backup*.py`, `cbom_parser_backup.py`, `score_contextual_cbom.py`, `generate_summary.py`, plus `data-backup/`. They are unreferenced but still runnable, so they were left in place; the stale `data/` outputs they once produced were removed (§4).
 
 **Possible extensions (not implemented)**

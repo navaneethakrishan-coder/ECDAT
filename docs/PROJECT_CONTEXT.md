@@ -138,7 +138,7 @@ Implemented by `backend/services/scanning/` and exposed as `POST /api/scan` (ali
 
 ## 4. Current dataset snapshot
 
-`data/keycloak-cbom.json` currently holds a CBOMKit scan of `keycloak/keycloak` (branch `main`, commit `dd4ae31`), produced through the scan workflow in §3.1 and verified as a fresh CBOM rather than one CBOMKit already held. The filename is fixed and historical. From it:
+`data/keycloak-cbom.json` currently holds a CBOMKit scan of `keycloak/keycloak` (branch `main`, commit `b4242ba`), produced through the scan workflow in §3.1 and verified as a fresh CBOM rather than one CBOMKit already held. The filename is fixed and historical. From it:
 
 - **Findings:** 59 (59 raw component entries; nothing to merge, as every `bom_ref` is already unique). By asset type: 30 algorithms, 28 related-crypto-material, 1 protocol.
 - **Relationships:** 37 recorded dependency entries, giving 37 unique CycloneDX dependency edges. Ten findings have none, among them `AES`, `ECDH` and `MD5`.
@@ -167,7 +167,7 @@ Earlier revisions of these documents describe a 30-finding scan of the same repo
 - **React 19** + **Vite 8**; **Recharts** (donut charts); **lucide-react** (icons); **three.js** (the 3D security space, lazily loaded)
 - **oxlint** (`npm run lint`)
 - **Styling:** one tokenized stylesheet (`App.css`), with Inter and Space Grotesk loaded from Google Fonts, which requires network access
-- **Structure:** no router, no global state library, no frontend test runner
+- **Structure:** no router and no global state library; Vitest + Testing Library (jsdom) as the test runner (`npm test`)
 
 ### External services (run separately; not part of this repository)
 - **CBOMKit** at `http://localhost:8081`, for repository scanning
@@ -263,7 +263,7 @@ docs/        ARCHITECTURE.md, PROJECT_CONTEXT.md, AI_ADVISOR.md, CHANGELOG.md, T
 - Discovery is limited to what CBOMKit finds in source code. Only Git repository targets have a scanner; binaries, libraries and containers are declared not implemented.
 - Organizational context must be configured manually.
 - The What-If model is family-level, not parameter-set-level.
-- There is no authentication, persistence layer or frontend unit testing.
+- There is no authentication or persistence layer. Frontend testing covers the theme system, the assistant panel and the 3D palette, not the whole UI.
 
 **Possible future extensions (not implemented)**
 - Binary, library, container-image, hardware or cloud/KMS/TLS discovery sources, added as scanners behind the existing registry.

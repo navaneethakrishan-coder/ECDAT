@@ -4,6 +4,8 @@
 
 Submitted for **SIH Problem Statement 26164**.
 
+**QRYPTA** is the product; **ECDAT** is the engine inside it that does the cryptographic discovery and post-quantum migration analysis. This repository is that engine, and every name in the code, API and UI is ECDAT's.
+
 ECDAT points at a public GitHub repository, discovers the cryptography it actually uses, and turns that into an explainable post-quantum migration analysis: what is at risk, why, what depends on it, what it should become, and what a developer has to change. Every figure it shows is computed from recorded evidence — ECDAT never guesses a value it cannot observe, and says so when it cannot.
 
 ECDAT is a working **prototype**: one repository at a time, flat JSON files instead of a database, no authentication, and all services running locally.
@@ -158,7 +160,7 @@ npm run build
 
 ## Current demo dataset
 
-`data/keycloak-cbom.json` (the filename is fixed and historical) holds a CBOMKit scan of **`keycloak/keycloak`, branch `main`, commit `dd4ae31`**:
+`data/keycloak-cbom.json` (the filename is fixed and historical) holds a CBOMKit scan of **`keycloak/keycloak`, branch `main`, commit `b4242ba`**:
 
 - **59 findings** from 59 raw component entries — 30 algorithms, 28 related-crypto-material, 1 protocol
 - **37 recorded dependency entries**, giving **37 unique dependency edges**; 10 findings have none (`AES`, `ECDH`, `MD5` and others)
@@ -184,7 +186,8 @@ repository is scanned.
 - **Business criticality and data lifetime are UNKNOWN** unless an organization supplies `data/business-context.json`, so Mosca-style urgency is not computed for the current dataset. The criticality and exposure inputs that *are* derived are path/API-context heuristics.
 - **The What-If model distinguishes PQC families, not parameter sets**, so options within one family score identically.
 - **The AI Advisor's text is generated.** ECDAT constrains the context but cannot guarantee the model's wording, and Ollama occasionally returns a transient error — the panel surfaces the failure with a Retry.
-- **No authentication, no database, no frontend unit tests.** The pipeline's stage outputs are written non-atomically, so an interrupted pipeline is recovered by re-running it.
+- **No authentication and no database.** Results are flat JSON files. The frontend suite (`npm test`) covers the theme system, the assistant panel and the 3D palette, not the whole UI — the 3D scene itself is verified in a browser, since jsdom has no WebGL.
+- **Only the scan-state files are written atomically** (`data/ecdat-scan.json`, `data/ecdat-scan-history.json`, via `os.replace`). The pipeline's stage outputs are written non-atomically, so an interrupted pipeline is recovered by re-running it.
 
 ---
 

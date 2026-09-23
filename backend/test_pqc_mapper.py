@@ -150,11 +150,11 @@ if __name__ == "__main__":
     print("PQC MAPPING TEST")
     print("================================")
 
-    run_test("ECDH → ML-KEM", test_ecdh)
-    run_test("Signature → ML-DSA / SLH-DSA", test_signature)
-    run_test("AES → No direct PQC", test_aes_no_direct_pqc)
-    run_test("SHA256 → No direct PQC", test_hash_no_direct_pqc)
-    run_test("EC → Usage validation", test_ec_requires_usage_validation)
+    run_test("ECDH -> ML-KEM", test_ecdh)
+    run_test("Signature -> ML-DSA / SLH-DSA", test_signature)
+    run_test("AES -> No direct PQC", test_aes_no_direct_pqc)
+    run_test("SHA256 -> No direct PQC", test_hash_no_direct_pqc)
+    run_test("EC -> Usage validation", test_ec_requires_usage_validation)
     run_test("Multiple assets", test_all_assets)
 
     print()

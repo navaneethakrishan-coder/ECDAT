@@ -174,7 +174,7 @@ The output is generated text: ECDAT constrains the context and instructions but 
   - `recommended_candidate` = the selected component for x25519 (DIRECT_PQC) and DSA (HYBRID)
   - neither field for SHA256 (KEEP)
   - per-`bom_ref` isolation of the two RSA-2048 findings
-- **Not covered:** `generate_advice()` (the Ollama call) and `AIAdvisorPanel.jsx`. The project has no frontend test runner; UI behavior has been verified with scripted browser sessions.
+- **Not covered:** `generate_advice()` (the Ollama call) and `AIAdvisorPanel.jsx`. The frontend suite covers the assistant panel (`src/components/chat/chat.test.jsx`), not the advisor panel; the advisor's UI behavior has been verified with scripted browser sessions.
 
 ## Limitations (still open)
 
